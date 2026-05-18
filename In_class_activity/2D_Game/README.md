@@ -1,6 +1,9 @@
 # Space Blaster — 2D Game Improvement
 
-**▶ Play in browser:** https://HEIMA-programmer.github.io/Games-Programming-Yanbin/In_class_activity/2D_Game/play/
+> ## 🎮 [▶ Play in your browser](http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/)
+>
+> No download, no install — the game runs directly in any modern browser via
+> **Unity WebGL**.
 
 A top-down 2D space shooter built on top of a Unity 2D starter pack.
 Defeat 10 enemies to clear the level while dodging incoming fire and adapting
@@ -9,12 +12,16 @@ to ever-rising difficulty.
 - **Author:** Yanbin Xu
 - **Course:** 2D Game Improvement Assignment
 - **Engine:** Unity 2022.3.62f3 (built-in Render Pipeline, 2D)
+- **Live demo:** <http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/>
 - **Start scene:** `Assets/Scenes/MainMenu.unity`
 - **Game scene:** `Assets/Scenes/SampleScene.unity`
 
 ---
 
 ## How to Play
+
+Click the **▶ Play in your browser** link above and the game will start
+straight in the browser tab. No installation, no Unity needed.
 
 | Action | Input |
 |--------|-------|
@@ -115,28 +122,37 @@ all fixed:
 
 ---
 
-## Project Structure (where each improvement lives)
+## Project Structure
 
 ```
-Assets/
-├── Scenes/
-│   ├── MainMenu.unity      ← Start-up scene (menu + camera + UIManager)
-│   └── SampleScene.unity   ← Main game scene (player, enemies, HUD)
-├── Scripts/
-│   ├── Polish/             ← NEW scripts written for this submission
-│   │   ├── HitFlash.cs            – Sprite colour flash on damage
-│   │   ├── CameraShake.cs         – Screen-shake offset for CameraController
-│   │   └── DifficultyManager.cs   – Scales spawn rates with kill count
-│   ├── UI/                 ← NEW HUD display scripts
-│   │   ├── HealthDisplay.cs           – "HP: 2 / 3"
-│   │   ├── LivesDisplay.cs            – "Lives: 3"
-│   │   └── EnemiesDefeatedDisplay.cs  – "Enemies: 4 / 10"
-│   ├── Camera/CameraController.cs     – Modified to read CameraShake offset
-│   ├── Health&Damage/
-│   │   ├── Damage.cs                  – Guard against invincible kills
-│   │   └── Health.cs                  – Always-on hit feedback
-│   └── Utility/GameManager.cs         – Added public EnemiesDefeated getter
-└── Prefabs/                ← Modified effect prefabs (positions / particles)
+2D_Game/
+├── Assets/                         ← Game source content
+│   ├── Scenes/
+│   │   ├── MainMenu.unity          ← Start-up scene (menu + camera + UIManager)
+│   │   └── SampleScene.unity       ← Main game scene (player, enemies, HUD)
+│   ├── Scripts/
+│   │   ├── Polish/                 ← NEW scripts written for this submission
+│   │   │   ├── HitFlash.cs                – Sprite colour flash on damage
+│   │   │   ├── CameraShake.cs             – Screen-shake offset for CameraController
+│   │   │   └── DifficultyManager.cs       – Scales spawn rates with kill count
+│   │   ├── UI/                     ← NEW HUD display scripts
+│   │   │   ├── HealthDisplay.cs           – "HP: 2 / 3"
+│   │   │   ├── LivesDisplay.cs            – "Lives: 3"
+│   │   │   └── EnemiesDefeatedDisplay.cs  – "Enemies: 4 / 10"
+│   │   ├── Camera/CameraController.cs     – Modified to read CameraShake offset
+│   │   ├── Health&Damage/
+│   │   │   ├── Damage.cs                  – Guard against invincible kills
+│   │   │   └── Health.cs                  – Always-on hit feedback
+│   │   └── Utility/GameManager.cs         – Added public EnemiesDefeated getter
+│   └── Prefabs/                    ← Modified effect prefabs (positions / particles)
+├── Packages/                       ← Unity package manifest
+├── ProjectSettings/                ← Project settings
+├── play/                           ← 🎮 WebGL build (deployed via GitHub Pages)
+│   ├── index.html                  ← Entry point — open this to play
+│   ├── Build/                      ← Compiled .data / .wasm / .js
+│   └── TemplateData/               ← Loader CSS / images
+├── README.md                       ← This file
+└── .gitignore                      ← Ignores Library/, Temp/, IDE files
 ```
 
 ---
@@ -148,17 +164,54 @@ Assets/
 
 ---
 
-## Build Instructions (Developer)
+## Build Instructions
 
-To produce a standalone executable:
+There are two builds in this project:
+
+1. **WebGL build** in `play/` — already deployed at the live demo link above.
+2. **Optional standalone build** (Windows / macOS / Linux) — re-build locally.
+
+### Rebuilding the WebGL Version (for GitHub Pages)
 
 1. Open the project in Unity **2022.3.62f3** (or compatible 2022 LTS).
 2. `File → Build Settings…`
-3. **Scenes In Build** should be:
+3. Set **Platform** to **WebGL** → click **Switch Platform** if needed.
+4. Confirm **Scenes In Build**:
    - `0` `Scenes/MainMenu` (start scene — **must be index 0**)
    - `1` `Scenes/SampleScene`
-4. **Platform:** `Windows, Mac, Linux` (or your target).
-5. **Architecture:** `x86_64` (Windows).
-6. Click **Build**, pick an empty output folder, and wait for the build to
+5. Open **Player Settings → Publishing Settings** and set
+   **`Compression Format = Disabled`**.
+   *(Required: GitHub Pages does not decompress Brotli, so the default setting
+   causes the loader to hang on a black screen.)*
+6. Click **Build**, output to the `play/` folder (overwrite the existing one).
+7. Commit `play/` and push — GitHub Pages will redeploy automatically.
+
+### Building a Standalone Executable
+
+1. Open the project in Unity **2022.3.62f3** (or compatible 2022 LTS).
+2. `File → Build Settings…`
+3. Set **Platform** to **Windows, Mac, Linux** (or your target).
+4. Confirm **Scenes In Build** as above (MainMenu first).
+5. Click **Build**, pick an empty output folder, and wait for the build to
    finish.
-7. Run `SpaceBlaster.exe` (or whatever name you chose) in the output folder.
+6. Run `2D_Game.exe` (or whatever name you chose) in the output folder.
+
+---
+
+## Hosting
+
+The WebGL build in `play/` is served as static files by **GitHub Pages**
+from this repository's root, and reached through the custom domain
+`yanbin.pro` (a CNAME pointed at `*.github.io`).
+That makes the live URL:
+
+```
+http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/
+```
+
+If GitHub Pages is rebuilding, the same URL on the default GitHub domain works
+too:
+
+```
+https://<github-username>.github.io/Games-Programming-Yanbin/In_class_activity/2D_Game/play/
+```
