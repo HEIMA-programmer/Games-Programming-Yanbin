@@ -13,6 +13,12 @@
 [Mm]emoryCaptures/
 [Rr]ecordings/
 
+# Exception: keep the WebGL build folder (deployed via GitHub Pages).
+# The rule [Bb]uild/ above otherwise excludes play/Build/.
+!/play/
+!/play/Build/
+!/play/Build/**
+
 # Asset meta files should be committed alongside their assets
 # (don't ignore .meta files inside Assets/)
 !/[Aa]ssets/**/*.meta
