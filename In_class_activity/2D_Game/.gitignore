@@ -1,0 +1,62 @@
+# =============================================================================
+# Unity .gitignore — standard template
+# =============================================================================
+
+# Unity generated folders (cache, temp, build outputs)
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Asset meta files should be committed alongside their assets
+# (don't ignore .meta files inside Assets/)
+!/[Aa]ssets/**/*.meta
+
+# IDE / Editor generated files
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vs/
+.vscode/
+.idea/
+
+# Unity package / build artifacts
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Unity crash reports
+sysinfo.txt
+crashlytics-build.properties
+
+# Packed Addressables / Streaming Assets
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Backup files (e.g. MainMenu.unity.bak)
+*.bak
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
