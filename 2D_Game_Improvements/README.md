@@ -1,6 +1,6 @@
 # Space Blaster — 2D Game Improvement
 
-> ## 🎮 [▶ Play in your browser](http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/)
+> ## 🎮 [▶ Play in your browser](http://yanbin.pro/Games-Programming-Yanbin/2D_Game_Improvements/play/)
 >
 > No download, no install — the game runs directly in any modern browser via
 > **Unity WebGL**.
@@ -12,7 +12,7 @@ to ever-rising difficulty.
 - **Author:** Yanbin Xu
 - **Course:** 2D Game Improvement Assignment
 - **Engine:** Unity 2022.3.62f3 (built-in Render Pipeline, 2D)
-- **Live demo:** <http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/>
+- **Live demo:** <http://yanbin.pro/Games-Programming-Yanbin/2D_Game_Improvements/play/>
 - **Start scene:** `Assets/Scenes/MainMenu.unity`
 - **Game scene:** `Assets/Scenes/SampleScene.unity`
 
@@ -125,7 +125,7 @@ all fixed:
 ## Project Structure
 
 ```
-2D_Game/
+2D_Game_Improvements/
 ├── Assets/                         ← Game source content
 │   ├── Scenes/
 │   │   ├── MainMenu.unity          ← Start-up scene (menu + camera + UIManager)
@@ -206,12 +206,12 @@ from this repository's root, and reached through the custom domain
 That makes the live URL:
 
 ```
-http://yanbin.pro/Games-Programming-Yanbin/In_class_activity/2D_Game/play/
+http://yanbin.pro/Games-Programming-Yanbin/2D_Game_Improvements/play/
 ```
 
 If GitHub Pages is rebuilding, the same URL on the default GitHub domain works
 too:
 
 ```
-https://<github-username>.github.io/Games-Programming-Yanbin/In_class_activity/2D_Game/play/
+https://<github-username>.github.io/Games-Programming-Yanbin/2D_Game_Improvements/play/
 ```
