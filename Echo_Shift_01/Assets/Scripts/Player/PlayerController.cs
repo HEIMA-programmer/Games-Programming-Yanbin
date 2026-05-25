@@ -34,6 +34,15 @@ namespace EchoShift
         [Header("Landing")]
         public float hardLandingSpeed = 14f;
 
+        [Header("Audio")]
+        public AudioSource audioSource;
+        public AudioClip jumpClip;
+        public AudioClip landClip;
+        public AudioClip footstepClip;
+        public float footstepInterval = 0.3f;
+        public float footstepMinSpeed = 1.5f;
+        public float landClipMinSpeed = 3f;
+
         public Vector2 Velocity => rb ? rb.velocity : Vector2.zero;
         public bool IsGrounded { get; private set; }
         public bool FacingRight { get; private set; } = true;
@@ -48,6 +57,7 @@ namespace EchoShift
         float bufferCounter;
         bool jumpHeld;
         bool wasGrounded;
+        float footstepTimer;
 
         void Awake()
         {
@@ -60,7 +70,7 @@ namespace EchoShift
 
         void Update()
         {
-            if (!ControlEnabled)
+            if (!ControlEnabled || GameManager.Paused)
             {
                 MoveInput = 0f;
                 jumpHeld = false;
@@ -74,6 +84,17 @@ namespace EchoShift
             bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
             jumpHeld = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
             if (jumpPressed) bufferCounter = jumpBuffer;
+
+            if (IsGrounded && Mathf.Abs(Velocity.x) > footstepMinSpeed)
+            {
+                footstepTimer -= Time.deltaTime;
+                if (footstepTimer <= 0f)
+                {
+                    if (audioSource != null && footstepClip != null) audioSource.PlayOneShot(footstepClip, 0.5f);
+                    footstepTimer = footstepInterval;
+                }
+            }
+            else footstepTimer = 0f;
         }
 
         void FixedUpdate()
@@ -102,6 +123,7 @@ namespace EchoShift
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 bufferCounter = 0f;
                 coyoteCounter = 0f;
+                if (audioSource != null && jumpClip != null) audioSource.PlayOneShot(jumpClip);
             }
 
             // Gravity shaping: heavier on the way down, cut short jumps.
@@ -113,8 +135,21 @@ namespace EchoShift
                 rb.velocity = new Vector2(rb.velocity.x, -maxFallSpeed);
 
             if (IsGrounded && !wasGrounded)
-                Landed?.Invoke(-fallSpeedBefore);
+            {
+                float impact = -fallSpeedBefore;
+                Landed?.Invoke(impact);
+                if (impact >= landClipMinSpeed && audioSource != null && landClip != null)
+                    audioSource.PlayOneShot(landClip);
+            }
             wasGrounded = IsGrounded;
+        }
+
+        public void Respawn(Vector3 position)
+        {
+            transform.position = position;
+            if (rb != null) rb.velocity = Vector2.zero;
+            coyoteCounter = 0f;
+            bufferCounter = 0f;
         }
 
         void OnDrawGizmosSelected()

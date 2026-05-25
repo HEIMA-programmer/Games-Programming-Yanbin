@@ -22,6 +22,19 @@ namespace EchoShift.EditorTools
             WriteWav("chime", Chime());
             WriteWav("doorslide", DoorSlide());
             WriteWav("land", Land());
+            WriteWav("footstep", Footstep());
+            WriteWav("jump", Jump());
+            WriteWav("recordstart", RecordStart());
+            WriteWav("materialize", Materialize());
+            WriteWav("clonedissolve", CloneDissolve());
+            WriteWav("platerelease", PlateRelease());
+            WriteWav("doorclose", DoorClose());
+            WriteWav("uihover", UiHover());
+            WriteWav("uiclick", UiClick());
+            WriteWav("pauseopen", PauseOpen());
+            WriteWav("bgm_menu", MenuDrone());
+            WriteWav("bgm_level", LevelAmbient());
+            WriteWav("bgm_victory", VictoryChord());
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -92,6 +105,177 @@ namespace EchoShift.EditorTools
                 float thud = Mathf.Sin(2f * Mathf.PI * 95f * t) * Mathf.Exp(-t * 32f) * 0.7f;
                 float dust = (Random.value * 2f - 1f) * Mathf.Exp(-t * 60f) * 0.22f;
                 d[i] = thud + dust;
+            }
+            return d;
+        }
+
+        static float[] Footstep()
+        {
+            float dur = 0.06f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float env = Mathf.Exp(-t * 80f);
+                d[i] = ((Random.value * 2f - 1f) * 0.3f + Mathf.Sin(2f * Mathf.PI * 170f * t) * 0.2f) * env;
+            }
+            return d;
+        }
+
+        static float[] Jump()
+        {
+            float dur = 0.18f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float k = t / dur;
+                float f = Mathf.Lerp(220f, 560f, k); ph += 2f * Mathf.PI * f / SampleRate;
+                float env = Mathf.Sin(Mathf.PI * k);
+                d[i] = (Mathf.Sin(ph) * 0.4f + (Random.value * 2f - 1f) * 0.1f) * env;
+            }
+            return d;
+        }
+
+        static float[] RecordStart()
+        {
+            float dur = 0.14f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate;
+                float env = Mathf.Clamp01(Mathf.Min(t * 40f, Mathf.Exp(-(t - 0.02f) * 22f)));
+                float s = Mathf.Sin(2f * Mathf.PI * 1046f * t) * 0.5f + Mathf.Sin(2f * Mathf.PI * 1568f * t) * 0.25f;
+                d[i] = s * env;
+            }
+            return d;
+        }
+
+        static float[] Materialize()
+        {
+            float dur = 0.55f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            float[] f = { 1318f, 1760f, 2349f, 3136f };
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float env = Mathf.Exp(-t * 4.5f);
+                float vib = 1f + 0.01f * Mathf.Sin(2f * Mathf.PI * 7f * t);
+                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * vib * t) * (0.3f / (k + 1));
+                d[i] = s * env;
+            }
+            return d;
+        }
+
+        static float[] CloneDissolve()
+        {
+            float dur = 0.55f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float k = t / dur;
+                float f = Mathf.Lerp(220f, 110f, k); ph += 2f * Mathf.PI * f / SampleRate;
+                float env = Mathf.Exp(-t * 3.5f);
+                d[i] = (Mathf.Sin(ph) * 0.4f + Mathf.Sin(ph * 1.5f) * 0.15f) * env;
+            }
+            return d;
+        }
+
+        static float[] PlateRelease()
+        {
+            float dur = 0.09f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float k = t / dur;
+                float f = Mathf.Lerp(600f, 1000f, k); ph += 2f * Mathf.PI * f / SampleRate;
+                float env = Mathf.Exp(-t * 45f);
+                d[i] = (Mathf.Sin(ph) * 0.5f + (Random.value * 2f - 1f) * 0.1f) * env;
+            }
+            return d;
+        }
+
+        static float[] DoorClose()
+        {
+            float dur = 0.34f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float k = t / dur;
+                float f = Mathf.Lerp(210f, 120f, k); ph += 2f * Mathf.PI * f / SampleRate;
+                float env = Mathf.Sin(Mathf.PI * k);
+                d[i] = (Mathf.Sin(ph) * 0.4f + (Random.value * 2f - 1f) * 0.16f) * env;
+            }
+            return d;
+        }
+
+        static float[] UiHover()
+        {
+            float dur = 0.04f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float env = Mathf.Exp(-t * 120f);
+                d[i] = Mathf.Sin(2f * Mathf.PI * 1400f * t) * env * 0.25f;
+            }
+            return d;
+        }
+
+        static float[] UiClick()
+        {
+            float dur = 0.1f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float env = Mathf.Exp(-t * 30f);
+                float s = Mathf.Sin(2f * Mathf.PI * 660f * t) * 0.4f + Mathf.Sin(2f * Mathf.PI * 990f * t) * 0.25f;
+                d[i] = s * env;
+            }
+            return d;
+        }
+
+        static float[] PauseOpen()
+        {
+            float dur = 0.45f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate; float k = t / dur;
+                float env = Mathf.Sin(Mathf.PI * k);
+                float s = Mathf.Sin(2f * Mathf.PI * 120f * t) * 0.4f + Mathf.Sin(2f * Mathf.PI * 180f * t) * 0.2f;
+                d[i] = s * env;
+            }
+            return d;
+        }
+
+        // ---- BGM: seamless loops (integer Hz over an integer-second length) ----
+        static float[] MenuDrone()
+        {
+            float dur = 8f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            int[] f = { 55, 110, 131, 165 };
+            float[] amp = { 0.28f, 0.22f, 0.16f, 0.16f };
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate;
+                float lfo = 0.85f + 0.15f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
+                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * amp[k];
+                d[i] = s * lfo * 0.5f;
+            }
+            return d;
+        }
+
+        static float[] LevelAmbient()
+        {
+            float dur = 8f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            int[] f = { 41, 62, 82 };
+            float[] amp = { 0.3f, 0.2f, 0.14f };
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate;
+                float lfo = 0.8f + 0.2f * Mathf.Sin(2f * Mathf.PI * 0.125f * t);
+                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * amp[k];
+                d[i] = s * lfo * 0.45f;
+            }
+            return d;
+        }
+
+        static float[] VictoryChord()
+        {
+            float dur = 4f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
+            int[] f = { 131, 165, 196, 262 };
+            for (int i = 0; i < n; i++)
+            {
+                float t = (float)i / SampleRate;
+                float env = 0.6f + 0.4f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
+                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * 0.22f;
+                d[i] = s * env * 0.6f;
             }
             return d;
         }

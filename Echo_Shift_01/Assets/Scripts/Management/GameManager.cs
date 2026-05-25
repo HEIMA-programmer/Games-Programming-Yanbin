@@ -1,96 +1,164 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace EchoShift
 {
     /// <summary>
-    /// Central flow + UI controller: recording vignette toggle, active-clone tracking
-    /// (for camera pull-back), and the level-complete sequence (white flash → memory
-    /// line → "Level Complete" → pause).
+    /// Per-level coordinator: holds level config, tracks fragments + time, drives the
+    /// recording vignette/HUD, owns pause + white flash + victory + (Level 2) respawn.
+    /// One instance per gameplay scene; referenced by UI components wired by the builder.
     /// </summary>
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
+        public static bool Paused { get; private set; }
 
+        [Header("Level config (set by the build script)")]
+        public string levelName = "Sector 01";
+        public string nextSceneName = "MainMenu";
+        [TextArea] public string narrativeLine = "I remember...";
+        [TextArea] public string finalMessage = "";
+        public int totalFragments = 1;
+
+        [Header("UI references")]
+        public HUDController hud;
+        public PauseMenu pauseMenu;
+        public VictoryScreen victoryScreen;
         public RecordingVignette vignette;
         public Image flashImage;
-        public TMP_Text endText;
+        public Image hitFlashImage;
 
-        public string line1 = "I remember... this was my home.";
-        public string line2 = "Level Complete";
         public float flashTime = 0.45f;
-        public float textFadeTime = 1.2f;
-        public float betweenDelay = 1.7f;
-
-        int activeClones;
-        bool completed;
 
         public bool IsCloneActive => activeClones > 0;
+        public bool IsVictory => completed;
+        public int Collected => collected;
+
+        int activeClones;
+        int collected;
+        bool completed;
+        bool respawning;
+        Vector3 checkpoint;
+        bool hasCheckpoint;
+        PlayerController player;
 
         void Awake()
         {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
+            Paused = false;
             Time.timeScale = 1f;
-            if (flashImage != null) SetImageAlpha(flashImage, 0f);
-            if (endText != null) SetTextAlpha(endText, 0f);
+            completed = false;
+            if (flashImage != null) SetAlpha(flashImage, 0f);
+            if (hitFlashImage != null) SetAlpha(hitFlashImage, 0f);
+        }
+
+        void Start()
+        {
+            player = FindObjectOfType<PlayerController>();
+            if (hud != null) { hud.SetCollected(0, totalFragments); hud.SetRecording(false); }
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayLevelMusic();
         }
 
         void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            Paused = false;
         }
 
+        // ---- recording / clone ----
+        public void SetRecording(bool on)
+        {
+            if (vignette != null) vignette.SetRecording(on);
+            if (hud != null) hud.SetRecording(on);
+        }
         public void RegisterClone() => activeClones++;
         public void UnregisterClone() => activeClones = Mathf.Max(0, activeClones - 1);
-        public void SetRecording(bool on) { if (vignette != null) vignette.SetRecording(on); }
 
-        public void CompleteLevel()
+        // ---- fragments ----
+        public void CollectFragment()
         {
-            if (completed) return;
-            completed = true;
-            StartCoroutine(CompleteRoutine());
+            collected++;
+            if (hud != null) hud.SetCollected(collected, totalFragments);
         }
 
-        IEnumerator CompleteRoutine()
+        // ---- pause ----
+        public void SetPaused(bool p)
         {
-            if (flashImage != null)
-            {
-                SetImageAlpha(flashImage, 0.92f);
-                float t = 0f;
-                while (t < flashTime)
-                {
-                    t += Time.unscaledDeltaTime;
-                    SetImageAlpha(flashImage, Mathf.Lerp(0.92f, 0f, t / flashTime));
-                    yield return null;
-                }
-                SetImageAlpha(flashImage, 0f);
-            }
-
-            if (endText != null)
-            {
-                endText.text = line1;
-                yield return FadeText(endText, 0f, 1f, textFadeTime);
-                yield return WaitUnscaled(betweenDelay);
-                endText.text = line1 + "\n\n" + line2;
-            }
-
-            yield return WaitUnscaled(0.4f);
-            Time.timeScale = 0f;
+            Paused = p;
+            Time.timeScale = p ? 0f : 1f;
         }
 
-        static IEnumerator FadeText(TMP_Text txt, float from, float to, float dur)
+        // ---- white flash on pickup ----
+        public void Flash()
         {
+            if (flashImage != null) StartCoroutine(FlashRoutine(flashImage, 0.92f, flashTime));
+        }
+
+        IEnumerator FlashRoutine(Image img, float peak, float dur)
+        {
+            SetAlpha(img, peak);
             float t = 0f;
             while (t < dur)
             {
                 t += Time.unscaledDeltaTime;
-                SetTextAlpha(txt, Mathf.Lerp(from, to, t / dur));
+                SetAlpha(img, Mathf.Lerp(peak, 0f, t / dur));
                 yield return null;
             }
-            SetTextAlpha(txt, to);
+            SetAlpha(img, 0f);
+        }
+
+        // ---- victory ----
+        public void CompleteLevel()
+        {
+            if (completed) return;
+            completed = true;
+            if (player != null) player.ControlEnabled = false;
+            float timeTaken = Time.timeSinceLevelLoad;
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayVictoryMusic();
+            if (victoryScreen != null)
+                victoryScreen.Show(levelName, timeTaken, collected, totalFragments, narrativeLine, nextSceneName, finalMessage);
+        }
+
+        // ---- checkpoints / respawn (Level 2) ----
+        public void SetCheckpoint(Vector3 pos)
+        {
+            checkpoint = pos;
+            hasCheckpoint = true;
+        }
+
+        public void RespawnPlayer()
+        {
+            if (respawning || completed || !hasCheckpoint) return;
+            StartCoroutine(RespawnRoutine());
+        }
+
+        IEnumerator RespawnRoutine()
+        {
+            respawning = true;
+            if (player == null) player = FindObjectOfType<PlayerController>();
+            if (player != null) player.ControlEnabled = false;
+
+            if (hitFlashImage != null) SetAlpha(hitFlashImage, 0.6f);
+            yield return WaitUnscaled(0.2f);
+
+            if (player != null) player.Respawn(checkpoint);
+            yield return WaitUnscaled(0.15f);
+
+            if (hitFlashImage != null)
+            {
+                float t = 0f, dur = 0.4f;
+                while (t < dur)
+                {
+                    t += Time.unscaledDeltaTime;
+                    SetAlpha(hitFlashImage, Mathf.Lerp(0.6f, 0f, t / dur));
+                    yield return null;
+                }
+                SetAlpha(hitFlashImage, 0f);
+            }
+
+            if (player != null) player.ControlEnabled = true;
+            respawning = false;
         }
 
         static IEnumerator WaitUnscaled(float seconds)
@@ -99,14 +167,9 @@ namespace EchoShift
             while (t < seconds) { t += Time.unscaledDeltaTime; yield return null; }
         }
 
-        static void SetImageAlpha(Image img, float a)
+        static void SetAlpha(Image img, float a)
         {
             Color c = img.color; c.a = a; img.color = c;
-        }
-
-        static void SetTextAlpha(TMP_Text txt, float a)
-        {
-            Color c = txt.color; c.a = a; txt.color = c;
         }
     }
 }

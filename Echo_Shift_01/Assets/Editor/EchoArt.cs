@@ -28,6 +28,11 @@ namespace EchoShift.EditorTools
             BuildBgEquip();
             BuildKeycap();
             BuildVignette();
+            BuildDrone();
+            BuildCone();
+            BuildDiamondFilled();
+            BuildDiamondOutline();
+            BuildButtonBg();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -213,6 +218,66 @@ namespace EchoShift.EditorTools
             Save(c, "vignette", 100, FilterMode.Bilinear);
         }
 
+        static void BuildDrone()
+        {
+            var c = new Canvas(32, 32);
+            Color body = new Color(1f, 0.36f, 0.16f, 1f);   // threatening red-orange
+            Color edge = Color.Lerp(body, Color.white, 0.4f);
+            Color eye = new Color(1f, 0.9f, 0.4f, 1f);
+            c.Glow(16f, 16f, 14f, new Color(body.r, body.g, body.b, 0.2f), 2.2f);
+            c.Diamond(16f, 16f, 11f, body);
+            c.DiamondOutline(16f, 16f, 11f, 1.4f, edge);
+            c.Glow(16f, 16f, 5f, new Color(eye.r, eye.g, eye.b, 0.9f), 1.4f);
+            c.Diamond(16f, 16f, 3f, Color.Lerp(eye, Color.white, 0.5f));
+            Save(c, "drone", 32, FilterMode.Point);
+        }
+
+        static void BuildCone()
+        {
+            int w = 48, h = 32;
+            var c = new Canvas(w, h);
+            Color col = new Color(1f, 0.5f, 0.25f, 1f);
+            for (int x = 0; x < w; x++)
+            {
+                float t = (float)x / (w - 1);
+                float halfH = Mathf.Lerp(1.5f, 14f, t);
+                float a = 0.55f * (1f - t * 0.7f);
+                for (int y = 0; y < h; y++)
+                {
+                    float dy = Mathf.Abs(y + 0.5f - h * 0.5f);
+                    float cov = Mathf.Clamp01(halfH - dy + 0.5f);
+                    if (cov <= 0f) continue;
+                    float aa = a * cov;
+                    int i = y * w + x;
+                    c.px[i] = new Color(col.r, col.g, col.b, Mathf.Max(c.px[i].a, aa));
+                }
+            }
+            Save(c, "cone", 32, FilterMode.Bilinear);
+        }
+
+        static void BuildDiamondFilled()
+        {
+            var c = new Canvas(16, 16);
+            c.Glow(8f, 8f, 8f, new Color(1f, 1f, 1f, 0.25f), 2f);
+            c.Diamond(8f, 8f, 6f, Color.white);
+            Save(c, "diamond_filled", 32, FilterMode.Bilinear);
+        }
+
+        static void BuildDiamondOutline()
+        {
+            var c = new Canvas(16, 16);
+            c.DiamondOutline(8f, 8f, 6f, 1.4f, Color.white);
+            Save(c, "diamond_outline", 32, FilterMode.Bilinear);
+        }
+
+        static void BuildButtonBg()
+        {
+            var c = new Canvas(32, 32);
+            c.RoundedBox(16f, 16f, 15f, 15f, 8f, new Color(0.06f, 0.1f, 0.18f, 0.85f));
+            c.RoundedBoxOutline(16f, 16f, 15f, 15f, 8f, new Color(0f, 0.83f, 1f, 0.7f));
+            SaveSliced(c, "button", 32, 9);
+        }
+
         // ---------------------------------------------------------------- io
 
         static void Save(Canvas c, string name, int ppu, FilterMode filter)
@@ -239,6 +304,36 @@ namespace EchoShift.EditorTools
             ti.ReadTextureSettings(s);
             s.spriteAlignment = (int)SpriteAlignment.Center;
             s.spriteMeshType = SpriteMeshType.FullRect;
+            ti.SetTextureSettings(s);
+
+            ti.SaveAndReimport();
+        }
+
+        static void SaveSliced(Canvas c, string name, int ppu, int border)
+        {
+            Texture2D tex = c.ToTexture();
+            byte[] png = tex.EncodeToPNG();
+            Object.DestroyImmediate(tex);
+
+            string path = $"{EchoBuildUtils.SpriteDir}/{name}.png";
+            File.WriteAllBytes(path, png);
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+
+            var ti = (TextureImporter)AssetImporter.GetAtPath(path);
+            ti.textureType = TextureImporterType.Sprite;
+            ti.spriteImportMode = SpriteImportMode.Single;
+            ti.spritePixelsPerUnit = ppu;
+            ti.filterMode = FilterMode.Bilinear;
+            ti.wrapMode = TextureWrapMode.Clamp;
+            ti.alphaIsTransparency = true;
+            ti.mipmapEnabled = false;
+            ti.textureCompression = TextureImporterCompression.Uncompressed;
+
+            var s = new TextureImporterSettings();
+            ti.ReadTextureSettings(s);
+            s.spriteAlignment = (int)SpriteAlignment.Center;
+            s.spriteMeshType = SpriteMeshType.FullRect;
+            s.spriteBorder = new Vector4(border, border, border, border);
             ti.SetTextureSettings(s);
 
             ti.SaveAndReimport();
@@ -360,6 +455,19 @@ namespace EchoShift.EditorTools
                     {
                         float d = (Mathf.Abs(x + 0.5f - cx) + Mathf.Abs(y + 0.5f - cy)) - half;
                         float cov = Mathf.Clamp01(0.5f - d);
+                        if (cov > 0f) { Color s = col; s.a *= cov; Blend(x, y, s); }
+                    }
+            }
+
+            public void DiamondOutline(float cx, float cy, float half, float thickness, Color col)
+            {
+                int x0 = Mathf.FloorToInt(cx - half - 1), x1 = Mathf.CeilToInt(cx + half + 1);
+                int y0 = Mathf.FloorToInt(cy - half - 1), y1 = Mathf.CeilToInt(cy + half + 1);
+                for (int y = y0; y <= y1; y++)
+                    for (int x = x0; x <= x1; x++)
+                    {
+                        float d = (Mathf.Abs(x + 0.5f - cx) + Mathf.Abs(y + 0.5f - cy)) - half;
+                        float cov = Mathf.Clamp01(thickness * 0.5f + 0.5f - Mathf.Abs(d));
                         if (cov > 0f) { Color s = col; s.a *= cov; Blend(x, y, s); }
                     }
             }

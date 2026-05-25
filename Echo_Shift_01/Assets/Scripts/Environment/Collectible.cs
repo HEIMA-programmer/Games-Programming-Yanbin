@@ -11,6 +11,7 @@ namespace EchoShift
     {
         public AudioSource audioSource;
         public AudioClip chimeClip;
+        public ParticleSystem burstParticles;
 
         bool taken;
 
@@ -21,7 +22,10 @@ namespace EchoShift
 
             taken = true;
             if (audioSource != null && chimeClip != null) audioSource.PlayOneShot(chimeClip);
-            if (GameManager.Instance != null) GameManager.Instance.CompleteLevel();
+            if (burstParticles != null) burstParticles.Play();
+
+            GameManager gm = GameManager.Instance;
+            if (gm != null) { gm.CollectFragment(); gm.Flash(); gm.CompleteLevel(); }
 
             foreach (SpriteRenderer r in GetComponentsInChildren<SpriteRenderer>())
                 r.enabled = false;

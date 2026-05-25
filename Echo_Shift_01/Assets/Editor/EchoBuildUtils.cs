@@ -1,7 +1,11 @@
 using System.IO;
+using EchoShift;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 namespace EchoShift.EditorTools
 {
@@ -19,6 +23,11 @@ namespace EchoShift.EditorTools
         public const string SceneDir = "Assets/_Scenes";
         public const string ScenePath = "Assets/_Scenes/Level_01.unity";
         public const string BloomProfilePath = "Assets/Art/Materials/EchoBloomProfile.asset";
+        public const string ResourcesDir = "Assets/Resources";
+        public const string AppPrefabPath = "Assets/Resources/App.prefab";
+        public const string Level1ScenePath = "Assets/_Scenes/Level_01.unity";
+        public const string Level2ScenePath = "Assets/_Scenes/Level_02.unity";
+        public const string MenuScenePath = "Assets/_Scenes/MainMenu.unity";
 
         public const string GroundLayer = "Ground";
 
@@ -198,6 +207,108 @@ namespace EchoShift.EditorTools
             light.color = color;
             light.intensity = intensity;
             return light;
+        }
+
+        // ---- UI helpers ---------------------------------------------------
+        public static Canvas CreateOverlayCanvas(string name, int sortingOrder)
+        {
+            var go = new GameObject(name);
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = sortingOrder;
+            var scaler = go.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.5f;
+            go.AddComponent<GraphicRaycaster>();
+            return canvas;
+        }
+
+        // uGUI buttons need exactly one EventSystem in the scene to receive clicks.
+        public static void EnsureEventSystem()
+        {
+            if (Object.FindObjectOfType<EventSystem>() != null) return;
+            var go = new GameObject("EventSystem");
+            go.AddComponent<EventSystem>();
+            go.AddComponent<StandaloneInputModule>();
+        }
+
+        public static RectTransform FullStretch(RectTransform rt)
+        {
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            return rt;
+        }
+
+        public static RectTransform Place(RectTransform rt, Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size)
+        {
+            rt.anchorMin = anchor;
+            rt.anchorMax = anchor;
+            rt.pivot = pivot;
+            rt.anchoredPosition = pos;
+            rt.sizeDelta = size;
+            return rt;
+        }
+
+        public static Image CreateImage(string name, Transform parent, Sprite sprite, Color color, bool sliced = false)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var img = go.AddComponent<Image>();
+            img.sprite = sprite;
+            img.color = color;
+            if (sprite != null && sliced) img.type = Image.Type.Sliced;
+            return img;
+        }
+
+        public static TMP_Text CreateText(string name, Transform parent, string text, float fontSize, Color color, TextAlignmentOptions align)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var t = go.AddComponent<TextMeshProUGUI>();
+            t.text = text;
+            t.fontSize = fontSize;
+            t.color = color;
+            t.alignment = align;
+            t.raycastTarget = false;
+            t.enableWordWrapping = true;
+            return t;
+        }
+
+        public static Button CreateButton(string name, Transform parent, string label, Sprite bg,
+            AudioSource uiSource, AudioClip hover, AudioClip click)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(360f, 74f);
+
+            var img = go.AddComponent<Image>();
+            img.sprite = bg;
+            if (bg != null) img.type = Image.Type.Sliced;
+            img.color = Color.white;
+
+            var btn = go.AddComponent<Button>();
+            btn.targetGraphic = img;
+            ColorBlock cb = btn.colors;
+            cb.normalColor = Color.white;
+            cb.highlightedColor = new Color(0.6f, 0.92f, 1f, 1f);
+            cb.pressedColor = new Color(0.45f, 0.7f, 0.9f, 1f);
+            cb.selectedColor = Color.white;
+            cb.colorMultiplier = 1f;
+            cb.fadeDuration = 0.12f;
+            btn.colors = cb;
+
+            TMP_Text t = CreateText("Label", go.transform, label, 30f, new Color(0.85f, 0.96f, 1f, 1f), TextAlignmentOptions.Center);
+            FullStretch(t.rectTransform);
+
+            var sfx = go.AddComponent<ButtonSfx>();
+            sfx.source = uiSource;
+            sfx.hoverClip = hover;
+            sfx.clickClip = click;
+            return btn;
         }
     }
 }

@@ -35,8 +35,9 @@ namespace EchoShift.EditorTools
             GameObject cam = BuildCamera();
             BuildGlobalLight();
             BuildBloomVolume();
-            BuildUI(out RecordingVignette vig, out Image flash, out TMP_Text endText);
-            BuildGameManager(vig, flash, endText);
+            EchoUI.GameplayUIRefs ui = EchoUI.BuildGameplayCanvas();
+            BuildGameManager(ui, "Sector 01 — Awakening", "Level_02",
+                "I remember... this was my home.", "", 1);
 
             var levelGO = new GameObject("Level");
             levelT = levelGO.transform;
@@ -50,7 +51,6 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SceneDir);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, EchoBuildUtils.ScenePath);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(EchoBuildUtils.ScenePath, true) };
         }
 
         // ----------------------------------------------------------- core rig
@@ -95,67 +95,23 @@ namespace EchoShift.EditorTools
             return player;
         }
 
-        // ----------------------------------------------------------- UI
-        static void BuildUI(out RecordingVignette vig, out Image flash, out TMP_Text endText)
-        {
-            var canvasGO = new GameObject("Canvas");
-            var canvas = canvasGO.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-            var scaler = canvasGO.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            canvasGO.AddComponent<GraphicRaycaster>();
-
-            var vigGO = NewFullImage("Vignette", canvasGO.transform, EchoBuildUtils.LoadSprite("vignette"));
-            var vigImg = vigGO.GetComponent<Image>();
-            vigImg.color = new Color(1f, 1f, 1f, 0f);
-            vigImg.raycastTarget = false;
-            vig = vigGO.AddComponent<RecordingVignette>();
-            vig.image = vigImg;
-
-            var flashGO = NewFullImage("Flash", canvasGO.transform, null);
-            flash = flashGO.GetComponent<Image>();
-            flash.color = new Color(1f, 1f, 1f, 0f);
-            flash.raycastTarget = false;
-
-            var etGO = new GameObject("EndText");
-            etGO.transform.SetParent(canvasGO.transform, false);
-            var tmp = etGO.AddComponent<TextMeshProUGUI>();
-            tmp.text = "";
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.fontSize = 64f;
-            tmp.color = new Color(0.9f, 1f, 0.95f, 0f);
-            tmp.enableWordWrapping = true;
-            RectTransform rt = tmp.rectTransform;
-            rt.anchorMin = new Vector2(0.1f, 0.3f);
-            rt.anchorMax = new Vector2(0.9f, 0.72f);
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-            endText = tmp;
-        }
-
-        static GameObject NewFullImage(string name, Transform parent, Sprite sprite)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            var img = go.AddComponent<Image>();
-            img.sprite = sprite;
-            RectTransform rt = img.rectTransform;
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-            return go;
-        }
-
-        static void BuildGameManager(RecordingVignette vig, Image flash, TMP_Text endText)
+        // In-game UI (HUD / pause / victory) is built by EchoUI.BuildGameplayCanvas().
+        static void BuildGameManager(EchoUI.GameplayUIRefs ui, string levelName, string nextScene,
+            string narrative, string finalMessage, int totalFragments)
         {
             var go = new GameObject("GameManager");
             var gm = go.AddComponent<GameManager>();
-            gm.vignette = vig;
-            gm.flashImage = flash;
-            gm.endText = endText;
+            gm.levelName = levelName;
+            gm.nextSceneName = nextScene;
+            gm.narrativeLine = narrative;
+            gm.finalMessage = finalMessage;
+            gm.totalFragments = totalFragments;
+            gm.hud = ui.hud;
+            gm.pauseMenu = ui.pause;
+            gm.victoryScreen = ui.victory;
+            gm.vignette = ui.vignette;
+            gm.flashImage = ui.flash;
+            gm.hitFlashImage = ui.hitFlash;
         }
 
         // ----------------------------------------------------------- background
