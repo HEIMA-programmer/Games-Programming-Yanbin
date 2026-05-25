@@ -21,7 +21,7 @@ namespace EchoShift
 
         public Color inactiveColor = new Color(1f, 0.667f, 0f, 1f);   // amber
         public Color activeColor = new Color(0f, 1f, 0.533f, 1f);     // green
-        public float depressDistance = 0.09f;                         // ~3px @ PPU 32
+        public float depressDistance = 0.18f;                         // ~6px @ PPU 32 (clearer feedback)
 
         public bool IsPressed { get; private set; }
         public event Action<bool> PressedChanged;
@@ -82,7 +82,11 @@ namespace EchoShift
         void ApplyVisualState()
         {
             Color c = IsPressed ? activeColor : inactiveColor;
-            if (plateLight != null) plateLight.color = c;
+            if (plateLight != null)
+            {
+                plateLight.color = c;
+                plateLight.intensity = IsPressed ? 1.7f : 0.9f;
+            }
             if (plateSprite != null) plateSprite.color = c;
         }
     }

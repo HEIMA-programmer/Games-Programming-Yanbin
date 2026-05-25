@@ -15,6 +15,8 @@ namespace EchoShift
         public float speed = 2.5f;
         public bool startMovingRight = true;
         public float stunTime = 2.5f;
+        [Tooltip("True = touching a clone destroys it (Level 2). False = clone survives and only stuns the drone, so one clone can draw several enemies (Level 3 decoy corridor).")]
+        public bool destroysClone = true;
 
         [Tooltip("Parent holding the drone sprite + detection cone; flipped to face travel direction.")]
         public Transform facing;
@@ -62,7 +64,7 @@ namespace EchoShift
             EchoClone clone = other.GetComponentInParent<EchoClone>();
             if (clone != null)
             {
-                clone.BeginDissolve();
+                if (destroysClone) clone.BeginDissolve();
                 Stun();
                 return;
             }

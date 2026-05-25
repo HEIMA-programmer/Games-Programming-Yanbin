@@ -36,15 +36,19 @@ namespace EchoShift.EditorTools
             vol.isGlobal = true;
             vol.sharedProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(EchoBuildUtils.BloomProfilePath);
 
-            BuildBackground();
-            BuildUI();
+            ParticleSystem menuPs = BuildBackground();
+            var warmGlow = new GameObject("WarmGlow");
+            warmGlow.transform.position = new Vector3(0f, 1f, 0f);
+            EchoBuildUtils.AddPointLight(warmGlow, new Color(1f, 0.6f, 0.3f, 1f), 0.8f, 12f);
+            warmGlow.SetActive(false);
+            BuildUI(menuPs, warmGlow);
 
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SceneDir);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, EchoBuildUtils.MenuScenePath);
         }
 
-        static void BuildBackground()
+        static ParticleSystem BuildBackground()
         {
             // a couple of soft equipment silhouettes + distant lights
             var mid = EchoBuildUtils.SpriteGO("Equip", EchoBuildUtils.LoadSprite("bgequip"),
@@ -77,6 +81,7 @@ namespace EchoShift.EditorTools
             var rend = go.GetComponent<ParticleSystemRenderer>();
             rend.sharedMaterial = EchoBuildUtils.LoadMaterial(EchoMaterials.ParticleName);
             rend.sortingOrder = -10;
+            return ps;
         }
 
         static GameObject NewAt(string name, Vector3 pos)
@@ -86,7 +91,7 @@ namespace EchoShift.EditorTools
             return go;
         }
 
-        static void BuildUI()
+        static void BuildUI(ParticleSystem menuPs, GameObject warmGlow)
         {
             EchoBuildUtils.EnsureEventSystem();
             Canvas canvas = EchoBuildUtils.CreateOverlayCanvas("MenuCanvas", 10);
@@ -110,9 +115,10 @@ namespace EchoShift.EditorTools
             var subtitle = EchoBuildUtils.CreateText("Subtitle", root, "a memory in two bodies", 32f, new Color(Soft.r, Soft.g, Soft.b, 0.7f), TextAlignmentOptions.Center);
             EchoBuildUtils.Place(subtitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 150f), new Vector2(1000f, 60f));
 
-            Button startBtn = MakeButton("Start", root, "Start Game", buttonBg, uiSource, hover, click, -40f);
-            Button howBtn = MakeButton("HowTo", root, "How to Play", buttonBg, uiSource, hover, click, -130f);
-            Button quitBtn = MakeButton("Quit", root, "Quit", buttonBg, uiSource, hover, click, -220f);
+            Button startBtn = MakeButton("Start", root, "Start Game", buttonBg, uiSource, hover, click, -30f);
+            Button howBtn = MakeButton("HowTo", root, "How to Play", buttonBg, uiSource, hover, click, -115f);
+            Button selectBtn = MakeButton("Select", root, "Level Select", buttonBg, uiSource, hover, click, -200f);
+            Button quitBtn = MakeButton("Quit", root, "Quit", buttonBg, uiSource, hover, click, -285f);
 
             // How to Play overlay
             var howPanel = new GameObject("HowToPanel");
@@ -129,13 +135,36 @@ namespace EchoShift.EditorTools
             Button backBtn = MakeButton("Back", howPanel.transform, "Back", buttonBg, uiSource, hover, click, -250f);
             howPanel.SetActive(false);
 
+            // Level Select overlay
+            var selPanel = new GameObject("LevelSelectPanel");
+            selPanel.transform.SetParent(root, false);
+            EchoBuildUtils.FullStretch(selPanel.AddComponent<RectTransform>());
+            var selDim = EchoBuildUtils.CreateImage("Dim", selPanel.transform, null, new Color(0.01f, 0.03f, 0.07f, 0.9f));
+            EchoBuildUtils.FullStretch(selDim.rectTransform);
+            var selTitle = EchoBuildUtils.CreateText("Title", selPanel.transform, "SELECT LEVEL", 64f, Cyan, TextAlignmentOptions.Center);
+            EchoBuildUtils.Place(selTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(900f, 90f));
+            string[] scenes = { "Level_00", "Level_01", "Level_02", "Level_03" };
+            string[] labels = { "0  ·  Awakening", "1  ·  Sector 01", "2  ·  Deep Labs", "3  ·  The Core" };
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                Button lb = MakeButton("Lv" + i, selPanel.transform, labels[i], buttonBg, uiSource, hover, click, 120f - i * 90f);
+                lb.gameObject.AddComponent<LevelButton>().sceneName = scenes[i];
+            }
+            Button selBack = MakeButton("Back", selPanel.transform, "Back", buttonBg, uiSource, hover, click, -260f);
+            selPanel.SetActive(false);
+
             var ctrl = canvas.gameObject.AddComponent<MainMenuController>();
             ctrl.startButton = startBtn;
             ctrl.howToButton = howBtn;
             ctrl.quitButton = quitBtn;
             ctrl.backButton = backBtn;
             ctrl.howToPanel = howPanel;
-            ctrl.firstLevelScene = "Level_01";
+            ctrl.firstLevelScene = "Level_00";
+            ctrl.ambientParticles = menuPs;
+            ctrl.warmGlow = warmGlow;
+            ctrl.selectButton = selectBtn;
+            ctrl.levelSelectPanel = selPanel;
+            ctrl.selectBackButton = selBack;
         }
 
         static Button MakeButton(string name, Transform parent, string label, Sprite bg,

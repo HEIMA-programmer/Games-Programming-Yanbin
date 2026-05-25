@@ -28,6 +28,8 @@ namespace EchoShift.EditorTools
         public const string Level1ScenePath = "Assets/_Scenes/Level_01.unity";
         public const string Level2ScenePath = "Assets/_Scenes/Level_02.unity";
         public const string MenuScenePath = "Assets/_Scenes/MainMenu.unity";
+        public const string Level0ScenePath = "Assets/_Scenes/Level_00.unity";
+        public const string Level3ScenePath = "Assets/_Scenes/Level_03.unity";
 
         public const string GroundLayer = "Ground";
 
@@ -309,6 +311,39 @@ namespace EchoShift.EditorTools
             sfx.hoverClip = hover;
             sfx.clickClip = click;
             return btn;
+        }
+
+        // World-space wall display for environmental narrative in breathing corridors.
+        public static GameObject CreateWallNarrative(Transform parent, Vector3 pos, string text, Color? color = null, bool flicker = true)
+        {
+            var root = new GameObject("WallNarrative");
+            if (parent != null) root.transform.SetParent(parent, false);
+            root.transform.position = pos;
+
+            var panel = SpriteGO("Screen", LoadSprite("platform"), "Midground", 2, root.transform,
+                LoadMaterial(EchoMaterials.UnlitName), new Color(0.03f, 0.06f, 0.12f, 0.7f));
+            panel.transform.localScale = new Vector3(3.6f, 1.3f, 1f);
+
+            var tgo = new GameObject("Text");
+            tgo.transform.SetParent(root.transform, false);
+            tgo.transform.localPosition = new Vector3(0f, 0f, -0.02f);
+            var tmp = tgo.AddComponent<TextMeshPro>();
+            tmp.text = text;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.fontSize = 2.1f;
+            tmp.color = color ?? new Color(0f, 0.83f, 1f, 1f);
+            tmp.rectTransform.sizeDelta = new Vector2(6.4f, 2.4f);
+            var mr = tgo.GetComponent<MeshRenderer>();
+            if (mr != null) { mr.sortingLayerID = SortingLayer.NameToID("Foreground"); mr.sortingOrder = 3; }
+
+            if (flicker)
+            {
+                var fl = root.AddComponent<Flicker>();
+                fl.spriteTarget = panel.GetComponent<SpriteRenderer>();
+                fl.min = 0.62f;
+                fl.max = 1f;
+            }
+            return root;
         }
     }
 }

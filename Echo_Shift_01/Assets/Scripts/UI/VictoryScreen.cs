@@ -25,6 +25,7 @@ namespace EchoShift
         public float narrativeHold = 3f;
 
         string nextScene = "MainMenu";
+        string pendingNarrative = "";
 
         void Awake()
         {
@@ -34,19 +35,23 @@ namespace EchoShift
         }
 
         public void Show(string levelName, float timeTaken, int collected, int total,
-            string narrative, string next, string finalMessage)
+            string narrative, string next, string finalMessage,
+            int totalCollected, int maxFragments, float totalTime, bool isFinal)
         {
             nextScene = string.IsNullOrEmpty(next) ? "MainMenu" : next;
+            pendingNarrative = narrative ?? "";
             if (panelRoot != null) panelRoot.SetActive(true);
             if (levelNameText != null) levelNameText.text = levelName;
-            if (timeText != null) timeText.text = "Time   " + FormatTime(timeTaken);
-            if (fragmentsText != null) fragmentsText.text = "Fragments   " + collected + " / " + total;
+            if (timeText != null)
+                timeText.text = isFinal ? "Total Time   " + FormatTime(totalTime) : "Time   " + FormatTime(timeTaken);
+            if (fragmentsText != null)
+                fragmentsText.text = "Fragments   " + collected + " / " + total + "        Total   " + totalCollected + " / " + maxFragments;
             if (finalMessageText != null)
             {
                 finalMessageText.text = finalMessage ?? "";
                 finalMessageText.gameObject.SetActive(!string.IsNullOrEmpty(finalMessage));
             }
-            if (narrativeText != null) narrativeText.text = narrative;
+            if (nextButton != null) nextButton.gameObject.SetActive(!isFinal);
             StartCoroutine(Sequence());
         }
 
@@ -56,11 +61,16 @@ namespace EchoShift
 
             if (narrativeText != null)
             {
-                SetTextAlpha(narrativeText, 0f);
-                yield return Fade(narrativeText, 0f, 1f, 1.2f);
+                string[] lines = pendingNarrative.Split('\n');
+                foreach (string line in lines)
+                {
+                    narrativeText.text = line;
+                    SetTextAlpha(narrativeText, 0f);
+                    yield return Fade(narrativeText, 0f, 1f, 0.9f);
+                    yield return WaitUnscaled(1.4f);
+                }
+                yield return Fade(narrativeText, 1f, 0f, 0.7f);
             }
-            yield return WaitUnscaled(narrativeHold);
-            if (narrativeText != null) yield return Fade(narrativeText, 1f, 0f, 0.8f);
 
             if (resultsGroup != null)
             {

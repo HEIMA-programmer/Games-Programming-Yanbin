@@ -33,6 +33,7 @@ namespace EchoShift.EditorTools
             BuildDiamondFilled();
             BuildDiamondOutline();
             BuildButtonBg();
+            BuildArrow();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -276,6 +277,22 @@ namespace EchoShift.EditorTools
             c.RoundedBox(16f, 16f, 15f, 15f, 8f, new Color(0.06f, 0.1f, 0.18f, 0.85f));
             c.RoundedBoxOutline(16f, 16f, 15f, 15f, 8f, new Color(0f, 0.83f, 1f, 0.7f));
             SaveSliced(c, "button", 32, 9);
+        }
+
+        static void BuildArrow()
+        {
+            var c = new Canvas(16, 16);
+            Color col = new Color(0.6f, 0.9f, 1f, 1f);
+            c.Glow(8f, 9f, 8f, new Color(col.r, col.g, col.b, 0.3f), 2f);
+            for (int y = 6; y <= 13; y++)
+            {
+                float t = (y - 6) / 7f;
+                int half = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(6f, 1f, t)));
+                for (int x = 8 - half; x <= 8 + half; x++)
+                    if (x >= 0 && x < 16) c.px[y * 16 + x] = col;
+            }
+            c.FilledRect(6, 1, 4, 6, col);
+            Save(c, "arrow", 32, FilterMode.Bilinear);
         }
 
         // ---------------------------------------------------------------- io

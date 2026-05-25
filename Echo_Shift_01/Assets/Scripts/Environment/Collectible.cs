@@ -12,6 +12,8 @@ namespace EchoShift
         public AudioSource audioSource;
         public AudioClip chimeClip;
         public ParticleSystem burstParticles;
+        [Tooltip("True = the level-ending fragment (flash + victory). False = an optional fragment that only counts.")]
+        public bool endsLevel = true;
 
         bool taken;
 
@@ -25,7 +27,11 @@ namespace EchoShift
             if (burstParticles != null) burstParticles.Play();
 
             GameManager gm = GameManager.Instance;
-            if (gm != null) { gm.CollectFragment(); gm.Flash(); gm.CompleteLevel(); }
+            if (gm != null)
+            {
+                gm.CollectFragment();
+                if (endsLevel) { gm.Flash(); gm.CompleteLevel(); }
+            }
 
             foreach (SpriteRenderer r in GetComponentsInChildren<SpriteRenderer>())
                 r.enabled = false;
