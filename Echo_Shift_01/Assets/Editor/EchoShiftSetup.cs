@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEditor;
@@ -7,64 +8,139 @@ using UnityEngine;
 namespace EchoShift.EditorTools
 {
     /// <summary>
-    /// One-click builder for Echo Shift Level 1. Generates all art, materials, audio,
-    /// prefabs and the scene, wiring everything up. Idempotent: re-running cleans and
-    /// rebuilds from scratch with no duplicates.
+    /// One-click builders for Echo Shift. "Build All" generates shared assets (art,
+    /// materials, audio, prefabs, persistent App) plus the three scenes and registers
+    /// them in Build Settings. Individual scene builders are also exposed. Idempotent.
     /// </summary>
     public static class EchoShiftSetup
     {
-        [MenuItem("EchoShift/Build Level 1")]
-        public static void BuildLevel1()
+        [MenuItem("EchoShift/Build All", false, 0)]
+        public static void BuildAll()
         {
-            // TextMeshPro needs its essential resources (font asset) before we can build
-            // the UI/world text. Auto-import once, then ask for a single re-run.
-            if (!TmpEssentialsPresent())
-            {
-                if (TryImportTmpEssentials())
-                    Debug.Log("[EchoShift] Imported TMP Essential Resources. Click EchoShift ▸ Build Level 1 once more to finish the build.");
-                else
-                    Debug.LogWarning("[EchoShift] Could not auto-import TMP Essentials. Use Window ▸ TextMeshPro ▸ Import TMP Essential Resources, then re-run.");
-                return;
-            }
-
+            if (!EnsureTmp()) return;
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-                EchoBuildUtils.CleanGenerated();
-                EchoBuildUtils.EnsureAllFolders();
-                EchoBuildUtils.EnsureSortingLayers();
-                EchoBuildUtils.EnsurePhysicsLayer(EchoBuildUtils.GroundLayer);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-
-                EchoArt.GenerateAll();
-                EchoMaterials.GenerateAll();
-                EchoAudio.GenerateAll();
-                EchoPrefabs.GenerateAll();
+                BuildShared();
+                EchoMenuScene.Build();
                 EchoScene.Build();
-
+                EchoLevel2.Build();
+                RegisterScenes();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
-                Debug.Log("✅ Echo Shift Level 1 built! Press Play to test.");
+                EditorSceneManager.OpenScene(EchoBuildUtils.MenuScenePath);
+                Debug.Log("✅ Echo Shift built (MainMenu + Level 1 + Level 2). Open MainMenu and press Play.");
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError("[EchoShift] Build failed: " + e);
-            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build All failed: " + e); }
         }
 
-        [MenuItem("EchoShift/Clean Generated Assets")]
+        [MenuItem("EchoShift/Build Main Menu", false, 20)]
+        public static void BuildMainMenu()
+        {
+            if (!EnsureTmp()) return;
+            try
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                BuildShared();
+                EchoMenuScene.Build();
+                RegisterScenes();
+                Done("Main Menu", EchoBuildUtils.MenuScenePath);
+            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build Main Menu failed: " + e); }
+        }
+
+        [MenuItem("EchoShift/Build Level 1", false, 21)]
+        public static void BuildLevel1()
+        {
+            if (!EnsureTmp()) return;
+            try
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                BuildShared();
+                EchoScene.Build();
+                RegisterScenes();
+                Done("Level 1", EchoBuildUtils.Level1ScenePath);
+            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build Level 1 failed: " + e); }
+        }
+
+        [MenuItem("EchoShift/Build Level 2", false, 22)]
+        public static void BuildLevel2()
+        {
+            if (!EnsureTmp()) return;
+            try
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                BuildShared();
+                EchoLevel2.Build();
+                RegisterScenes();
+                Done("Level 2", EchoBuildUtils.Level2ScenePath);
+            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build Level 2 failed: " + e); }
+        }
+
+        [MenuItem("EchoShift/Clean Generated Assets", false, 40)]
         public static void CleanGenerated()
         {
             EchoBuildUtils.CleanGenerated();
+            EchoBuildUtils.DeleteIfExists(EchoBuildUtils.AppPrefabPath);
+            EchoBuildUtils.DeleteIfExists(EchoBuildUtils.Level2ScenePath);
+            EchoBuildUtils.DeleteIfExists(EchoBuildUtils.MenuScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[EchoShift] Cleaned generated assets.");
         }
 
-        static bool TmpEssentialsPresent()
-            => File.Exists("Assets/TextMesh Pro/Resources/TMP Settings.asset");
+        // Shared assets used by every scene (idempotent — regenerated in place).
+        static void BuildShared()
+        {
+            EchoBuildUtils.EnsureAllFolders();
+            EchoBuildUtils.EnsureFolder(EchoBuildUtils.ResourcesDir);
+            EchoBuildUtils.EnsureSortingLayers();
+            EchoBuildUtils.EnsurePhysicsLayer(EchoBuildUtils.GroundLayer);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            EchoArt.GenerateAll();
+            EchoMaterials.GenerateAll();
+            EchoAudio.GenerateAll();
+            EchoPrefabs.GenerateAll();
+        }
+
+        static void Done(string label, string scenePath)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorSceneManager.OpenScene(scenePath);
+            Debug.Log($"✅ Echo Shift {label} built! Press Play to test.");
+        }
+
+        static void RegisterScenes()
+        {
+            var list = new List<EditorBuildSettingsScene>();
+            AddScene(list, EchoBuildUtils.MenuScenePath);
+            AddScene(list, EchoBuildUtils.Level1ScenePath);
+            AddScene(list, EchoBuildUtils.Level2ScenePath);
+            EditorBuildSettings.scenes = list.ToArray();
+        }
+
+        static void AddScene(List<EditorBuildSettingsScene> list, string path)
+        {
+            if (File.Exists(path)) list.Add(new EditorBuildSettingsScene(path, true));
+        }
+
+        // ---- TMP gate ----
+        static bool EnsureTmp()
+        {
+            if (TmpEssentialsPresent()) return true;
+            if (TryImportTmpEssentials())
+                Debug.Log("[EchoShift] Imported TMP Essential Resources. Click the EchoShift menu item again to finish the build.");
+            else
+                Debug.LogWarning("[EchoShift] Could not auto-import TMP Essentials. Use Window ▸ TextMeshPro ▸ Import TMP Essential Resources, then re-run.");
+            return false;
+        }
+
+        static bool TmpEssentialsPresent() => File.Exists("Assets/TextMesh Pro/Resources/TMP Settings.asset");
 
         static bool TryImportTmpEssentials()
         {

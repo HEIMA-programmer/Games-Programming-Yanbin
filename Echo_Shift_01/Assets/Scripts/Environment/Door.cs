@@ -18,6 +18,7 @@ namespace EchoShift
         public float openTime = 0.3f;
         public AudioSource audioSource;
         public AudioClip slideClip;
+        public AudioClip closeClip;
 
         Vector3 closedPos;
         Vector3 openPos;
@@ -77,7 +78,11 @@ namespace EchoShift
         {
             if (open == isOpen) return;
             isOpen = open;
-            if (audioSource != null && slideClip != null) audioSource.PlayOneShot(slideClip);
+            if (audioSource != null)
+            {
+                AudioClip clip = open ? slideClip : (closeClip != null ? closeClip : slideClip);
+                if (clip != null) audioSource.PlayOneShot(clip);
+            }
             if (anim != null) StopCoroutine(anim);
             anim = StartCoroutine(Slide(open ? openPos : closedPos));
         }

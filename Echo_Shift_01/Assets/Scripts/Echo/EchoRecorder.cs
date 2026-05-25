@@ -18,6 +18,11 @@ namespace EchoShift
         public float maxRecordSeconds = 5f;
         public KeyCode recordKey = KeyCode.R;
 
+        [Header("Audio")]
+        public AudioSource audioSource;
+        public AudioClip recordStartClip;
+        public AudioClip materializeClip;
+
         public bool IsRecording { get; private set; }
         public float RecordTimeNormalized => maxRecordSeconds <= 0f ? 0f : Mathf.Clamp01(elapsed / maxRecordSeconds);
 
@@ -35,6 +40,7 @@ namespace EchoShift
 
         void Update()
         {
+            if (GameManager.Paused) return;
             if (Input.GetKeyDown(recordKey)) StartRecording();
             else if (IsRecording && (Input.GetKeyUp(recordKey) || elapsed >= maxRecordSeconds)) StopRecording();
         }
@@ -66,6 +72,7 @@ namespace EchoShift
 
             if (recordIndicator != null) recordIndicator.SetActive(true);
             if (recordParticles != null) recordParticles.Play();
+            if (audioSource != null && recordStartClip != null) audioSource.PlayOneShot(recordStartClip);
             if (GameManager.Instance != null) GameManager.Instance.SetRecording(true);
         }
 
@@ -83,6 +90,7 @@ namespace EchoShift
                 GameObject go = Instantiate(echoClonePrefab, frames[0].position, Quaternion.identity);
                 currentClone = go.GetComponent<EchoClone>();
                 if (currentClone != null) currentClone.Play(new List<RecordedFrame>(frames));
+                if (audioSource != null && materializeClip != null) audioSource.PlayOneShot(materializeClip);
             }
         }
     }

@@ -17,6 +17,7 @@ namespace EchoShift
         public Light2D plateLight;
         public AudioSource audioSource;
         public AudioClip clickClip;
+        public AudioClip releaseClip;
 
         public Color inactiveColor = new Color(1f, 0.667f, 0f, 1f);   // amber
         public Color activeColor = new Color(0f, 1f, 0.533f, 1f);     // green
@@ -63,8 +64,11 @@ namespace EchoShift
             if (IsPressed == was) return;
 
             ApplyVisualState();
-            if (IsPressed && audioSource != null && clickClip != null)
-                audioSource.PlayOneShot(clickClip);
+            if (audioSource != null)
+            {
+                if (IsPressed && clickClip != null) audioSource.PlayOneShot(clickClip);
+                else if (!IsPressed && releaseClip != null) audioSource.PlayOneShot(releaseClip);
+            }
             PressedChanged?.Invoke(IsPressed);
         }
 

@@ -18,6 +18,10 @@ namespace EchoShift
         public float materializeTime = 0.32f;
         public float floatUpSpeed = 1.2f;
 
+        [Header("Audio")]
+        public AudioSource audioSource;
+        public AudioClip dissolveClip;
+
         Rigidbody2D rb;
         SpriteRenderer sr;
         List<RecordedFrame> frames;
@@ -71,6 +75,7 @@ namespace EchoShift
             dissolving = true;
             playing = false;
             if (dissolveParticles != null) dissolveParticles.Play();
+            if (audioSource != null && dissolveClip != null) audioSource.PlayOneShot(dissolveClip);
             StartCoroutine(DissolveRoutine());
         }
 

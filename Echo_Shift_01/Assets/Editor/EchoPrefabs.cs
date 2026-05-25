@@ -31,6 +31,9 @@ namespace EchoShift.EditorTools
             BuildMovingPlatform();
             BuildCollectible();
             BuildEndArch();
+            BuildPatrolDrone();
+            BuildCheckpoint();
+            BuildApp();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -90,6 +93,12 @@ namespace EchoShift.EditorTools
             clone.ripple = ripple.transform;
             clone.dissolveParticles = diss;
 
+            var audio = root.AddComponent<AudioSource>();
+            audio.playOnAwake = false;
+            audio.spatialBlend = 0f;
+            clone.audioSource = audio;
+            clone.dissolveClip = EchoBuildUtils.LoadAudio("clonedissolve");
+
             return SavePrefab(root, "Echo");
         }
 
@@ -147,6 +156,17 @@ namespace EchoShift.EditorTools
             rec.echoClonePrefab = echoAsset;
             dot.SetActive(false);
 
+            var audio = root.AddComponent<AudioSource>();
+            audio.playOnAwake = false;
+            audio.spatialBlend = 0f;
+            pc.audioSource = audio;
+            pc.jumpClip = EchoBuildUtils.LoadAudio("jump");
+            pc.landClip = EchoBuildUtils.LoadAudio("land");
+            pc.footstepClip = EchoBuildUtils.LoadAudio("footstep");
+            rec.audioSource = audio;
+            rec.recordStartClip = EchoBuildUtils.LoadAudio("recordstart");
+            rec.materializeClip = EchoBuildUtils.LoadAudio("materialize");
+
             SavePrefab(root, "Player");
         }
 
@@ -178,6 +198,7 @@ namespace EchoShift.EditorTools
 
             plate.audioSource = audio;
             plate.clickClip = EchoBuildUtils.LoadAudio("click");
+            plate.releaseClip = EchoBuildUtils.LoadAudio("platerelease");
 
             SavePrefab(root, "PressurePlate");
         }
@@ -205,6 +226,7 @@ namespace EchoShift.EditorTools
             door.doorBody = body.transform;
             door.audioSource = audio;
             door.slideClip = EchoBuildUtils.LoadAudio("doorslide");
+            door.closeClip = EchoBuildUtils.LoadAudio("doorclose");
             door.openDistance = 2.6f;
 
             SavePrefab(root, "Door");
@@ -275,6 +297,11 @@ namespace EchoShift.EditorTools
             coll.audioSource = audio;
             coll.chimeClip = EchoBuildUtils.LoadAudio("chime");
 
+            var burst = MakePS("Burst", root.transform, new Color(1f, 0.85f, 0.35f, 1f), 0.8f, 2.5f, 0.13f, 0f, false, "Environment", 4);
+            var burstEm = burst.emission;
+            burstEm.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)24) });
+            coll.burstParticles = burst;
+
             SavePrefab(root, "Collectible");
         }
 
@@ -335,6 +362,62 @@ namespace EchoShift.EditorTools
 
             if (!playOnAwake) ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             return ps;
+        }
+
+        static void BuildPatrolDrone()
+        {
+            var root = new GameObject("PatrolDrone");
+            root.layer = 0;
+            var rb = root.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+
+            var col = root.AddComponent<CircleCollider2D>();
+            col.isTrigger = true;
+            col.radius = 0.5f;
+
+            var facing = new GameObject("Facing");
+            facing.transform.SetParent(root.transform, false);
+
+            EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit);
+            var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 0.45f, 0.2f, 0.28f));
+            cone.transform.localPosition = new Vector3(1.0f, 0f, 0f);
+            cone.transform.localScale = new Vector3(1.3f, 1.3f, 1f);
+
+            var dr = root.AddComponent<PatrolDrone>();
+            dr.facing = facing.transform;
+            dr.coneRenderer = cone.GetComponent<SpriteRenderer>();
+
+            var lightGO = new GameObject("DroneLight");
+            lightGO.transform.SetParent(root.transform, false);
+            EchoBuildUtils.AddPointLight(lightGO, new Color(1f, 0.4f, 0.2f, 1f), 0.7f, 2.6f);
+
+            SavePrefab(root, "PatrolDrone");
+        }
+
+        static void BuildCheckpoint()
+        {
+            var root = new GameObject("Checkpoint");
+            root.layer = 0;
+            var col = root.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.5f, 3f);
+            root.AddComponent<Checkpoint>();
+            SavePrefab(root, "Checkpoint");
+        }
+
+        static void BuildApp()
+        {
+            EchoBuildUtils.EnsureFolder(EchoBuildUtils.ResourcesDir);
+            var root = new GameObject("App");
+            var am = root.AddComponent<AudioManager>();
+            am.menuBgm = EchoBuildUtils.LoadAudio("bgm_menu");
+            am.levelBgm = EchoBuildUtils.LoadAudio("bgm_level");
+            am.victoryBgm = EchoBuildUtils.LoadAudio("bgm_victory");
+            root.AddComponent<SceneFader>();
+
+            EchoBuildUtils.DeleteIfExists(EchoBuildUtils.AppPrefabPath);
+            PrefabUtility.SaveAsPrefabAsset(root, EchoBuildUtils.AppPrefabPath);
+            Object.DestroyImmediate(root);
         }
 
         static GameObject SavePrefab(GameObject go, string name)
