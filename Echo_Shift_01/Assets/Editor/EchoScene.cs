@@ -37,7 +37,7 @@ namespace EchoShift.EditorTools
             BuildBloomVolume();
             EchoUI.GameplayUIRefs ui = EchoUI.BuildGameplayCanvas();
             BuildGameManager(ui, "Sector 01 — Awakening", "Level_02",
-                "I remember... this was my home.", "", 1);
+                "I remember... this was my home.", "", 3);
 
             var levelGO = new GameObject("Level");
             levelT = levelGO.transform;
@@ -197,7 +197,17 @@ namespace EchoShift.EditorTools
             mp5.riseHeight = 4.6f;
 
             Inst("EndArch", new Vector3(126f, 6f, 0f));
-            Inst("Collectible", new Vector3(120f, 6.3f, 0f));
+            Inst("Collectible", new Vector3(120f, 6.3f, 0f)); // level-ending fragment (endsLevel=true by default)
+
+            // --- optional fragments (off the critical path) ---
+            SolidBlock(16f, 2f, 2f, 0.4f, "FragLedge2");
+            Inst("Collectible", new Vector3(16f, 2.9f, 0f)).GetComponent<Collectible>().endsLevel = false;
+            SolidBlock(70f, 1.8f, 2f, 0.4f, "FragLedge4");
+            Inst("Collectible", new Vector3(70f, 2.6f, 0f)).GetComponent<Collectible>().endsLevel = false;
+
+            // --- corridor environmental narrative ---
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(30f, 3.2f, 0f), "Echo Protocol: Active");
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(88f, 3.4f, 0f), "Core Access — Authorized Personnel Only");
 
             // --- ambient mood lights ---
             AmbientLight(6f, 4f, EchoBuildUtils.ColPlayer, 0.35f, 6f);

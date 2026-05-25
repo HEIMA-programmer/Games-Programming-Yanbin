@@ -37,9 +37,8 @@ namespace EchoShift.EditorTools
             vol.sharedProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(EchoBuildUtils.BloomProfilePath);
 
             EchoUI.GameplayUIRefs ui = EchoUI.BuildGameplayCanvas();
-            BuildGameManager(ui, "Sector 02 — Deep Labs", "MainMenu",
-                "I remember... I wasn't always alone.",
-                "Thank you for playing. More memories await...", 1);
+            BuildGameManager(ui, "Sector 02 — Deep Labs", "Level_03",
+                "I remember... I wasn't always alone.", "", 3);
 
             var levelGO = new GameObject("Level");
             levelT = levelGO.transform;
@@ -136,7 +135,7 @@ namespace EchoShift.EditorTools
 
             // --- Area 2: echo decoy ---
             Checkpoint(29f);
-            Drone(37f, 0.9f, 3f, 2.2f);
+            Drone(37f, 0.9f, 4f, 2.8f);   // tighter: harder to slip past without a decoy clone
             var plate2 = Inst("PressurePlate", new Vector3(44f, 0.13f, 0f));
             var door2 = Inst("Door", new Vector3(50f, 1f, 0f));
             DoorWall(50f);
@@ -170,7 +169,17 @@ namespace EchoShift.EditorTools
 
             // --- ending ---
             Inst("EndArch", new Vector3(114f, 1f, 0f));
-            Inst("Collectible", new Vector3(112f, 1f, 0f));
+            Inst("Collectible", new Vector3(112f, 1f, 0f)); // level-ending fragment
+
+            // --- optional fragments (off the critical path) ---
+            SolidBlock(12f, 2f, 2f, 0.4f, "FragLedge1");     // above enemy e1's patrol
+            Inst("Collectible", new Vector3(12f, 2.8f, 0f)).GetComponent<Collectible>().endsLevel = false;
+            SolidBlock(66f, 2.1f, 2f, 0.4f, "FragLedge3");   // alcove on the timed sprint
+            Inst("Collectible", new Vector3(66f, 2.8f, 0f)).GetComponent<Collectible>().endsLevel = false;
+
+            // --- corridor environmental narrative ---
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(31f, 3.2f, 0f), "Security drones: patrol mode enabled");
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(78f, 3.2f, 0f), "Is anyone still here?");
 
             // --- ambient mood lights (cool, sparse) ---
             AmbientLight(8f, 4f, Cold, 0.3f, 6f);

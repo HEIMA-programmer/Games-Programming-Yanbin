@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace EchoShift
@@ -80,6 +81,7 @@ namespace EchoShift
         {
             collected++;
             if (hud != null) hud.SetCollected(collected, totalFragments);
+            GameProgress.SetFragments(SceneManager.GetActiveScene().name, collected);
         }
 
         // ---- pause ----
@@ -115,9 +117,15 @@ namespace EchoShift
             completed = true;
             if (player != null) player.ControlEnabled = false;
             float timeTaken = Time.timeSinceLevelLoad;
+            string scene = SceneManager.GetActiveScene().name;
+            GameProgress.SetTime(scene, timeTaken);
+            bool isFinal = string.IsNullOrEmpty(nextSceneName) || nextSceneName == "MainMenu";
+            if (isFinal) GameProgress.MarkCompleted();
             if (AudioManager.Instance != null) AudioManager.Instance.PlayVictoryMusic();
             if (victoryScreen != null)
-                victoryScreen.Show(levelName, timeTaken, collected, totalFragments, narrativeLine, nextSceneName, finalMessage);
+                victoryScreen.Show(levelName, timeTaken, collected, totalFragments, narrativeLine,
+                    nextSceneName, finalMessage, GameProgress.TotalFragments(), GameProgress.MaxFragments,
+                    GameProgress.TotalTime(), isFinal);
         }
 
         // ---- checkpoints / respawn (Level 2) ----

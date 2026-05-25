@@ -23,8 +23,10 @@ namespace EchoShift.EditorTools
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 BuildShared();
                 EchoMenuScene.Build();
+                EchoLevel0.Build();
                 EchoScene.Build();
                 EchoLevel2.Build();
+                EchoLevel3.Build();
                 RegisterScenes();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -79,6 +81,36 @@ namespace EchoShift.EditorTools
             catch (System.Exception e) { Debug.LogError("[EchoShift] Build Level 2 failed: " + e); }
         }
 
+        [MenuItem("EchoShift/Build Level 0", false, 23)]
+        public static void BuildLevel0()
+        {
+            if (!EnsureTmp()) return;
+            try
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                BuildShared();
+                EchoLevel0.Build();
+                RegisterScenes();
+                Done("Level 0", EchoBuildUtils.Level0ScenePath);
+            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build Level 0 failed: " + e); }
+        }
+
+        [MenuItem("EchoShift/Build Level 3", false, 24)]
+        public static void BuildLevel3()
+        {
+            if (!EnsureTmp()) return;
+            try
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                BuildShared();
+                EchoLevel3.Build();
+                RegisterScenes();
+                Done("Level 3", EchoBuildUtils.Level3ScenePath);
+            }
+            catch (System.Exception e) { Debug.LogError("[EchoShift] Build Level 3 failed: " + e); }
+        }
+
         [MenuItem("EchoShift/Clean Generated Assets", false, 40)]
         public static void CleanGenerated()
         {
@@ -119,8 +151,10 @@ namespace EchoShift.EditorTools
         {
             var list = new List<EditorBuildSettingsScene>();
             AddScene(list, EchoBuildUtils.MenuScenePath);
+            AddScene(list, EchoBuildUtils.Level0ScenePath);
             AddScene(list, EchoBuildUtils.Level1ScenePath);
             AddScene(list, EchoBuildUtils.Level2ScenePath);
+            AddScene(list, EchoBuildUtils.Level3ScenePath);
             EditorBuildSettings.scenes = list.ToArray();
         }
 
