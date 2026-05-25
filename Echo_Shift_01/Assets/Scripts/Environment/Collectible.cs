@@ -1,0 +1,30 @@
+using UnityEngine;
+
+namespace EchoShift
+{
+    /// <summary>
+    /// The memory fragment at the level's end. When the player touches it, triggers the
+    /// level-complete sequence. Only the player (not an echo clone) can collect it.
+    /// </summary>
+    [RequireComponent(typeof(Collider2D))]
+    public class Collectible : MonoBehaviour
+    {
+        public AudioSource audioSource;
+        public AudioClip chimeClip;
+
+        bool taken;
+
+        void OnTriggerEnter2D(Collider2D other)
+        {
+            if (taken) return;
+            if (other.GetComponentInParent<PlayerController>() == null) return;
+
+            taken = true;
+            if (audioSource != null && chimeClip != null) audioSource.PlayOneShot(chimeClip);
+            if (GameManager.Instance != null) GameManager.Instance.CompleteLevel();
+
+            foreach (SpriteRenderer r in GetComponentsInChildren<SpriteRenderer>())
+                r.enabled = false;
+        }
+    }
+}
