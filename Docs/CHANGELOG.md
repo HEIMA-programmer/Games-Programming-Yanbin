@@ -7,7 +7,29 @@ in [`DevLog/`](DevLog/).
 
 ## [Unreleased]
 
-_Work in progress for the next session._
+### Added
+
+- Patrol drones gained a real line-of-sight sense + chase AI: a Patrol → Alert → Chase →
+  Search → Return state machine. A drone sees the player or an echo clone through its
+  detection cone (range + angle + an unobstructed ray on the Ground layer) and prefers the
+  clone, so a recorded decoy reliably draws it off the path; the cone colour now follows the
+  drone's state.
+- Level 2: a low cover block past the first drone that teaches breaking line of sight.
+- Stealth detection rule (opt-in per drone): a drone that holds the player in its cone too long
+  fills a detection meter and catches them, not just on contact. The screen reddens as a warning.
+- Level 3 corridor rebuilt as a stealth section using it: cover pillars block line of sight, so
+  you hide in cover, time the cone sweeps, or record a clone — the drones lock their cones onto
+  the decoy and leave your lane unwatched. (Level 2 drones keep the old behaviour for now.)
+- Level 3 mirror room simplified to an optional "echo lift": hold the plate with a clone, ride
+  up, and jump for the fragment. Removed a redundant mid-level door whose one-way gate could
+  lock it permanently.
+
+### Changed
+
+- The detection cone is now functional (was decorative) and resized so the visible cone
+  equals the real detection range.
+- Chase speed (6) stays below the player's run speed (7.5) and a per-drone leash bounds how
+  far a drone will chase — the player can always escape and is never cornered into a softlock.
 
 ## [0.3.0] — 2026-05-25
 

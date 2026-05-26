@@ -22,6 +22,9 @@ namespace EchoShift
         public AudioSource audioSource;
         public AudioClip dissolveClip;
 
+        /// <summary>The one clone currently in play, or null. Enemies use this to target the decoy.</summary>
+        public static EchoClone Active { get; private set; }
+
         Rigidbody2D rb;
         SpriteRenderer sr;
         List<RecordedFrame> frames;
@@ -40,6 +43,7 @@ namespace EchoShift
 
         public void Play(List<RecordedFrame> recorded)
         {
+            Active = this;
             frames = recorded;
             index = 0;
             playing = frames != null && frames.Count > 0;
@@ -127,6 +131,7 @@ namespace EchoShift
 
         void Unregister()
         {
+            if (Active == this) Active = null;
             if (registered && GameManager.Instance != null)
             {
                 GameManager.Instance.UnregisterClone();

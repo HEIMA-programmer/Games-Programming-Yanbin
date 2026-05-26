@@ -235,14 +235,17 @@ namespace EchoShift.EditorTools
 
         static void BuildCone()
         {
-            int w = 48, h = 32;
+            // Proportioned so the apex (x=0) opens at ~26° half-angle to the mouth, matching
+            // PatrolDrone.viewHalfAngle. The prefab scales this uniformly so the visible cone
+            // equals the real detection range — what you see is what detects you.
+            int w = 48, h = 48;
             var c = new Canvas(w, h);
             Color col = new Color(1f, 0.5f, 0.25f, 1f);
             for (int x = 0; x < w; x++)
             {
                 float t = (float)x / (w - 1);
-                float halfH = Mathf.Lerp(1.5f, 14f, t);
-                float a = 0.55f * (1f - t * 0.7f);
+                float halfH = Mathf.Lerp(0.5f, 23f, t);   // tan(26°) ≈ 0.49 → 23px over 48px
+                float a = 0.55f * (1f - t * 0.65f);
                 for (int y = 0; y < h; y++)
                 {
                     float dy = Mathf.Abs(y + 0.5f - h * 0.5f);

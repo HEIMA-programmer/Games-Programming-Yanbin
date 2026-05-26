@@ -32,6 +32,10 @@ namespace EchoShift
 
         public float flashTime = 0.45f;
 
+        [Header("Detection (stealth)")]
+        public float detectionFillTime = 1.6f;    // seconds of continuous sight before caught
+        public float detectionDecayMult = 1.8f;   // how fast the meter empties when unseen
+
         public bool IsCloneActive => activeClones > 0;
         public bool IsVictory => completed;
         public int Collected => collected;
@@ -43,6 +47,8 @@ namespace EchoShift
         Vector3 checkpoint;
         bool hasCheckpoint;
         PlayerController player;
+        float detection;
+        bool seenThisFrame;
 
         void Awake()
         {
@@ -75,6 +81,24 @@ namespace EchoShift
         }
         public void RegisterClone() => activeClones++;
         public void UnregisterClone() => activeClones = Mathf.Max(0, activeClones - 1);
+
+        // ---- detection (drones report on the physics step the player sits in their cone) ----
+        public void ReportSeen() => seenThisFrame = true;
+
+        void FixedUpdate()
+        {
+            if (Paused || completed || respawning)
+            {
+                if (respawning) detection = 0f;
+                seenThisFrame = false;
+                return;
+            }
+            float per = Mathf.Max(0.1f, detectionFillTime);
+            detection = Mathf.Clamp01(detection + (seenThisFrame ? 1f : -detectionDecayMult) * Time.fixedDeltaTime / per);
+            seenThisFrame = false;
+            if (hitFlashImage != null) SetAlpha(hitFlashImage, detection * 0.55f);
+            if (detection >= 1f) { detection = 0f; RespawnPlayer(); }
+        }
 
         // ---- fragments ----
         public void CollectFragment()
