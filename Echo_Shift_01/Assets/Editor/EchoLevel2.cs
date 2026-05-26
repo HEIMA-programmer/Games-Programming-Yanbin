@@ -132,6 +132,7 @@ namespace EchoShift.EditorTools
             // --- Area 1: enemy introduction ---
             Checkpoint(-2f);
             Drone(12f, 0.9f, 6f, 2.6f);
+            SolidBlock(21f, 0.7f, 1f, 1.4f, "CoverPillarA");   // low cover just past the patrol: duck behind it to break the drone's sight
 
             // --- Area 2: echo decoy ---
             Checkpoint(29f);
@@ -154,7 +155,7 @@ namespace EchoShift.EditorTools
             // --- Area 4: the gauntlet (upper plate -> lower bridge, two enemies) ---
             Checkpoint(82f);
             var plateA = Inst("PressurePlate", new Vector3(88f, 4.63f, 0f));   // on the upper ledge
-            Drone(95f, 5.4f, 3f, 2.4f);                                        // upper enemy
+            Drone(95f, 5.4f, 3f, 2.4f, 4f);                                    // upper enemy (short leash so it can't chase off the ledge edge at x99.5)
             Drone(94f, 0.9f, 4f, 2.8f);                                        // lower enemy
 
             var bridge = Inst("MovingPlatform", new Vector3(103.5f, -2.5f, 0f));
@@ -227,12 +228,13 @@ namespace EchoShift.EditorTools
             cp.GetComponent<Checkpoint>().respawnPoint = new Vector3(x, 0.6f, 0f);
         }
 
-        static void Drone(float x, float y, float dist, float speed)
+        static void Drone(float x, float y, float dist, float speed, float leash = 5f)
         {
             var e = Inst("PatrolDrone", new Vector3(x, y, 0f));
             var d = e.GetComponent<PatrolDrone>();
             d.patrolDistance = dist;
             d.speed = speed;
+            d.leash = leash;
         }
 
         static GameObject Inst(string prefabName, Vector3 pos)

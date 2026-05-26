@@ -74,32 +74,37 @@ namespace EchoShift.EditorTools
             SolidBlock(9f, 6.6f, 1.6f, 0.4f, "FragLedgeA");
             InstFrag(9f, 7.3f);
 
-            // ---- Area 2: Mirror Room (2 plates + latch, vertical) ----
-            SolidBlock(34f, -1f, 24f, 2f, "GroundB");         // x 22..46
+            // ---- Area 2: Echo Lift (optional fragment via a clone-held plate) ----
+            // Simplified from the old "mirror room": the door here gated nothing (the ground is
+            // open) and its one-way gate locked permanently, so both are gone. What remains is a
+            // clean optional echo puzzle — hold plateA with a recorded clone, ride the raised
+            // platform up to the ledge, and jump for the fragment. Skippable (off the main path).
+            SolidBlock(34f, -1f, 24f, 2f, "GroundB");         // x 22..46, top y0 (open walk-through)
             Checkpoint(24f);
             var plateA = Inst("PressurePlate", new Vector3(27f, 0.13f, 0f));
-            ConfigPlate(Inst("MovingPlatform", new Vector3(30f, 0.4f, 0f)), plateA, 3.3f, 3f); // top ~4 = MidLedgeB
-            SolidBlock(36f, 3.5f, 10f, 1f, "MidLedgeB");      // mid ledge top y4 (x31..41), clear above P2
-            var plateB = Inst("PressurePlate", new Vector3(35f, 4.13f, 0f));
-            var d2 = Inst("Door", new Vector3(40f, 5f, 0f));  // door at mid level
-            SolidBlock(40f, 7.5f, 0.7f, 4f, "DoorWallB");
-            var door2 = d2.GetComponent<Door>();
-            door2.requiredPlates = new[] { plateA.GetComponent<PressurePlate>(), plateB.GetComponent<PressurePlate>() };
-            door2.requireAll = true;
-            door2.latch = true;
-            Gate(43f, door2);
-            ConfigPingPong(Inst("MovingPlatform", new Vector3(37.5f, 4f, 0f)), new Vector2(0f, 4f), 2.4f);
-            InstFrag(37.5f, 8.5f);     // fragment 2 sits at P3's top point (no ledge above the platform)
-            Arrow(27f, 2f, -45f);      // points from plateA toward the rising platform P2
-            Arrow(37.5f, 6.4f, 0f);    // points up: ride the ping-pong platform to fragment 2
+            ConfigPlate(Inst("MovingPlatform", new Vector3(30f, 0.4f, 0f)), plateA, 3.3f, 3f); // top ~y4 = MidLedgeB
+            SolidBlock(36f, 3.5f, 10f, 1f, "MidLedgeB");      // ledge top y4 (x31..41)
+            InstFrag(34f, 6.3f);       // above the ledge: a jump from MidLedgeB (apex ~2.87) grabs it
+            Arrow(27f, 2f, -45f);      // points from plateA toward the rising platform
+            Arrow(34f, 5.2f, 0f);      // points up at the fragment
 
-            // ---- Area 3: Decoy Corridor (two enemies) ----
-            SolidBlock(54f, -1f, 24f, 2f, "GroundC");         // x 42..66
-            SolidBlock(54f, 2f, 18f, 1f, "CeilingC");         // low ceiling (y1.5..2.5) forces a ground run past enemies
+            // ---- Area 3: Stealth Corridor (detection + cover + decoy) ----
+            // These drones CATCH you if their cone holds you in sight too long (a detection meter
+            // in GameManager), not only on contact — so standing on a ledge no longer trivialises
+            // it. Cover pillars block line of sight: wait in a pillar's shadow, time the cone
+            // sweeps, or record a clone — the drones lock their cones onto the decoy (clone-
+            // priority) and leave your lane unwatched. Open above, so you can hop a pillar, but
+            // you're briefly exposed at the apex (a short look is fine; lingering gets you caught).
+            SolidBlock(54f, -1f, 24f, 2f, "GroundC");           // lower lane x42..66, top y0
+            SolidBlock(48f, 1.2f, 0.7f, 2.4f, "CoverC1");       // LOS blocker, top y2.4 — shadows the entrance from drone 1
+            SolidBlock(56f, 1.2f, 0.7f, 2.4f, "CoverC2");       // LOS blocker, top y2.4 — mid shadow pocket before drone 2
             Checkpoint(44f);
-            // decoy enemies (clone survives, draws both); x44..48 left as a safe record buffer
-            Drone(52f, 0.9f, 4f, 3.0f, false);
-            Drone(57f, 0.9f, 3f, 3.4f, false);
+            // drones patrol the gaps between cover; detects:true makes their cones lethal-on-sight
+            Drone(52f, 0.9f, 3f, 3.0f, false, 4f, true);        // patrol x49..55
+            Drone(59f, 0.9f, 2.5f, 3.0f, false, 4f, true);      // patrol x56.5..61.5
+            // signpost the stealth play
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(43f, 3.0f, 0f), "Don't be seen — hide, time it, or send a decoy");
+            Arrow(45.5f, 1.0f, -90f);   // advance right, cover to cover
 
             // ---- Area 4: Memory Core ----
             SolidBlock(72f, -1f, 20f, 2f, "GroundD");         // x 62..82
@@ -123,9 +128,9 @@ namespace EchoShift.EditorTools
             AmbientLight(4f, 4f, Cyan, 0.3f, 6f);
             AmbientLight(20f, 5f, Warm, 0.3f, 6f);
             AmbientLight(34f, 6f, Cyan, 0.3f, 7f);
-            AmbientLight(54f, 4f, Warm, 0.3f, 6f);
+            AmbientLight(54f, 0.8f, Warm, 0.3f, 6f);   // inside the tunnel now that the ceiling is solid up to y4.5
             EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(28f, 6.5f, 0f), "Memory restoration chamber — 200m ahead");
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(63f, 3.2f, 0f), "Welcome home, Echo.", new Color(1f, 0.8f, 0.5f, 1f));
+            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(64f, 3.2f, 0f), "Welcome home, Echo.", new Color(1f, 0.8f, 0.5f, 1f));
         }
 
         // ---- platform config ----
@@ -252,13 +257,15 @@ namespace EchoShift.EditorTools
             cp.GetComponent<Checkpoint>().respawnPoint = new Vector3(x, 0.6f, 0f);
         }
 
-        static void Drone(float x, float y, float dist, float speed, bool destroysClone = true)
+        static void Drone(float x, float y, float dist, float speed, bool destroysClone = true, float leash = 5f, bool detects = false)
         {
             var e = Inst("PatrolDrone", new Vector3(x, y, 0f));
             var d = e.GetComponent<PatrolDrone>();
             d.patrolDistance = dist;
             d.speed = speed;
             d.destroysClone = destroysClone;
+            d.leash = leash;
+            d.detects = detects;
         }
 
         static GameObject Inst(string prefabName, Vector3 pos)

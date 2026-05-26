@@ -380,12 +380,15 @@ namespace EchoShift.EditorTools
 
             EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit);
             var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 0.45f, 0.2f, 0.28f));
-            cone.transform.localPosition = new Vector3(1.0f, 0f, 0f);
-            cone.transform.localScale = new Vector3(1.3f, 1.3f, 1f);
+            // Apex at the drone centre, mouth reaching viewRange (4.5u): the 48px (1.5u) sprite
+            // scaled x3 spans 4.5u, centred so its left edge sits on the drone.
+            cone.transform.localPosition = new Vector3(2.25f, 0f, 0f);
+            cone.transform.localScale = new Vector3(3f, 3f, 1f);
 
             var dr = root.AddComponent<PatrolDrone>();
             dr.facing = facing.transform;
             dr.coneRenderer = cone.GetComponent<SpriteRenderer>();
+            dr.sightBlockMask = 1 << groundLayer;
 
             var lightGO = new GameObject("DroneLight");
             lightGO.transform.SetParent(root.transform, false);
