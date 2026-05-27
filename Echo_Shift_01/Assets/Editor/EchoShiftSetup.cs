@@ -137,6 +137,7 @@ namespace EchoShift.EditorTools
             EchoMaterials.GenerateAll();
             EchoAudio.GenerateAll();
             EchoPrefabs.GenerateAll();
+            EchoFont.EnsureFontAsset();   // load/generate the custom UI font (Exo 2) → EchoBuildUtils.CustomFont
         }
 
         static void Done(string label, string scenePath)

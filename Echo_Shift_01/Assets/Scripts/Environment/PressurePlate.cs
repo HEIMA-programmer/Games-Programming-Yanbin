@@ -18,6 +18,7 @@ namespace EchoShift
         public AudioSource audioSource;
         public AudioClip clickClip;
         public AudioClip releaseClip;
+        public ParticleSystem pressParticles;   // small burst emitted on press
 
         public Color inactiveColor = new Color(1f, 0.667f, 0f, 1f);   // amber
         public Color activeColor = new Color(0f, 1f, 0.533f, 1f);     // green
@@ -64,6 +65,7 @@ namespace EchoShift
             if (IsPressed == was) return;
 
             ApplyVisualState();
+            if (IsPressed && pressParticles != null) pressParticles.Emit(16);
             if (audioSource != null)
             {
                 if (IsPressed && clickClip != null) audioSource.PlayOneShot(clickClip);

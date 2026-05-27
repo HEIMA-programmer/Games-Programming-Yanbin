@@ -17,6 +17,7 @@ namespace EchoShift.EditorTools
         public static void GenerateAll()
         {
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.AudioDir);
+            Random.InitState(82914);   // deterministic noise → identical WAVs each Build All (no git churn)
 
             WriteWav("click", Click());
             WriteWav("chime", Chime());
@@ -48,10 +49,11 @@ namespace EchoShift.EditorTools
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate;
-                float env = Mathf.Exp(-t * 65f);
-                float tone = Mathf.Sin(2f * Mathf.PI * 1500f * t) * env * 0.6f;
-                float tick = (Random.value * 2f - 1f) * Mathf.Exp(-t * 130f) * 0.15f;
-                d[i] = tone + tick;
+                float env = Mathf.Exp(-t * 60f);
+                float tone = Mathf.Sin(2f * Mathf.PI * 1500f * t) * env * 0.5f;
+                float ring = Mathf.Sin(2f * Mathf.PI * 2250f * t) * Mathf.Exp(-t * 95f) * 0.2f;  // bright overtone
+                float tick = (Random.value * 2f - 1f) * Mathf.Exp(-t * 130f) * 0.13f;
+                d[i] = tone + ring + tick;
             }
             return d;
         }
@@ -96,15 +98,17 @@ namespace EchoShift.EditorTools
 
         static float[] Land()
         {
-            float dur = 0.15f;
+            float dur = 0.2f;
             int n = Mathf.CeilToInt(dur * SampleRate);
             var d = new float[n];
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate;
-                float thud = Mathf.Sin(2f * Mathf.PI * 95f * t) * Mathf.Exp(-t * 32f) * 0.7f;
-                float dust = (Random.value * 2f - 1f) * Mathf.Exp(-t * 60f) * 0.22f;
-                d[i] = thud + dust;
+                float sub   = Mathf.Sin(2f * Mathf.PI * 55f * t) * Mathf.Exp(-t * 24f) * 0.38f;   // weight
+                float thud  = Mathf.Sin(2f * Mathf.PI * 95f * t) * Mathf.Exp(-t * 32f) * 0.52f;   // body
+                float knock = Mathf.Sin(2f * Mathf.PI * 190f * t) * Mathf.Exp(-t * 55f) * 0.18f;  // attack
+                float dust  = (Random.value * 2f - 1f) * Mathf.Exp(-t * 55f) * 0.2f;              // grit
+                d[i] = (sub + thud + knock + dust) * 0.8f;
             }
             return d;
         }
@@ -122,13 +126,14 @@ namespace EchoShift.EditorTools
 
         static float[] Jump()
         {
-            float dur = 0.18f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            float dur = 0.18f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f, ph2 = 0f;
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate; float k = t / dur;
                 float f = Mathf.Lerp(220f, 560f, k); ph += 2f * Mathf.PI * f / SampleRate;
+                ph2 += 2f * Mathf.PI * (f * 1.5f) / SampleRate;   // a fifth above for a brighter lift
                 float env = Mathf.Sin(Mathf.PI * k);
-                d[i] = (Mathf.Sin(ph) * 0.4f + (Random.value * 2f - 1f) * 0.1f) * env;
+                d[i] = (Mathf.Sin(ph) * 0.4f + Mathf.Sin(ph2) * 0.15f + (Random.value * 2f - 1f) * 0.08f) * env;
             }
             return d;
         }
@@ -239,13 +244,20 @@ namespace EchoShift.EditorTools
         static float[] MenuDrone()
         {
             float dur = 8f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
-            int[] f = { 55, 110, 131, 165 };
-            float[] amp = { 0.28f, 0.22f, 0.16f, 0.16f };
+            int[] f = { 55, 110, 131, 165, 220, 262 };       // + upper shimmer partials
+            float[] amp = { 0.26f, 0.2f, 0.14f, 0.14f, 0.07f, 0.05f };
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate;
                 float lfo = 0.85f + 0.15f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
-                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * amp[k];
+                float shimmer = 0.5f + 0.5f * Mathf.Sin(2f * Mathf.PI * 0.125f * t);   // slow pad swell
+                float s = 0f;
+                for (int k = 0; k < f.Length; k++)
+                {
+                    float a = amp[k];
+                    if (f[k] >= 200) a *= shimmer;
+                    s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * a;
+                }
                 d[i] = s * lfo * 0.5f;
             }
             return d;
@@ -254,13 +266,20 @@ namespace EchoShift.EditorTools
         static float[] LevelAmbient()
         {
             float dur = 8f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
-            int[] f = { 41, 62, 82 };
-            float[] amp = { 0.3f, 0.2f, 0.14f };
+            int[] f = { 27, 41, 62, 82, 123 };          // + sub-bass (27) and a high shimmer (123)
+            float[] amp = { 0.22f, 0.26f, 0.18f, 0.12f, 0.07f };
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate;
-                float lfo = 0.8f + 0.2f * Mathf.Sin(2f * Mathf.PI * 0.125f * t);
-                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * amp[k];
+                float lfo = 0.8f + 0.2f * Mathf.Sin(2f * Mathf.PI * 0.125f * t);     // slow amplitude swell
+                float shimmer = 0.6f + 0.4f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);  // pad layer breathes in/out
+                float s = 0f;
+                for (int k = 0; k < f.Length; k++)
+                {
+                    float a = amp[k];
+                    if (f[k] >= 100) a *= shimmer;
+                    s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * a;
+                }
                 d[i] = s * lfo * 0.45f;
             }
             return d;

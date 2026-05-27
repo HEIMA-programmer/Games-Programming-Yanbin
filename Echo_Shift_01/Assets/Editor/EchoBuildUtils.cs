@@ -37,6 +37,10 @@ namespace EchoShift.EditorTools
         public static readonly string[] SortingLayers =
             { "Background", "Midground", "Environment", "Player", "Foreground", "UI" };
 
+        /// <summary>Custom UI font (Exo 2, OFL), set by EchoFont.EnsureFontAsset during Build All.
+        /// Null → fall back to TMP's default (Liberation Sans), so a missing font never breaks the build.</summary>
+        public static TMP_FontAsset CustomFont;
+
         // ---- Palette -------------------------------------------------------
         public static Color Hex(string hex)
         {
@@ -276,6 +280,7 @@ namespace EchoShift.EditorTools
             t.alignment = align;
             t.raycastTarget = false;
             t.enableWordWrapping = true;
+            if (CustomFont != null) t.font = CustomFont;
             return t;
         }
 
@@ -332,6 +337,7 @@ namespace EchoShift.EditorTools
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.fontSize = 2.1f;
             tmp.color = color ?? new Color(0f, 0.83f, 1f, 1f);
+            if (CustomFont != null) tmp.font = CustomFont;
             tmp.rectTransform.sizeDelta = new Vector2(6.4f, 2.4f);
             var mr = tgo.GetComponent<MeshRenderer>();
             if (mr != null) { mr.sortingLayerID = SortingLayer.NameToID("Foreground"); mr.sortingOrder = 3; }
