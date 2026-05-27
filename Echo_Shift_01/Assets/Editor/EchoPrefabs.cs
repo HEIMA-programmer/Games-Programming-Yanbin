@@ -200,6 +200,13 @@ namespace EchoShift.EditorTools
             plate.clickClip = EchoBuildUtils.LoadAudio("click");
             plate.releaseClip = EchoBuildUtils.LoadAudio("platerelease");
 
+            // small green burst that puffs up when the plate is pressed (emitted on demand)
+            var press = MakePS("PressBurst", root.transform, new Color(0f, 1f, 0.53f, 1f),
+                0.45f, 2.2f, 0.1f, 0f, false, "Environment", 3);
+            press.transform.localPosition = new Vector3(0f, 0.2f, 0f);
+            var pressMain = press.main; pressMain.gravityModifier = -0.2f;
+            plate.pressParticles = press;
+
             SavePrefab(root, "PressurePlate");
         }
 

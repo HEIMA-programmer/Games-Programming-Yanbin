@@ -7,6 +7,29 @@ in [`DevLog/`](DevLog/).
 
 ## [Unreleased]
 
+_Nothing yet._
+
+## [0.5.0] — 2026-05-27
+
+Session 2 · Section B — polish pass (game feel, audio, font).
+
+### Added
+
+- UI font: the game now uses **Exo 2** (OFL) across menus, HUD, and narrative — generated from
+  a committed `.ttf` during Build All, with a graceful fallback to the TMP default if absent.
+- A particle burst when a pressure plate is pressed.
+- A brief hit-stop + camera shake on death/respawn.
+- Richer procedural audio: layered harmonics/transients on impacts and a pad layer under the music.
+
+### Changed
+
+- Audio synthesis now uses a fixed RNG seed, so the generated WAVs are identical on every
+  Build All (no more spurious git diffs).
+
+## [0.4.0] — 2026-05-26
+
+Session 2 · Section A — real enemy detection + chase AI.
+
 ### Added
 
 - Patrol drones gained a real line-of-sight sense + chase AI: a Patrol → Alert → Chase →
@@ -14,12 +37,12 @@ in [`DevLog/`](DevLog/).
   detection cone (range + angle + an unobstructed ray on the Ground layer) and prefers the
   clone, so a recorded decoy reliably draws it off the path; the cone colour now follows the
   drone's state.
-- Level 2: a low cover block past the first drone that teaches breaking line of sight.
 - Stealth detection rule (opt-in per drone): a drone that holds the player in its cone too long
   fills a detection meter and catches them, not just on contact. The screen reddens as a warning.
-- Level 3 corridor rebuilt as a stealth section using it: cover pillars block line of sight, so
-  you hide in cover, time the cone sweeps, or record a clone — the drones lock their cones onto
-  the decoy and leave your lane unwatched. (Level 2 drones keep the old behaviour for now.)
+- Level 2: a low cover block past the first drone that teaches breaking line of sight.
+- Level 3 corridor rebuilt as a stealth section: cover pillars block line of sight, so you hide
+  in cover, time the cone sweeps, or record a clone — the drones lock their cones onto the decoy
+  and leave your lane unwatched. (Level 2 drones keep the old behaviour for now.)
 - Level 3 mirror room simplified to an optional "echo lift": hold the plate with a clone, ride
   up, and jump for the fragment. Removed a redundant mid-level door whose one-way gate could
   lock it permanently.

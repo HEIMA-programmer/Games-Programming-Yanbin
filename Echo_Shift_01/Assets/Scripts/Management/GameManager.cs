@@ -47,6 +47,7 @@ namespace EchoShift
         Vector3 checkpoint;
         bool hasCheckpoint;
         PlayerController player;
+        CameraShake cameraShake;
         float detection;
         bool seenThisFrame;
 
@@ -63,6 +64,7 @@ namespace EchoShift
         void Start()
         {
             player = FindObjectOfType<PlayerController>();
+            cameraShake = FindObjectOfType<CameraShake>();
             if (hud != null) { hud.SetCollected(0, totalFragments); hud.SetRecording(false); }
             if (AudioManager.Instance != null) AudioManager.Instance.PlayLevelMusic();
         }
@@ -171,7 +173,14 @@ namespace EchoShift
             if (player == null) player = FindObjectOfType<PlayerController>();
             if (player != null) player.ControlEnabled = false;
 
+            // Death feel: red flash + camera shake + a brief hit-stop. CameraShake runs on
+            // unscaled time, so it keeps animating while time is frozen. Kept short so the
+            // (sometimes frequent) detection respawns never feel laboured.
             if (hitFlashImage != null) SetAlpha(hitFlashImage, 0.6f);
+            if (cameraShake != null) cameraShake.Shake(0.55f);
+            Time.timeScale = 0.12f;
+            yield return WaitUnscaled(0.09f);
+            if (!Paused) Time.timeScale = 1f;
             yield return WaitUnscaled(0.2f);
 
             if (player != null) player.Respawn(checkpoint);

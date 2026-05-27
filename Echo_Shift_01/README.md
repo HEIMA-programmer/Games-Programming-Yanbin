@@ -60,16 +60,19 @@ About 5–8 minutes of play. Three memory fragments per level (9 total) reward e
 - **No harsh strobing** — lighting is soft glow / bloom. Calm, untimed pacing outside the
   one optional timed section.
 - **Privacy/security:** the game is fully offline and collects no data.
-- **Assets:** all original (see Credits) — no third-party or licensed content is used.
+- **Assets:** original except one licensed font — every sprite and sound is generated
+  procedurally; the UI font is **Exo 2** under the SIL Open Font License (see Credits /
+  `Assets/Fonts/OFL.txt`).
 
 ## Credits
 
 - **Design & programming:** Yanbin Xu
-- **Art, audio & music:** 100% original, generated procedurally by this project's editor
-  scripts (sprites drawn pixel-by-pixel to PNG; sound synthesised as 16-bit PCM WAV). No
-  external or third-party assets are used.
-- **Engine & tools:** Unity 2022.3 LTS, Universal Render Pipeline, TextMesh Pro (default
-  Liberation Sans font).
+- **Art, audio & music:** original, generated procedurally by this project's editor scripts
+  (sprites drawn pixel-by-pixel to PNG; sound synthesised as 16-bit PCM WAV). The **only**
+  third-party asset is the UI font below.
+- **Font:** [Exo 2](https://fonts.google.com/specimen/Exo+2) (Natanael Gama), under the SIL
+  Open Font License 1.1 — see `Assets/Fonts/OFL.txt`.
+- **Engine & tools:** Unity 2022.3 LTS, Universal Render Pipeline, TextMesh Pro.
 
 ## How this project was built
 
