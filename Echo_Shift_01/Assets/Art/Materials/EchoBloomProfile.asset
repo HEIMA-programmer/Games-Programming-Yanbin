@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: EchoBloomProfile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: 5509412699084441777}
---- !u!114 &5509412699084441777
+  - {fileID: 8507085374584393914}
+--- !u!114 &8507085374584393914
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
