@@ -37,6 +37,11 @@ bug-fixing, and polish.
 
 - [Session 01 — 2026-05-25](Session-01_2026-05-25.md) — Core echo mechanic, one-click
   builder, four levels + menu, complete game loop.
+- [Session 02 — 2026-05-26 / 2026-05-27](Session-02_2026-05-26.md) — Real drone
+  line-of-sight + chase AI and a stealth-detection rule; polish pass (Exo 2 font, death
+  hit-stop + shake, plate particle, richer procedural audio); static font-asset fix; and
+  the Milestone-1 process backfill — ROADMAP + BACKLOG written, project renamed
+  *Echo Shift → Aftertrace*.
 - _(add new sessions here as they are written)_
 
 ---
