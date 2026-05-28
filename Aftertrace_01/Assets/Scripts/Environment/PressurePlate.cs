@@ -20,8 +20,9 @@ namespace EchoShift
         public AudioClip releaseClip;
         public ParticleSystem pressParticles;   // small burst emitted on press
 
-        public Color inactiveColor = new Color(1f, 0.667f, 0f, 1f);   // amber
-        public Color activeColor = new Color(0f, 1f, 0.533f, 1f);     // green
+        // 1-Bit: plate state reads via ALPHA, not hue. Dim = open, full white = pressed.
+        public Color inactiveColor = new Color(1f, 1f, 1f, 0.55f);   // dim white — not pressed
+        public Color activeColor = new Color(1f, 1f, 1f, 1f);        // full white — pressed
         public float depressDistance = 0.18f;                         // ~6px @ PPU 32 (clearer feedback)
 
         public bool IsPressed { get; private set; }

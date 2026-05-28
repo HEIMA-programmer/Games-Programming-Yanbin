@@ -110,7 +110,7 @@ namespace EchoShift.EditorTools
             bsr.sortingOrder = 2;
 
             var panel = EchoBuildUtils.SpriteGO("Panel", EchoBuildUtils.LoadSprite("glow"), "Environment", 1, root.transform, unlit,
-                new Color(0.27f, 1f, 0.67f, 0.8f));
+                new Color(1f, 1f, 1f, 0.8f));  // 1-Bit: white door glow
             panel.transform.localPosition = new Vector3(0.6f, 1.2f, 0f);
             panel.transform.localScale = Vector3.one * 0.6f;
 
@@ -132,7 +132,7 @@ namespace EchoShift.EditorTools
             var black = EchoBuildUtils.CreateImage("Black", canvas.transform, null, Color.black);
             EchoBuildUtils.FullStretch(black.rectTransform);
             black.raycastTarget = false;
-            var line = EchoBuildUtils.CreateText("Line", canvas.transform, "", 60f, new Color(0.85f, 0.95f, 1f, 1f), TextAlignmentOptions.Center);
+            var line = EchoBuildUtils.CreateText("Line", canvas.transform, "", 60f, Color.white, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(line.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1400f, 240f));
 
             var introGO = new GameObject("Level0Intro");
@@ -157,6 +157,9 @@ namespace EchoShift.EditorTools
             sr.sortingOrder = 0;
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
+            EchoBuildUtils.AddTopEdge(go, w, h, lit);
+            EchoBuildUtils.SprinkleCraters(go, w, h, lit);
+            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
             return go;
         }
     }

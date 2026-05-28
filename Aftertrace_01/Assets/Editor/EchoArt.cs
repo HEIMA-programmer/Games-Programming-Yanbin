@@ -18,6 +18,10 @@ namespace EchoShift.EditorTools
             // as fallback (and as commit-history rollback) but no longer regenerate:
             //   BuildPlayer / BuildEcho / BuildPlatform / BuildDoor /
             //   BuildDrone / BuildEndArch / BuildFragment
+            BuildWhite();
+            BuildCrater();
+            BuildCrater2();
+            BuildRockShade();
             BuildPlate();
             BuildParticle();
             BuildGlow();
@@ -93,6 +97,70 @@ namespace EchoShift.EditorTools
             Save(c, "platform", 32, FilterMode.Point);
         }
 
+        // Solid 1×1 white sprite (PPU 8 → 1 world unit). Scaled to thin bars for the
+        // crisp white terrain top-edge; solid colour means scaling never distorts pixels.
+        static void BuildWhite()
+        {
+            var c = new Canvas(8, 8);
+            c.FilledRect(0, 0, 8, 8, Color.white);
+            Save(c, "white", 8, FilterMode.Point);
+        }
+
+        // 4×4 ordered (Bayer) dither matrix, values 0..15 — used for seamless, deterministic
+        // dithered edges/gradients (no RNG → no git churn on the generated PNGs).
+        static readonly int[,] Bayer4 =
+        {
+            { 0, 8, 2, 10 }, { 12, 4, 14, 6 }, { 3, 11, 1, 9 }, { 15, 7, 13, 5 }
+        };
+
+        // Irregular dark cavity with a dithered (ragged) rim + a couple of inner light
+        // specks — reads as a recessed hole in the rock, not a flat ringed dot. Two phase
+        // variants give variety. Opaque so it punches through the white mass. PPU 32 → 1u.
+        static void BuildCrater()  => CraterSprite("crater", 3f, 7f, 1.3f);
+        static void BuildCrater2() => CraterSprite("crater2", 4f, 9f, 2.7f);
+
+        static void CraterSprite(string name, float k1, float k2, float phase)
+        {
+            int n = 32;
+            var c = new Canvas(n, n);
+            const float cx = 16f, cy = 16f, baseR = 12f;
+            Color black = new Color(0f, 0f, 0f, 1f);
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = x + 0.5f - cx, dy = y + 0.5f - cy;
+                    float ang = Mathf.Atan2(dy, dx);
+                    float r = baseR + Mathf.Sin(ang * k1) * 0.7f + Mathf.Sin(ang * k2 + phase) * 0.45f; // gently irregular, mostly round
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    if (d <= r - 0.8f) c.px[y * n + x] = black;                      // solid core
+                    else if (d <= r + 0.8f && Bayer4[y % 4, x % 4] < 6) c.px[y * n + x] = black; // light dithered rim
+                }
+            c.px[18 * n + 12] = Color.white;   // light pooling specks
+            c.px[13 * n + 20] = Color.white;
+            c.px[21 * n + 17] = Color.white;
+            Save(c, name, 32, FilterMode.Point);
+        }
+
+        // Vertical shadow gradient: transparent at the top, ramping to dense opaque-black
+        // dither at the bottom. Overlaid on the lower part of terrain masses for volume
+        // (lit top, shadowed underside). Horizontally seamless (Bayer period 4 | width 16).
+        // 16×24 @ PPU 16 → 1u wide × 1.5u tall; callers tile it horizontally.
+        static void BuildRockShade()
+        {
+            int w = 16, h = 24;
+            var c = new Canvas(w, h);
+            for (int y = 0; y < h; y++)
+            {
+                float t = 1f - (float)y / (h - 1);   // px row 0 = bottom (Unity tex y-up) → t=1 bottom
+                float amt = Mathf.Clamp01((t - 0.04f) / 0.96f);
+                float thresh = amt * amt * 16f;       // ease-in so the shadow hugs the bottom
+                for (int x = 0; x < w; x++)
+                    if (Bayer4[y % 4, x % 4] < thresh)
+                        c.px[y * w + x] = new Color(0f, 0f, 0f, 1f);
+            }
+            Save(c, "rockshade", 16, FilterMode.Point);
+        }
+
         static void BuildPlate()
         {
             // Near-white so runtime tint (amber/green) shows cleanly.
@@ -164,38 +232,39 @@ namespace EchoShift.EditorTools
         static void BuildRing()
         {
             var c = new Canvas(48, 48);
-            c.Ring(24f, 24f, 22f, 14f, new Color(0.7f, 0.87f, 1f, 1f));
+            c.Ring(24f, 24f, 22f, 14f, Color.white);
             Save(c, "ring", 32, FilterMode.Bilinear);
         }
 
         static void BuildBgDot()
         {
             var c = new Canvas(16, 16);
-            c.Glow(8f, 8f, 8f, new Color(0.55f, 0.7f, 1f, 1f), 2.4f);
+            c.Glow(8f, 8f, 8f, Color.white, 2.4f);  // pure 1-Bit: white star, hue removed
             Save(c, "bgdot", 32, FilterMode.Bilinear);
         }
 
         static void BuildBgEquip()
         {
             var c = new Canvas(64, 48);
-            Color body = new Color(0.09f, 0.12f, 0.2f, 1f);
-            c.FilledRect(0, 0, 64, 40, body);
-            Color top = new Color(0.13f, 0.17f, 0.27f, 1f);
-            c.FilledRect(8, 40, 20, 8, top);
-            c.FilledRect(40, 40, 16, 6, top);
-            Color line = new Color(0.2f, 0.26f, 0.4f, 0.6f);
-            for (int x = 6; x < 64; x += 12) c.FilledRect(x, 6, 1, 28, line);
+            // 1-Bit background machinery: a faint white wireframe silhouette, NOT a solid
+            // slab. A filled block would dominate the black bg; outlines read as distant
+            // structure and let the black show through.
+            Color line = new Color(1f, 1f, 1f, 0.5f);
+            c.RectBorder(0, 0, 64, 40, 1, line);   // main chassis outline
+            c.RectBorder(8, 40, 20, 8, 1, line);   // top module A
+            c.RectBorder(40, 40, 16, 6, 1, line);  // top module B
+            Color rib = new Color(1f, 1f, 1f, 0.28f);
+            for (int x = 12; x < 64; x += 12) c.FilledRect(x, 4, 1, 32, rib);  // panel ribs
             Save(c, "bgequip", 32, FilterMode.Point);
         }
 
         static void BuildKeycap()
         {
             var c = new Canvas(24, 24);
-            Color fill = new Color(0.04f, 0.07f, 0.13f, 0.82f);
+            Color fill = new Color(0f, 0f, 0f, 0.82f);  // neutral dark fill (no blue)
             c.RoundedBox(12f, 12f, 10f, 10f, 4f, fill);
-            Color border = EchoBuildUtils.ColPlayer;
+            Color border = Color.white;  // 1-Bit: white key outline
             c.RoundedBoxOutline(12f, 12f, 10f, 10f, 4f, border);
-            c.Glow(12f, 12f, 13f, new Color(border.r, border.g, border.b, 0.25f), 2.2f);
             Save(c, "keycap", 32, FilterMode.Bilinear);
         }
 
@@ -203,7 +272,7 @@ namespace EchoShift.EditorTools
         {
             int n = 256;
             var c = new Canvas(n, n);
-            Color red = new Color(1f, 0.25f, 0.12f, 1f);
+            Color red = Color.white;  // 1-Bit: recording feedback is a white edge pulse, not red
             float half = n * 0.5f;
             for (int y = 0; y < n; y++)
                 for (int x = 0; x < n; x++)
@@ -238,7 +307,7 @@ namespace EchoShift.EditorTools
             // equals the real detection range — what you see is what detects you.
             int w = 48, h = 48;
             var c = new Canvas(w, h);
-            Color col = new Color(1f, 0.5f, 0.25f, 1f);
+            Color col = Color.white;  // 1-Bit: detection cone reads via shape + low alpha, not red
             for (int x = 0; x < w; x++)
             {
                 float t = (float)x / (w - 1);
@@ -297,7 +366,7 @@ namespace EchoShift.EditorTools
         static void BuildArrow()
         {
             var c = new Canvas(16, 16);
-            Color col = new Color(0.6f, 0.9f, 1f, 1f);
+            Color col = Color.white;  // 1-Bit: white guide arrow
             c.Glow(8f, 9f, 8f, new Color(col.r, col.g, col.b, 0.3f), 2f);
             for (int y = 6; y <= 13; y++)
             {

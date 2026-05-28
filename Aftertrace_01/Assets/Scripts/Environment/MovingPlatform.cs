@@ -64,7 +64,11 @@ namespace EchoShift
                 for (int i = riders.Count - 1; i >= 0; i--)
                 {
                     if (riders[i] == null) { riders.RemoveAt(i); continue; }
-                    riders[i].MovePosition(riders[i].position + delta);
+                    // A rider moving up faster than a carry has jumped — let them go, don't
+                    // re-glue them. (Carrying via position += delta preserves the rider's own
+                    // velocity, so the jump survives; MovePosition would have overwritten it.)
+                    if (riders[i].velocity.y > 4f) continue;
+                    riders[i].position += delta;
                 }
             }
 

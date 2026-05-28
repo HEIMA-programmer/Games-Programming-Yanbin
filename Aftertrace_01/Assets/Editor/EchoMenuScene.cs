@@ -141,7 +141,7 @@ namespace EchoShift.EditorTools
             var ps = go.AddComponent<ParticleSystem>();
             var main = ps.main;
             main.loop = true; main.duration = 10f; main.startLifetime = 9f; main.startSpeed = 0.3f;
-            main.startSize = 0.12f; main.startColor = new Color(0.4f, 0.6f, 1f, 0.5f);
+            main.startSize = 0.12f; main.startColor = new Color(1f, 1f, 1f, 0.5f);  // 1-Bit: white motes
             main.maxParticles = 140; main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.gravityModifier = -0.02f; main.playOnAwake = true;
             var em = ps.emission; em.rateOverTime = 12f;
@@ -182,8 +182,8 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.AddSceneFrame(root, new Color(0.92f, 0.96f, 1f, 0.95f), 10f);
 
             // title glow + text (upper third)
-            // Subtle cyan halo — Aftertrace's only accent on the menu, kept low alpha.
-            var glow = EchoBuildUtils.CreateImage("TitleGlow", root, EchoBuildUtils.LoadSprite("glow"), new Color(0f, 0.83f, 1f, 0.18f));
+            // 1-Bit: a faint WHITE halo behind the title (no cyan accent).
+            var glow = EchoBuildUtils.CreateImage("TitleGlow", root, EchoBuildUtils.LoadSprite("glow"), new Color(1f, 1f, 1f, 0.14f));
             EchoBuildUtils.Place(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(1100f, 360f));
             glow.raycastTarget = false;
 

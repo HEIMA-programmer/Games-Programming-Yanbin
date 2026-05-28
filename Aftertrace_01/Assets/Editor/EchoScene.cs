@@ -119,103 +119,10 @@ namespace EchoShift.EditorTools
         {
             Random.InitState(20240517);
             var bg = new GameObject("Background");
+            EchoBuildUtils.BuildAtmosphere(bg.transform, cameraTransform, 136f, unlit);
 
-            // FAR: 13 LARGE 1-Bit backdrops — every ~11u so the camera always shows at least 2.
-            var decor = new GameObject("BG_1Bit");
-            decor.transform.SetParent(bg.transform, false);
-            var dp = decor.AddComponent<Parallax>();
-            dp.factor = 0.08f;
-            dp.cameraTransform = cameraTransform;
-            for (int i = 0; i < 13; i++)
-            {
-                var sprite = EchoBuildUtils.GetBackgroundVariant(i);
-                if (sprite == null) continue;
-                var d = EchoBuildUtils.SpriteGO("Backdrop", sprite, "Background", -2, decor.transform, unlit,
-                    EchoBuildUtils.TintBgFar);
-                d.transform.localPosition = new Vector3(2f + i * 11f, Random.Range(4f, 9f), 7f);
-                d.transform.localScale = Vector3.one * Random.Range(3.6f, 4.8f);
-            }
-
-            // MID: very dense Tileset_details — every ~2.5u so screen always reads "busy".
-            var details = new GameObject("BG_Details");
-            details.transform.SetParent(bg.transform, false);
-            var dpx = details.AddComponent<Parallax>();
-            dpx.factor = 0.32f;
-            dpx.cameraTransform = cameraTransform;
-            for (int i = 0; i < 60; i++)
-            {
-                var sprite = EchoBuildUtils.GetTilesetDetail(i * 5);
-                if (sprite == null) continue;
-                var d = EchoBuildUtils.SpriteGO("Detail", sprite, "Background", -1, details.transform, unlit,
-                    EchoBuildUtils.TintBgMid);
-                d.transform.localPosition = new Vector3(Random.Range(-2f, 134f), Random.Range(2.5f, 12f), 4f);
-                d.transform.localScale = Vector3.one * Random.Range(1.2f, 2.0f);
-            }
-
-            // NPC SILHOUETTES: distant "past workers" in background — Char_Boy / Girl frames.
-            // Establishes the abandoned-lab narrative without dialogue.
-            var npcs = new GameObject("BG_NPCs");
-            npcs.transform.SetParent(bg.transform, false);
-            var dnpc = npcs.AddComponent<Parallax>();
-            dnpc.factor = 0.5f;
-            dnpc.cameraTransform = cameraTransform;
-            for (int i = 0; i < 8; i++)
-            {
-                bool boy = (i & 1) == 0;
-                var sprite = boy ? EchoBuildUtils.GetNpcBoy(i * 5) : EchoBuildUtils.GetNpcGirl(i * 5);
-                if (sprite == null) continue;
-                var d = EchoBuildUtils.SpriteGO("NPC", sprite, "Background", 0, npcs.transform, unlit,
-                    EchoBuildUtils.TintNpc);
-                d.transform.localPosition = new Vector3(Random.Range(0f, 130f), Random.Range(0f, 1.5f), 3f);
-                d.transform.localScale = new Vector3((Random.value > 0.5f ? 1f : -1f) * 1.1f, 1.1f, 1f);
-            }
-
-            // PROPS: crates + machinery on/near ground (parallax 1.0 = static world).
-            // Adds occupied-lab density without affecting gameplay collision.
-            var props = new GameObject("BG_Props");
-            props.transform.SetParent(bg.transform, false);
-            for (int i = 0; i < 14; i++)
-            {
-                // Mix boxes (75%) and large machinery (25%) for variety.
-                bool isBox = Random.value > 0.25f;
-                var sprite = isBox ? EchoBuildUtils.GetBox(i) : EchoBuildUtils.GetMachine(i);
-                if (sprite == null) continue;
-                var d = EchoBuildUtils.SpriteGO("Prop", sprite, "Environment", -1, props.transform, unlit,
-                    EchoBuildUtils.TintBgNear);
-                float scale = isBox ? Random.Range(0.7f, 1.0f) : Random.Range(1.0f, 1.4f);
-                d.transform.localPosition = new Vector3(Random.Range(5f, 130f), isBox ? Random.Range(0.2f, 0.6f) : 0.6f, 2.5f);
-                d.transform.localScale = new Vector3((Random.value > 0.5f ? 1f : -1f) * scale, scale, 1f);
-            }
-
-            // Note: screen-space scene border is added by EchoUI on the HUD canvas
-            // so it follows the camera and frames the whole viewport (not just level edges).
-
-            // Legacy cyan ambient — kept for atmosphere.
-            var far = new GameObject("BG_Far");
-            far.transform.SetParent(bg.transform, false);
-            var fp = far.AddComponent<Parallax>();
-            fp.factor = 0.2f;
-            fp.cameraTransform = cameraTransform;
-            for (int i = 0; i < 48; i++)
-            {
-                var d = EchoBuildUtils.SpriteGO("Dot", EchoBuildUtils.LoadSprite("bgdot"), "Background", 0, far.transform, unlit,
-                    new Color(0.4f, 0.6f, 1f, Random.Range(0.2f, 0.6f)));
-                d.transform.localPosition = new Vector3(Random.Range(-6f, 136f), Random.Range(2f, 13f), 5f);
-                d.transform.localScale = Vector3.one * Random.Range(0.3f, 1.1f);
-            }
-
-            var mid = new GameObject("BG_Mid");
-            mid.transform.SetParent(bg.transform, false);
-            var mp = mid.AddComponent<Parallax>();
-            mp.factor = 0.5f;
-            mp.cameraTransform = cameraTransform;
-            for (int i = 0; i < 16; i++)
-            {
-                var e = EchoBuildUtils.SpriteGO("Equip", EchoBuildUtils.LoadSprite("bgequip"), "Midground", 0, mid.transform, lit,
-                    new Color(0.5f, 0.6f, 0.8f, 1f));
-                e.transform.localPosition = new Vector3(Random.Range(0f, 132f), Random.Range(-0.5f, 3.5f), 3f);
-                e.transform.localScale = Vector3.one * Random.Range(0.8f, 1.8f);
-            }
+            // Note: foreground richness comes from terrain + platforms + gameplay objects,
+            // not a cluttered parallax backdrop (the reference keeps backgrounds mostly black).
         }
 
         // ----------------------------------------------------------- level geometry
@@ -312,6 +219,9 @@ namespace EchoShift.EditorTools
 
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
+            EchoBuildUtils.AddTopEdge(go, w, h, lit);
+            EchoBuildUtils.SprinkleCraters(go, w, h, lit);
+            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
             return go;
         }
 
@@ -366,7 +276,7 @@ namespace EchoShift.EditorTools
             tmp.text = "R";
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.fontSize = 6f;
-            tmp.color = EchoBuildUtils.ColPlayer;
+            tmp.color = Color.white;
             tmp.rectTransform.sizeDelta = new Vector2(3f, 3f);
             var mr = rgo.GetComponent<MeshRenderer>();
             if (mr != null)

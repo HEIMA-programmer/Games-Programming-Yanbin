@@ -93,28 +93,7 @@ namespace EchoShift.EditorTools
         {
             Random.InitState(73210);
             var bg = new GameObject("Background");
-
-            var far = new GameObject("BG_Far");
-            far.transform.SetParent(bg.transform, false);
-            var fp = far.AddComponent<Parallax>(); fp.factor = 0.2f; fp.cameraTransform = cameraTransform;
-            for (int i = 0; i < 40; i++)
-            {
-                var d = EchoBuildUtils.SpriteGO("Dot", EchoBuildUtils.LoadSprite("bgdot"), "Background", 0, far.transform, unlit,
-                    new Color(0.35f, 0.5f, 0.9f, Random.Range(0.15f, 0.45f)));
-                d.transform.localPosition = new Vector3(Random.Range(-6f, 120f), Random.Range(2f, 12f), 5f);
-                d.transform.localScale = Vector3.one * Random.Range(0.3f, 1f);
-            }
-
-            var mid = new GameObject("BG_Mid");
-            mid.transform.SetParent(bg.transform, false);
-            var mp = mid.AddComponent<Parallax>(); mp.factor = 0.5f; mp.cameraTransform = cameraTransform;
-            for (int i = 0; i < 14; i++)
-            {
-                var e = EchoBuildUtils.SpriteGO("Equip", EchoBuildUtils.LoadSprite("bgequip"), "Midground", 0, mid.transform, lit,
-                    new Color(0.35f, 0.45f, 0.65f, 1f));
-                e.transform.localPosition = new Vector3(Random.Range(0f, 118f), Random.Range(-0.5f, 3f), 3f);
-                e.transform.localScale = Vector3.one * Random.Range(0.9f, 1.9f);
-            }
+            EchoBuildUtils.BuildAtmosphere(bg.transform, cameraTransform, 126f, unlit);
         }
 
         static void BuildGeometry()
@@ -206,6 +185,9 @@ namespace EchoShift.EditorTools
             sr.sortingOrder = 0;
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
+            EchoBuildUtils.AddTopEdge(go, w, h, lit);
+            EchoBuildUtils.SprinkleCraters(go, w, h, lit);
+            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
             return go;
         }
 

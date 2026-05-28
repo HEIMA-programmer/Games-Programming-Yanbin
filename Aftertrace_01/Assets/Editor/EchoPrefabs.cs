@@ -91,15 +91,15 @@ namespace EchoShift.EditorTools
             tr.sortingOrder = -2;
             var grad = new Gradient();
             grad.SetKeys(
-                new[] { new GradientColorKey(EchoBuildUtils.ColEcho, 0f), new GradientColorKey(EchoBuildUtils.ColEcho, 1f) },
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },  // 1-Bit: white trail
                 new[] { new GradientAlphaKey(0.5f, 0f), new GradientAlphaKey(0f, 1f) });
             tr.colorGradient = grad;
 
             var ripple = EchoBuildUtils.SpriteGO("Ripple", EchoBuildUtils.LoadSprite("ring"), "Player", 1, root.transform, unlit,
-                new Color(0.7f, 0.87f, 1f, 0.9f));
+                new Color(1f, 1f, 1f, 0.9f));
             ripple.SetActive(false);
 
-            var diss = MakePS("DissolveParticles", root.transform, new Color(EchoBuildUtils.ColEcho.r, EchoBuildUtils.ColEcho.g, EchoBuildUtils.ColEcho.b, 1f),
+            var diss = MakePS("DissolveParticles", root.transform, Color.white,  // 1-Bit: white echo motes
                 0.7f, 1.2f, 0.12f, 0f, false, "Player", 2);
             var dissMain = diss.main; dissMain.gravityModifier = -0.5f;
             var dissEm = diss.emission; dissEm.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)18) });
@@ -155,13 +155,13 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.AddPointLight(lightGO, EchoBuildUtils.ColPlayer, 0.95f, 5f, 0.4f);
 
             var dot = EchoBuildUtils.SpriteGO("RecordIndicator", EchoBuildUtils.LoadSprite("glow"), "Foreground", 5, root.transform, unlit,
-                new Color(1f, 0.2f, 0.15f, 1f));
+                new Color(1f, 1f, 1f, 1f));  // 1-Bit: white record indicator
             dot.transform.localPosition = new Vector3(0f, 1.0f, 0f);
             dot.transform.localScale = Vector3.one * 0.5f;
             var pg = dot.AddComponent<PulseGlow>();
             pg.target = dot.GetComponent<SpriteRenderer>();
 
-            var recPS = MakePS("RecordParticles", root.transform, new Color(1f, 0.45f, 0.18f, 1f),
+            var recPS = MakePS("RecordParticles", root.transform, Color.white,  // 1-Bit: white record motes
                 0.6f, 0.5f, 0.1f, 14f, false, "Foreground", 4);
             recPS.transform.localPosition = new Vector3(0f, 0.9f, 0f);
 
@@ -271,8 +271,11 @@ namespace EchoShift.EditorTools
             var col = root.AddComponent<BoxCollider2D>();
             col.size = new Vector2(2.0f, 0.6f);
 
-            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("platform"), "Environment", 1, root.transform, lit, EchoBuildUtils.ColPlatform);
-            visual.transform.localScale = new Vector3(2f, 0.6f, 1f);
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("platform"), "Environment", 1, root.transform, lit, Color.white);
+            var vsr = visual.GetComponent<SpriteRenderer>();
+            vsr.drawMode = SpriteDrawMode.Tiled;          // tile, don't stretch (no dither distortion)
+            vsr.size = new Vector2(2f, 0.6f);
+            EchoBuildUtils.AddTopEdge(visual, 2f, 0.6f, lit);
 
             var mp = root.AddComponent<MovingPlatform>();
             mp.riseHeight = 4.5f;
@@ -301,7 +304,7 @@ namespace EchoShift.EditorTools
             audio.spatialBlend = 0f;
 
             var glow = EchoBuildUtils.SpriteGO("Glow", EchoBuildUtils.LoadSprite("glow"), "Environment", 2, root.transform, unlit,
-                new Color(EchoBuildUtils.ColFragment.r, EchoBuildUtils.ColFragment.g, EchoBuildUtils.ColFragment.b, 0.6f));
+                new Color(1f, 1f, 1f, 0.6f));  // 1-Bit: white fragment halo
             glow.transform.localScale = Vector3.one * 1.4f;
             var gpg = glow.AddComponent<PulseGlow>();
             gpg.target = glow.GetComponent<SpriteRenderer>();
@@ -407,7 +410,7 @@ namespace EchoShift.EditorTools
 
             var droneBody = EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit, EchoBuildUtils.TintDrone);
             droneBody.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
-            var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 0.45f, 0.2f, 0.28f));
+            var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 1f, 1f, 0.28f));
             // Apex at the drone centre, mouth reaching viewRange (4.5u): the 48px (1.5u) sprite
             // scaled x3 spans 4.5u, centred so its left edge sits on the drone.
             cone.transform.localPosition = new Vector3(2.25f, 0f, 0f);
