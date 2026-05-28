@@ -9,9 +9,32 @@ in [`DevLog/`](DevLog/).
 
 _Nothing yet._
 
+## [0.5.1] — 2026-05-28
+
+Session 2 · Section C — Milestone-1 process backfill + rename.
+
+### Added
+
+- `Docs/ROADMAP.md` — the five-week, four-milestone plan (M1 vertical slice → M2
+  mechanical depth → M3 art/world/audio identity → M4 climax + ship) with guiding
+  principles, the label scheme, and GitHub-process recommendations.
+- `Docs/BACKLOG.md` — copy-paste-ready issue / sub-issue text for the GitHub board: §1
+  backfills PRs #1–#7 as closed "Done" Milestone-1 issues; §2 specs out every Milestone
+  2–4 issue (Ride Your Echo, crate-carry, device pack, scanner enemy, "Shift" spike,
+  art-direction & palette, normal-map generation, audio identity, finale, builds,
+  v1.0.0 release, etc.).
+
+### Changed
+
+- **Project renamed: *Echo Shift* → *Aftertrace*.** `Echo_Shift_01/` is now
+  `Aftertrace_01/`; the concept document, READMEs, DevLog header, screenshots index,
+  `.gitattributes`, and Unity's `productName` all follow. The C# namespace `EchoShift`
+  and the `EchoShift ▸ Build All` editor menu deliberately stay — they're code identifiers,
+  not the player-facing title.
+
 ## [0.5.0] — 2026-05-27
 
-Session 2 · Section B — polish pass (game feel, audio, font).
+Session 2 · Section B — polish pass (game feel, audio, font) + a same-day follow-up fix.
 
 ### Added
 
@@ -25,6 +48,12 @@ Session 2 · Section B — polish pass (game feel, audio, font).
 
 - Audio synthesis now uses a fixed RNG seed, so the generated WAVs are identical on every
   Build All (no more spurious git diffs).
+
+### Fixed
+
+- The generated Exo 2 TMP font asset is now baked as **Static** with the UI's glyph set
+  pre-included, so opening or playing the project no longer dirties `Exo2-Regular SDF.asset`
+  in git (the old Dynamic asset rewrote its atlas on demand at runtime).
 
 ## [0.4.0] — 2026-05-26
 

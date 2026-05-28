@@ -55,8 +55,8 @@ line-of-sight chase AI + stealth; polish pass (Exo 2 font, juice, audio); font-a
 
 **Still open this week:**
 
-- **Session-02 dev log + changelog wrap-up** (covers PRs #5–#7).
-- **Process backfill** — labels, milestones, board, and the Done issues in this roadmap; link each PR.
+- **Session-02 dev log + changelog wrap-up** (covers PRs #5–#7 and the #144 process backfill).
+- **Process backfill** — labels, milestones, board, and the Done issues in this roadmap; link each PR. *(Landed via PR #144 on 2026-05-28.)*
 - **Known-issues triage** — log small defects (e.g. the per-Build-All scene fileID churn) as `bug` issues.
 
 **Exit criteria.** A stranger reaches the ending unaided; Session-02 dev log published; board
