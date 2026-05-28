@@ -50,9 +50,10 @@ namespace EchoShift
         [Tooltip("Parent holding the drone sprite + detection cone; flipped to face travel direction.")]
         public Transform facing;
         public SpriteRenderer coneRenderer;
-        public Color coneNormal = new Color(1f, 0.45f, 0.2f, 0.28f);
-        public Color coneAlert = new Color(1f, 0.12f, 0.1f, 0.55f);
-        public Color coneStunned = new Color(0.4f, 0.42f, 0.5f, 0.45f);
+        // 1-Bit: cone state reads via ALPHA (brightness), not hue. Brighter = more alert.
+        public Color coneNormal = new Color(1f, 1f, 1f, 0.22f);   // faint white — passive sweep
+        public Color coneAlert = new Color(1f, 1f, 1f, 0.6f);     // bright white — spotted you
+        public Color coneStunned = new Color(1f, 1f, 1f, 0.08f);  // near-invisible — disabled
 
         Rigidbody2D rb;
         Vector2 origin;

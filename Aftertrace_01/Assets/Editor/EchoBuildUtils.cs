@@ -65,24 +65,27 @@ namespace EchoShift.EditorTools
         public static readonly Color ColFragment = Hex("#ffcc44");
         public static readonly Color ColEnd = Hex("#44ffaa");
 
-        // 1-Bit sprite tints — kept very close to white so the monochrome pop survives
-        // (Downwell / Minit principle: contrast is the whole point of 1-bit).
-        public static readonly Color TintPlayer   = Hex("#e8f4ff");  // near-white, hint of cool
-        public static readonly Color TintEcho     = new Color(0.82f, 0.92f, 1f, 0.45f);  // ghost: low alpha
-        public static readonly Color TintDrone    = Hex("#ffd0a0");  // pale warm — distinguishes hostile
-        public static readonly Color TintDoor     = Hex("#dce8f4");  // near-white, slight cool
-        public static readonly Color TintFragment = Hex("#ffe080");  // pale gold
-        public static readonly Color TintEnd      = Hex("#a8ffd8");  // pale mint
-        // Background tones — brighter greys for visibility against pure-black bg.
-        // 1-Bit aesthetic: monochrome where the only differentiator is brightness, not hue.
-        public static readonly Color TintBgFar    = new Color(0.62f, 0.66f, 0.72f, 1f); // far backdrops — solid mid-grey
-        public static readonly Color TintBgMid    = new Color(0.72f, 0.76f, 0.82f, 1f); // mid details — lighter
-        public static readonly Color TintBgNear   = new Color(0.82f, 0.86f, 0.92f, 1f); // foreground props — near-white
-        public static readonly Color TintNpc      = new Color(0.68f, 0.72f, 0.78f, 1f); // background workers — mid-grey
-        public static readonly Color TintBorder   = new Color(0.85f, 0.90f, 0.95f, 1f); // scene border frames
+        // Pure 1-Bit sprite tints — everything renders PURE WHITE on black. There is no
+        // grey ramp: depth and material reads come from SHAPE, scale, dither density and
+        // sparseness, NOT from hue or brightness. Tinting a white sprite grey only dims
+        // its baked dithering into mud, so we keep all tints at full white.
+        public static readonly Color TintPlayer   = Color.white;
+        public static readonly Color TintEcho     = new Color(1f, 1f, 1f, 0.45f);  // ghost: alpha only, never colour
+        public static readonly Color TintDrone    = Color.white;  // hostile read via its alien SHAPE, not a warm tint
+        public static readonly Color TintDoor     = Color.white;
+        public static readonly Color TintFragment = Color.white;
+        public static readonly Color TintEnd      = Color.white;
+        // Background layers stay pure white too; the CraftPix backdrops carry their own
+        // baked dither (the "grey" planets are dot patterns, not flat grey), so full white
+        // preserves that texture instead of crushing it.
+        public static readonly Color TintBgFar    = Color.white;
+        public static readonly Color TintBgMid    = Color.white;
+        public static readonly Color TintBgNear   = Color.white;
+        public static readonly Color TintNpc      = Color.white;
+        public static readonly Color TintBorder   = Color.white;
         // Deprecated — kept for back compat.
-        public static readonly Color TintDecor    = new Color(0.7f, 0.75f, 0.82f, 1f);
-        public static readonly Color TintDetail   = new Color(0.72f, 0.76f, 0.82f, 1f);
+        public static readonly Color TintDecor    = Color.white;
+        public static readonly Color TintDetail   = Color.white;
 
         // ---- Folders -------------------------------------------------------
         public static void EnsureFolder(string path)
@@ -204,16 +207,18 @@ namespace EchoShift.EditorTools
                 { "player",          ("Assets/Art/Imported/CraftPix1Bit/Main_Characters/Char_Robot.png", "Char_Robot_0") },
                 { "echo",            ("Assets/Art/Imported/CraftPix1Bit/Main_Characters/Char_Robot.png", "Char_Robot_0") },
                 { "drone",           ("Assets/Art/Imported/CraftPix1Bit/Enemies/Alien1.png",             "Alien1_0") },
-                // Tileset_0 = top-left tile of the first lab pattern (textured).
-                { "platform",        ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_0") },
+                // Tileset_24 = interior of the white dithered "rock mass" — the ONE tile that
+                // tiles seamlessly (no built-in border), so Tiled drawMode fills any block size
+                // into a clean white dotted terrain instead of repeating the old box-corner noise.
+                { "platform",        ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_24") },
                 { "door",            ("Assets/Art/Imported/CraftPix1Bit/Objects/Door.png",               "Door_0") },
                 { "fragment",        ("Assets/Art/Imported/CraftPix1Bit/Objects/Items.png",              "Items_4") },
                 { "endarch",         ("Assets/Art/Imported/CraftPix1Bit/Objects/Door.png",               "Door_3") },
                 { "arrow",           ("Assets/Art/Imported/CraftPix1Bit/GUI/Icons.png",                  "Icons_69") },
-                // Tile variants — different patterns for walls / ceiling so the level
-                // doesn't read as one monotonous texture (demo art uses 3+ tile styles).
-                { "platform_wall",   ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_85") },
-                { "platform_ceiling",("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_153") },
+                // Walls / ceiling share the same seamless rock fill (Tileset_24) so all
+                // terrain reads as one cohesive white dithered material (the reference look).
+                { "platform_wall",   ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_24") },
+                { "platform_ceiling",("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset.png",            "Tileset_24") },
                 { "checkpoint",      ("Assets/Art/Imported/CraftPix1Bit/Objects/checkpoint.png",         "checkpoint_0") },
                 // HUD fragment counter — both states use the same gem; outline = lower alpha at use site.
                 { "diamond_filled",  ("Assets/Art/Imported/CraftPix1Bit/Objects/Items.png",              "Items_4") },
@@ -317,6 +322,134 @@ namespace EchoShift.EditorTools
             if (material != null) sr.sharedMaterial = material;
             if (color.HasValue) sr.color = color.Value;
             return go;
+        }
+
+        // Crisp white surface line along the top of walkable terrain — the 1-Bit "edge"
+        // read that makes the white dithered mass land as solid ground. Only wider-than-tall
+        // blocks (floors/platforms) get it; walls (w < h) are skipped. Uses the solid "white"
+        // sprite scaled to a thin bar (solid colour → scaling never distorts).
+        public static void AddTopEdge(GameObject block, float w, float h, Material material)
+        {
+            if (w < h) return;
+            var bsr = block.GetComponent<SpriteRenderer>();
+            const float t = 0.12f;
+            var edge = SpriteGO("TopEdge", LoadSprite("white"),
+                bsr != null ? bsr.sortingLayerName : "Environment",
+                (bsr != null ? bsr.sortingOrder : 0) + 1,
+                block.transform, material, Color.white);
+            edge.transform.localScale = new Vector3(w, t, 1f);
+            edge.transform.localPosition = new Vector3(0f, h * 0.5f - t * 0.5f, -0.01f);
+        }
+
+        // Sprinkles a few dark "craters" across a large terrain mass so it reads as textured
+        // rock with depth instead of a flat uniform slab (the dark holes in the CraftPix
+        // reference rock). Only big ground blocks get them; thin platforms / walls are skipped.
+        // Deterministic: seeded from the block's position so rebuilds are stable.
+        public static void SprinkleCraters(GameObject block, float w, float h, Material material)
+        {
+            if (w < 5f || h < 2f) return;
+            var bsr = block.GetComponent<SpriteRenderer>();
+            string layer = bsr != null ? bsr.sortingLayerName : "Environment";
+            int baseOrder = bsr != null ? bsr.sortingOrder : 0;
+
+            // 1) Shadow band along the bottom → volume (lit top, shadowed underside).
+            float bandH = Mathf.Min(h, 1.5f);
+            var shade = SpriteGO("RockShade", LoadSprite("rockshade"), layer, baseOrder + 1, block.transform, material, Color.white);
+            var ssr = shade.GetComponent<SpriteRenderer>();
+            ssr.drawMode = SpriteDrawMode.Tiled;                       // tile horizontally; native 1.5u height = no vertical repeat
+            ssr.size = new Vector2(w, bandH);
+            shade.transform.localPosition = new Vector3(0f, -h * 0.5f + bandH * 0.5f, -0.004f);
+
+            // 2) Dark cavities, biased toward the lower (shadowed) half. Deterministic per block.
+            UnityEngine.Random.State prev = UnityEngine.Random.state;
+            Vector3 p = block.transform.position;
+            UnityEngine.Random.InitState(Mathf.RoundToInt(p.x * 13.1f + p.y * 7.7f + w * 3.3f));
+
+            int count = Mathf.Clamp(Mathf.FloorToInt(w / 6f), 1, 6);
+            float maxR = Mathf.Min(0.6f, h * 0.32f);
+            for (int i = 0; i < count; i++)
+            {
+                float r = UnityEngine.Random.Range(maxR * 0.4f, maxR);
+                float yTop = h * 0.5f - 0.35f - r;        // stay below the top-edge surface line
+                float yBot = -h * 0.5f + r + 0.1f;
+                if (yBot >= yTop) continue;
+                float bias = Mathf.Pow(UnityEngine.Random.value, 1.6f);  // skew toward the bottom
+                float y = Mathf.Lerp(yBot, yTop, bias);
+                float x = UnityEngine.Random.Range(-w * 0.5f + r + 0.2f, w * 0.5f - r - 0.2f);
+                string sprite = (i % 2 == 0) ? "crater" : "crater2";
+                var cr = SpriteGO("Crater", LoadSprite(sprite), layer, baseOrder + 2, block.transform, material, Color.white);
+                cr.transform.localScale = new Vector3(r * 2f, r * 2f, 1f);  // crater sprite is 1u diameter
+                cr.transform.localPosition = new Vector3(x, y, -0.005f);
+            }
+            UnityEngine.Random.state = prev;
+        }
+
+        // Sparse decorative props (kit crates) resting ON a large ground block's surface —
+        // the deliberate "stuff on the floor" the reference scenes use, drawn from the kit's
+        // Boxes sheet (not procedural). Decoration only (no collider). Deterministic per block.
+        public static void PlaceGroundProps(GameObject block, float w, float h, Material unlit)
+        {
+            if (w < 10f || h < 2f) return;
+            var bsr = block.GetComponent<SpriteRenderer>();
+            string layer = bsr != null ? bsr.sortingLayerName : "Environment";
+            int order = (bsr != null ? bsr.sortingOrder : 0) + 3;
+
+            UnityEngine.Random.State prev = UnityEngine.Random.state;
+            Vector3 p = block.transform.position;
+            UnityEngine.Random.InitState(Mathf.RoundToInt(p.x * 7.3f + p.y * 3.1f + w) + 555);
+
+            int n = Mathf.Clamp(Mathf.RoundToInt(w / 18f), 1, 3);
+            for (int i = 0; i < n; i++)
+            {
+                var sp = GetBox(UnityEngine.Random.Range(0, 16));
+                if (sp == null) continue;
+                float scale = UnityEngine.Random.Range(0.75f, 1.05f);  // box sprite is 1u @ PPU 32
+                var d = SpriteGO("Prop", sp, layer, order, block.transform, unlit, Color.white);
+                float x = UnityEngine.Random.Range(-w * 0.5f + 1.2f, w * 0.5f - 1.2f);
+                d.transform.localPosition = new Vector3(x, h * 0.5f + scale * 0.5f - 0.06f, -0.02f);
+                d.transform.localScale = new Vector3((UnityEngine.Random.value > 0.5f ? 1f : -1f) * scale, scale, 1f);
+            }
+            UnityEngine.Random.state = prev;
+        }
+
+        // Clean, restrained "sky" — the reference keeps backgrounds MOSTLY BLACK: just a
+        // sparse starfield and one or two dim dithered moons. The visual richness lives in
+        // the foreground (terrain, platforms, props), not in a cluttered parallax backdrop.
+        // Far moons are mildly alpha-dimmed for aerial depth. Deterministic (seeded).
+        public static void BuildAtmosphere(Transform bgParent, Transform cameraTransform, float worldWidth, Material unlit)
+        {
+            UnityEngine.Random.State prev = UnityEngine.Random.state;
+            UnityEngine.Random.InitState(Mathf.RoundToInt(worldWidth * 101f) + 9173);
+
+            // PLANETS — the kit's own dithered planet tile (Background_n_details variant 4),
+            // dim + far, a couple of them. Uses the real asset (the grey moons in the
+            // reference), not a generated sprite.
+            var sky = new GameObject("BG_Sky");
+            sky.transform.SetParent(bgParent, false);
+            var skyP = sky.AddComponent<Parallax>(); skyP.factor = 0.1f; skyP.cameraTransform = cameraTransform;
+            int planets = worldWidth > 90f ? 3 : 2;
+            for (int i = 0; i < planets; i++)
+            {
+                var d = SpriteGO("Planet", GetBackgroundVariant(4), "Background", -6, sky.transform, unlit,
+                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.4f, 0.6f)));
+                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(0.1f, 0.9f) * worldWidth, UnityEngine.Random.Range(7f, 12f), 9f);
+                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(1.8f, 3.6f);
+            }
+
+            // STARFIELD — sparse white dots, varied brightness, mostly in the sky.
+            var stars = new GameObject("BG_Stars");
+            stars.transform.SetParent(bgParent, false);
+            var starP = stars.AddComponent<Parallax>(); starP.factor = 0.1f; starP.cameraTransform = cameraTransform;
+            int dots = Mathf.Clamp(Mathf.RoundToInt(worldWidth * 0.5f), 16, 80);
+            for (int i = 0; i < dots; i++)
+            {
+                var d = SpriteGO("Star", LoadSprite("bgdot"), "Background", -7, stars.transform, unlit,
+                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.25f, 0.85f)));
+                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(-4f, worldWidth + 4f), UnityEngine.Random.Range(3.5f, 13f), 10f);
+                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.18f, 0.48f);
+            }
+
+            UnityEngine.Random.state = prev;
         }
 
         public static Light2D AddPointLight(GameObject go, Color color, float intensity, float outerRadius, float innerRadius = 0f)
@@ -499,8 +632,9 @@ namespace EchoShift.EditorTools
             btn.targetGraphic = img;
             ColorBlock cb = btn.colors;
             cb.normalColor = Color.white;
-            cb.highlightedColor = new Color(0.6f, 0.92f, 1f, 1f);
-            cb.pressedColor = new Color(0.45f, 0.7f, 0.9f, 1f);
+            // 1-Bit: greyscale hover/press feedback (no cyan).
+            cb.highlightedColor = new Color(0.72f, 0.72f, 0.72f, 1f);
+            cb.pressedColor = new Color(0.45f, 0.45f, 0.45f, 1f);
             cb.selectedColor = Color.white;
             cb.colorMultiplier = 1f;
             cb.fadeDuration = 0.12f;

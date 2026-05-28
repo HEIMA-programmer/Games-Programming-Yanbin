@@ -1,14 +1,13 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace EchoShift.EditorTools
 {
     /// <summary>
-    /// Creates the shared Lit / Unlit sprite materials and a Bloom VolumeProfile.
-    /// Lit responds to 2D lights (world surfaces); Unlit always renders bright so
-    /// glows and the player read clearly and feed bloom.
+    /// Creates the shared sprite materials and an (empty) VolumeProfile.
+    /// Pure 1-Bit target: both "Lit" and "Unlit" logical materials bind the Unlit
+    /// shader so every sprite renders flat at full brightness, ignoring all 2D lights.
     /// </summary>
     public static class EchoMaterials
     {
@@ -20,7 +19,12 @@ namespace EchoShift.EditorTools
         {
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.MaterialDir);
 
-            CreateMaterial(LitName, "Universal Render Pipeline/2D/Sprite-Lit-Default");
+            // Pure 1-Bit target: NOTHING is lit. Both logical materials bind the Unlit
+            // shader, so every sprite renders flat at full brightness and ignores all
+            // Light2D — CraftPix white pixels stay pure white on black. The Light2D
+            // objects the builders still scatter become harmless no-ops (a later pass
+            // can delete them outright).
+            CreateMaterial(LitName, "Universal Render Pipeline/2D/Sprite-Unlit-Default");
             CreateMaterial(UnlitName, "Universal Render Pipeline/2D/Sprite-Unlit-Default");
             CreateParticleMaterial();
             CreateBloomProfile();
@@ -56,22 +60,15 @@ namespace EchoShift.EditorTools
             AssetDatabase.CreateAsset(mat, path);
         }
 
+        // Pure 1-Bit target: no post-processing. We still create the profile asset (the
+        // scene builders reference it on a global Volume), but leave it EMPTY so the
+        // Volume is a no-op. Bloom on a pure-white image would bleed every edge and wash
+        // the whole screen grey — the opposite of the crisp 1-bit look.
         static void CreateBloomProfile()
         {
             EchoBuildUtils.DeleteIfExists(EchoBuildUtils.BloomProfilePath);
             var profile = ScriptableObject.CreateInstance<VolumeProfile>();
             AssetDatabase.CreateAsset(profile, EchoBuildUtils.BloomProfilePath);
-
-            var bloom = profile.Add<Bloom>(true);
-            bloom.threshold.Override(0.82f);
-            bloom.intensity.Override(1.15f);
-            bloom.scatter.Override(0.62f);
-            bloom.tint.Override(Color.white);
-
-            // VolumeComponents must be persisted as sub-assets of the profile, otherwise
-            // the Bloom override is dropped on the next asset reload.
-            bloom.hideFlags = HideFlags.HideInHierarchy;
-            AssetDatabase.AddObjectToAsset(bloom, profile);
             EditorUtility.SetDirty(profile);
         }
     }

@@ -21,9 +21,10 @@ namespace EchoShift.EditorTools
             public Image hitFlash;
         }
 
-        static readonly Color Cyan = new Color(0f, 0.83f, 1f, 1f);
-        static readonly Color Soft = new Color(0.667f, 0.867f, 1f, 1f);
-        static readonly Color Gold = new Color(1f, 0.8f, 0.27f, 1f);
+        // 1-Bit: all UI text is white. (Names kept to avoid churn at the call sites.)
+        static readonly Color Cyan = Color.white;
+        static readonly Color Soft = Color.white;
+        static readonly Color Gold = Color.white;
 
         public static GameplayUIRefs BuildGameplayCanvas()
         {
@@ -51,7 +52,7 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.FullStretch(refs.flash.rectTransform);
             refs.flash.raycastTarget = false;
 
-            refs.hitFlash = EchoBuildUtils.CreateImage("HitFlash", root, null, new Color(1f, 0.12f, 0.1f, 0f));
+            refs.hitFlash = EchoBuildUtils.CreateImage("HitFlash", root, null, new Color(1f, 1f, 1f, 0f));  // 1-Bit: white damage flash
             EchoBuildUtils.FullStretch(refs.hitFlash.rectTransform);
             refs.hitFlash.raycastTarget = false;
 
@@ -62,12 +63,12 @@ namespace EchoShift.EditorTools
             var hud = canvas.gameObject.AddComponent<HUDController>();
             Sprite gem = EchoBuildUtils.LoadSprite("fragment");
 
-            var icon = EchoBuildUtils.CreateImage("FragIcon", root, gem, new Color(0.85f, 1f, 1f, 1f));
+            var icon = EchoBuildUtils.CreateImage("FragIcon", root, gem, Color.white);
             EchoBuildUtils.Place(icon.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(48f, -52f), new Vector2(54f, 54f));
             icon.raycastTarget = false;
             hud.iconImage = icon;
 
-            var counter = EchoBuildUtils.CreateTitleText("FragCounter", root, "0 / 3", 44f, new Color(0.85f, 1f, 1f, 1f), TextAlignmentOptions.Left);
+            var counter = EchoBuildUtils.CreateTitleText("FragCounter", root, "0 / 3", 44f, Color.white, TextAlignmentOptions.Left);
             EchoBuildUtils.Place(counter.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(95f, -52f), new Vector2(160f, 56f));
             counter.fontStyle = FontStyles.Bold;
             counter.characterSpacing = 4f;

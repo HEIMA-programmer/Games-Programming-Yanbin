@@ -13,12 +13,12 @@ namespace EchoShift
         [Header("Fragments")]
         public Image iconImage;
         public TMP_Text counterText;
-        public Color collectedColor = new Color(0.85f, 1f, 1f, 1f);
-        public Color emptyColor = new Color(0.4f, 0.6f, 0.85f, 0.55f);
+        public Color collectedColor = new Color(1f, 1f, 1f, 1f);    // 1-Bit: full white = collected
+        public Color emptyColor = new Color(1f, 1f, 1f, 0.4f);      // 1-Bit: dim white = empty
 
         [Header("Record")]
         public Graphic recordIndicator;
-        public Color recordOnColor = new Color(1f, 0.25f, 0.2f, 1f);
+        public Color recordOnColor = new Color(1f, 1f, 1f, 1f);  // 1-Bit: white = recording
         public Color recordOffColor = new Color(1f, 1f, 1f, 0.22f);
 
         // Legacy fields kept so older prefabs/scenes don't break — unused by SetCollected.

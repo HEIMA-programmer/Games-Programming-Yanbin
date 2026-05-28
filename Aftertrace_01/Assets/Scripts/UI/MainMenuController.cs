@@ -42,7 +42,7 @@ namespace EchoShift
                 if (ambientParticles != null)
                 {
                     var main = ambientParticles.main;
-                    main.startColor = new Color(1f, 0.7f, 0.35f, 0.55f);
+                    main.startColor = new Color(1f, 1f, 1f, 0.55f);  // 1-Bit: keep white on completion
                 }
                 if (warmGlow != null) warmGlow.SetActive(true);
             }
