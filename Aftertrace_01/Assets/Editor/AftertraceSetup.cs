@@ -134,10 +134,11 @@ namespace EchoShift.EditorTools
             AssetDatabase.Refresh();
 
             EchoArt.GenerateAll();
+            EchoSpriteSlicer.SliceAll();  // slice CraftPix / Kenney spritesheets so LoadSprite can address named frames
             EchoMaterials.GenerateAll();
             EchoAudio.GenerateAll();
             EchoPrefabs.GenerateAll();
-            EchoFont.EnsureFontAsset();   // load/generate the custom UI font (Exo 2) → EchoBuildUtils.CustomFont
+            EchoFont.EnsureFontAsset();   // load/generate UI fonts (Exo 2 body + Orbitron title)
         }
 
         static void Done(string label, string scenePath)

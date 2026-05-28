@@ -225,13 +225,84 @@ renders with no missing-glyph boxes.
 
 ---
 
+## Issue: Ride Your Echo + 1-Bit art baseline + menu / HUD polish
+
+**Labels:** `feature`, `area: core`, `area: art`, `area: ui`, `must-have` · **Milestone:** M2 · **Status:** Done · **PR:** #TBD
+
+Opens Milestone 2 with one core mechanic + a full 1-Bit visual baseline that the rest of M2 / M3
+can build on. Closes the "Ride Your Echo" issue from M2 §2 and supersedes M3's
+"100%-procedural sprites" principle.
+
+**Delivered**
+
+- **Ride Your Echo (mechanic).** `EchoClone` gains a child `Standpoint` (BoxCollider2D +
+  one-way PlatformEffector2D, surfaceArc 170°) on the Ground layer; per-frame `OverlapBoxAll`
+  above the surface carries riders by the echo's delta (avoids OnCollisionEnter/Exit edge
+  cases the effector creates). Trigger circle on the root stays for pressure plates;
+  `BeginDissolve` clears the standpoint so the rising echo can't drag the player up.
+- **Art baseline switch.** Sprites swap from `EchoArt`'s pixel-by-pixel generators to a
+  curated 1-Bit pack: CraftPix Sci-Fi Platformer 1-Bit Game Kit (royalty-free) + Kenney UI
+  Pack: Sci-Fi (CC0). `EchoSpriteSlicer` slices every spritesheet on a per-asset grid;
+  `EchoImportedAssetSettings` (an `AssetPostprocessor`) auto-configures Point filter,
+  per-folder PPU, and FullRect mesh; `EchoBuildUtils.LoadSprite` maps logical names
+  (`player`, `echo`, `drone`, `platform`, `platform_wall`, `platform_ceiling`, `door`,
+  `endarch`, `fragment`, `arrow`, `checkpoint`, `background`) to named frames; `EchoArt`
+  generators for replaced sprites stay in source as fallback / rollback.
+- **1-Bit visual identity.** Camera background pure black; `Tint*` palette keeps sprites
+  near-white so the monochrome pop survives (Downwell / Obra Dinn principle); cyan kept
+  only as a HUD/lighting accent. Multi-tile variety: walls / ground / ceiling pick
+  different Tileset frames so the level reads as a constructed lab.
+- **Scene frame.** New `BuildFrameBorder` procedural sprite (9-sliced rounded white
+  outline) is stretched as `EchoBuildUtils.AddSceneFrame` on every canvas — menu, HUD,
+  pause, victory — for the CraftPix promo-art framed-scene look.
+- **Dense composition.** Menu hero diorama: huge planet hero + corner backdrops + NPC
+  silhouettes flanking + ground prop vignette + top icons + bottom detail strip, all
+  placed outside the button column (no overlap). Level: 13 large 1-Bit backdrops (parallax
+  0.08), 60 mid-layer Tileset_details circuits (parallax 0.32), 8 NPC silhouettes
+  (parallax 0.5), 14 ground props (boxes + machines); camera zoomed `6.5 → 5.4` for
+  density.
+- **Typography.** Added Orbitron (display fallback) and VT323 (retro pixel terminal,
+  title default) as OFL fonts. `EchoFont` bakes both as Static TMP assets alongside
+  Exo 2; new `CreateTitleText` routes menu / pause / victory titles through VT323 with a
+  per-instance outline material.
+- **Modern HUD.** Replaced the 3-diamond fragment row with a single gem icon
+  (`Items_4`) + Orbitron / VT323 "X / Y" counter; `HUDController` refactored.
+- **Wall narrative tactical panel.** `CreateWallNarrative` now uses a 9-sliced button
+  panel + outlined display-font text instead of a stretched lab tile + glow halo.
+- **UI bug.** HowToPlay / LevelSelect dim panel alpha 0.9 → 1.0 (no more bleed-through);
+  title-only outline polish on AFTERTRACE / HOW TO PLAY / SELECT LEVEL / PAUSED / Victory
+  level name. Button background regenerated with crisp white outline (was cyan); button
+  size and label weight bumped for stronger 1-Bit contrast.
+- **Checkpoint visual.** Was a collider-only prefab; now ships with a CraftPix flag-pole
+  sprite + cyan-mint PointLight.
+- **Editor tooling.** `EchoSpriteSlicer` (menu + Build All step), `EchoSpritePicker`
+  (`Aftertrace ▸ Sprite Picker` — visual frame browser), `EchoImportedAssetSettings`.
+
+**Acceptance (met):** echo holds plates AND carries riders horizontally/vertically without
+jitter; side-touch doesn't drag the player; dissolve drops the rider cleanly; HowToPlay /
+LevelSelect overlays are opaque; menu titles use VT323, body uses Exo 2; every Aftertrace
+scene shows a closed scene-frame; all four levels load and complete with the new art.
+
+**Sub-issues**
+
+- `EchoClone` Standpoint + PlatformEffector2D + overlap-based carry; `BeginDissolve` cleanup
+- `EchoSpriteSlicer` + `EchoImportedAssetSettings` + `LoadSprite` → imported pipeline
+- `BuildFrameBorder` 9-sliced frame + `AddSceneFrame` on menu / HUD / pause / victory
+- VT323 / Orbitron baking; `CreateTitleText` + `ApplyOutline` helpers
+- HUD refactor (single gem + counter); `CreateWallNarrative` tactical panel
+- Dense menu diorama + zoomed level + multi-tile walls/ground/ceiling
+- `EchoSpritePicker` editor window; `EchoFont` two-font bake
+- `CREDITS.md` + README / ROADMAP licensing-story revision
+
+---
+
 # §2 — Planned backlog (game-core focus)
 
 ## Milestone 2 — Mechanical Depth & Variety (Week 3 · Jun 1–7)
 
 ### Issue: Ride Your Echo (clone as a standable platform)
 
-**Labels:** `feature`, `area: core`, `should-have` · **Milestone:** M2
+**Labels:** `feature`, `area: core`, `should-have` · **Milestone:** M2 · **Status:** Done — see §1 entry "Ride Your Echo + 1-Bit art baseline + menu / HUD polish" above.
 
 Today the echo is a single `CircleCollider2D (isTrigger, r=0.4)` + `PlateActivator` — it triggers
 plates, but you fall through it. Make the clone a **surface you can stand on and be carried by**,

@@ -9,6 +9,75 @@ in [`DevLog/`](DevLog/).
 
 _Nothing yet._
 
+## [0.6.0] — 2026-05-29
+
+Session 3 · M2 opener — Ride Your Echo mechanic + 1-Bit art baseline + menu/HUD polish.
+
+### Added
+
+- **Ride Your Echo (core mechanic).** `EchoClone` gains a child `Standpoint` (BoxCollider2D +
+  one-way PlatformEffector2D, surfaceArc 170°) on the Ground layer. Per-frame `OverlapBoxAll`
+  above the surface carries riders by the echo's delta — avoids OnCollisionEnter/Exit edge
+  cases the effector creates. Trigger circle on the root is unchanged so pressure plates
+  still fire; `BeginDissolve` clears the standpoint so the rising echo can't drag the player up.
+- **External 1-Bit art baseline.** Sprites switch from `EchoArt` procedural to a curated
+  CC0 / royalty-free pack (CraftPix 1-Bit Sci-Fi Platformer Kit + Kenney UI Pack: Sci-Fi).
+  `EchoSpriteSlicer` slices every sheet on a per-asset grid; `EchoImportedAssetSettings`
+  (an `AssetPostprocessor`) configures Point filter, per-folder PPU, and FullRect mesh.
+  `EchoBuildUtils.LoadSprite` maps logical names to named frames; replaced generators
+  stay in source as fallback.
+- **9-sliced rounded scene frame** (`EchoBuildUtils.AddSceneFrame`) on every canvas —
+  menu, HUD, pause, victory — for the framed-scene look of the source kit's promo art.
+- **VT323** retro pixel display font (OFL) baked alongside Exo 2 / Orbitron. `EchoFont`
+  bakes both as Static TMP assets; `CreateTitleText` routes titles through VT323.
+- **Multi-tile variety.** `SolidBlock` picks `platform_wall` for tall walls,
+  `platform_ceiling` for high horizontal blocks, default for ground — so the level reads
+  as a constructed lab rather than one repeated tile.
+- **Dense scene composition.** Menu hero diorama (planet hero + NPC silhouettes flanking
+  + ground vignette + corner accents). Level: 13 large 1-Bit backdrops, 60 mid-layer
+  Tileset_details circuits, 8 NPC silhouettes, 14 ground props — placed at parallax
+  factors 0.08 / 0.32 / 0.5 / 1.0.
+- **Modern HUD.** Single gem icon + display-font "X / Y" counter (was a row of three
+  outline / filled diamonds). `HUDController` refactored.
+- **Checkpoint visual.** `BuildCheckpoint` now ships a CraftPix flag-pole sprite +
+  cyan-mint PointLight (was collider-only).
+- **Editor tooling.** `EchoSpriteSlicer`, `EchoImportedAssetSettings`, `EchoSpritePicker`
+  (`Aftertrace ▸ Sprite Picker` — visual frame browser to find sprite names).
+- **`CREDITS.md`** at the repo root listing every external asset / font.
+- **Orbitron** + **OFL** files (display-font fallback).
+
+### Changed
+
+- **1-Bit white tints** (`TintPlayer / TintEcho / TintDrone / TintDoor / TintFragment /
+  TintEnd`) so the monochrome pop survives — cyan is reserved for HUD / lighting accents.
+- **Background tones** are solid muted greys (`TintBgFar / TintBgMid / TintBgNear /
+  TintNpc`), not transparent white wash — Obra Dinn / 1-Bit principle: recede via brightness,
+  not alpha.
+- **Camera background** is now pure `#000000` in every scene (was dark blue `#0a0e1a` for
+  M1 levels and per-level hard-coded for Level 2 / 3).
+- **Level 1 camera** zoomed in (orthographic size 6.5 → 5.4) for denser composition.
+- **Wall narrative tactical panel** — 9-sliced button panel + VT323 outlined text
+  replaces the stretched lab-tile + glow halo.
+- **HowToPlay / LevelSelect dim panel** alpha 0.9 → 1.0 (no more menu bleed-through).
+- **Menu buttons** sized up (360×74 → 460×92), labels pure white Bold at 36pt for
+  stronger 1-Bit contrast; procedural button background regenerated with crisp white
+  outline (was cyan).
+- **`EchoArt.GenerateAll`** skips generators for sprites now sourced externally
+  (`BuildPlayer / Echo / Platform / Door / Drone / EndArch / Fragment`) — functions stay
+  in source as fallback.
+- **ROADMAP.md M3 introduction** revised — the "100%-procedural sprites" principle is now
+  the "M2+ art baseline" principle (procedural pipeline kept for everything else;
+  sprites / fonts come from licensed packs tracked in `CREDITS.md`).
+
+### Fixed
+
+- Title outline now uses `Object.Instantiate(fontSharedMaterial)` so applying outlines no
+  longer triggers Unity's "Instantiating material during edit mode" warning.
+- `EchoSpriteSlicer` forces `SpriteMeshType.FullRect` on every sliced sheet so Tiled
+  `drawMode` doesn't silently fall back to stretching (fixed flat ground texture).
+- `CS0618` (`TextureImporter.spritesheet` obsolete) suppressed locally on the one call
+  site — no stable replacement on Unity 2022.3.
+
 ## [0.5.1] — 2026-05-28
 
 Session 2 · Section C — Milestone-1 process backfill + rename.

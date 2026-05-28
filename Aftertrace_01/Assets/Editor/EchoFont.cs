@@ -7,17 +7,18 @@ using UnityEngine;
 namespace EchoShift.EditorTools
 {
     /// <summary>
-    /// Wires the project's custom UI font (Exo 2, OFL). Drop the font's .ttf into Assets/Fonts/.
-    /// Build All loads — or, best-effort, generates — a TMP_FontAsset from it and assigns it to
-    /// <see cref="EchoBuildUtils.CustomFont"/>, so every CreateText / CreateWallNarrative uses it.
+    /// Wires the project's UI fonts:
+    ///   • Body — Exo 2 (OFL) → <see cref="EchoBuildUtils.CustomFont"/>
+    ///   • Title — Orbitron (OFL) → <see cref="EchoBuildUtils.TitleFont"/>
     ///
-    /// The generated asset is forced to <b>Static</b> atlas mode with the glyphs the game uses
-    /// pre-baked: a Dynamic font asset rewrites its own atlas as glyphs are rendered at runtime,
-    /// which shows up as a perpetually "modified" .asset in git. Static = the atlas is fixed, so
-    /// opening or playing the game never edits the file.
+    /// For each TTF in Assets/Fonts/ matching a known base name, Build All loads — or, best-effort,
+    /// generates — a TMP_FontAsset and assigns it. Generated assets are forced to <b>Static</b>
+    /// atlas mode with the glyphs the game uses pre-baked: a Dynamic font asset rewrites its own
+    /// atlas as glyphs are rendered, which shows up as a perpetually "modified" .asset in git.
+    /// Static = the atlas is fixed, so opening or playing never edits the file.
     ///
-    /// If no font is present (or generation fails), CustomFont stays null and TMP's default
-    /// (Liberation Sans) is used — the build never breaks.
+    /// If a font is missing or generation fails, the corresponding pointer stays null and the
+    /// callers fall back gracefully (TitleFont → CustomFont → TMP default Liberation Sans).
     /// </summary>
     public static class EchoFont
     {
@@ -26,85 +27,82 @@ namespace EchoShift.EditorTools
         public static void EnsureFontAsset()
         {
             EchoBuildUtils.CustomFont = null;
-            EchoBuildUtils.EnsureFolder(FontDir);   // give the user's .ttf a home
+            EchoBuildUtils.TitleFont = null;
+            EchoBuildUtils.EnsureFolder(FontDir);
 
-            // Find any existing TMP_FontAsset already in Assets/Fonts/.
-            TMP_FontAsset existing = null;
+            EchoBuildUtils.CustomFont = LoadOrBake("Exo2");        // body — used by CreateText
+            // VT323 is a retro pixel-terminal display font (OFL) — fits 1-Bit kit perfectly.
+            // Falls back to Orbitron then TMP default if VT323 isn't present.
+            EchoBuildUtils.TitleFont  = LoadOrBake("VT323") ?? LoadOrBake("Orbitron");
+        }
+
+        // Finds (or bakes once) a Static TMP_FontAsset whose source TTF filename contains nameHint.
+        static TMP_FontAsset LoadOrBake(string nameHint)
+        {
+            // 1) An existing Static asset matching the hint — reuse (no regeneration → no git churn).
             foreach (string guid in AssetDatabase.FindAssets("t:TMP_FontAsset", new[] { FontDir }))
             {
-                existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(AssetDatabase.GUIDToAssetPath(guid));
-                if (existing != null) break;
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!path.Contains(nameHint)) continue;
+                var existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+                if (existing != null && existing.atlasPopulationMode == AtlasPopulationMode.Static) return existing;
             }
 
-            // 1) A pre-baked Static asset is already good — reuse it as-is (no regeneration → no churn).
-            if (existing != null && existing.atlasPopulationMode == AtlasPopulationMode.Static)
-            {
-                EchoBuildUtils.CustomFont = existing;
-                return;
-            }
-
-            // 2) Otherwise (re)generate a Static, pre-baked asset from the first font file found.
+            // 2) Find a source TTF whose name contains the hint.
             string ttfPath = null;
             foreach (string guid in AssetDatabase.FindAssets("t:Font", new[] { FontDir }))
             {
-                ttfPath = AssetDatabase.GUIDToAssetPath(guid);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!path.Contains(nameHint)) continue;
+                ttfPath = path;
                 break;
             }
+            if (ttfPath == null) return null;
 
-            if (ttfPath != null)
+            var font = AssetDatabase.LoadAssetAtPath<Font>(ttfPath);
+            if (font == null) return null;
+
+            try
             {
-                var font = AssetDatabase.LoadAssetAtPath<Font>(ttfPath);
-                if (font != null)
+                var fa = TMP_FontAsset.CreateFontAsset(font); // dynamic atlas to start
+                if (fa == null) return null;
+
+                // Pre-bake every glyph the UI uses, then freeze.
+                var chars = new StringBuilder();
+                for (int c = 32; c <= 126; c++) chars.Append((char)c);    // printable ASCII
+                for (int c = 160; c <= 255; c++) chars.Append((char)c);   // Latin-1
+                chars.Append("←→↑↓—–…•“”‘’");                              // arrows, dashes, ellipsis, quotes
+                fa.TryAddCharacters(chars.ToString());
+                fa.atlasPopulationMode = AtlasPopulationMode.Static;
+
+                string assetPath = $"{FontDir}/{Path.GetFileNameWithoutExtension(ttfPath)} SDF.asset";
+                AssetDatabase.DeleteAsset(assetPath);
+                AssetDatabase.CreateAsset(fa, assetPath);
+
+                if (fa.material != null)
                 {
-                    try
-                    {
-                        var fa = TMP_FontAsset.CreateFontAsset(font);   // dynamic atlas to start
-                        if (fa != null)
-                        {
-                            // Pre-bake every glyph the UI uses, then freeze the atlas.
-                            var chars = new StringBuilder();
-                            for (int c = 32; c <= 126; c++) chars.Append((char)c);    // printable ASCII
-                            for (int c = 160; c <= 255; c++) chars.Append((char)c);   // Latin-1 (·, ×, accents…)
-                            chars.Append("←→↑↓—–…•“”‘’");                              // arrows, dashes, ellipsis, quotes
-                            fa.TryAddCharacters(chars.ToString());
-                            fa.atlasPopulationMode = AtlasPopulationMode.Static;
-
-                            string assetPath = $"{FontDir}/{Path.GetFileNameWithoutExtension(ttfPath)} SDF.asset";
-                            AssetDatabase.DeleteAsset(assetPath);
-                            AssetDatabase.CreateAsset(fa, assetPath);
-
-                            // Material + atlas texture must live inside the asset to survive reimport.
-                            if (fa.material != null)
-                            {
-                                fa.material.name = font.name + " Material";
-                                AssetDatabase.AddObjectToAsset(fa.material, fa);
-                            }
-                            if (fa.atlasTextures != null)
-                                foreach (var tex in fa.atlasTextures)
-                                    if (tex != null) AssetDatabase.AddObjectToAsset(tex, fa);
-
-                            fa.ReadFontAssetDefinition();
-                            EditorUtility.SetDirty(fa);
-                            AssetDatabase.SaveAssets();
-
-                            EchoBuildUtils.CustomFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(assetPath);
-                            Debug.Log($"[EchoFont] Generated a static TMP font asset from {ttfPath}.");
-                            return;
-                        }
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogWarning("[EchoFont] Auto-generating the TMP font asset failed — generate one once via " +
-                            "Window ▸ TextMeshPro ▸ Font Asset Creator (load the .ttf, Generate Font Atlas, save into " +
-                            "Assets/Fonts/), then re-run Build All. (" + e.Message + ")");
-                    }
+                    fa.material.name = font.name + " Material";
+                    AssetDatabase.AddObjectToAsset(fa.material, fa);
                 }
-            }
+                if (fa.atlasTextures != null)
+                    foreach (var tex in fa.atlasTextures)
+                        if (tex != null) AssetDatabase.AddObjectToAsset(tex, fa);
 
-            // 3) Fallbacks: use an existing (e.g. dynamic) asset so the font still works; else TMP default.
-            if (EchoBuildUtils.CustomFont == null && existing != null) EchoBuildUtils.CustomFont = existing;
-            if (EchoBuildUtils.CustomFont == null)
-                Debug.Log("[EchoFont] No usable font in Assets/Fonts/ — using TMP default. Drop an Exo 2 .ttf there to enable the custom font.");
+                fa.ReadFontAssetDefinition();
+                EditorUtility.SetDirty(fa);
+                AssetDatabase.SaveAssets();
+
+                var baked = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(assetPath);
+                Debug.Log($"[EchoFont] Baked static TMP font from {ttfPath}.");
+                return baked;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[EchoFont] Auto-generating TMP font for {nameHint} failed — open " +
+                    "Window ▸ TextMeshPro ▸ Font Asset Creator, generate manually, save into " +
+                    $"Assets/Fonts/, then re-run Build All. ({e.Message})");
+                return null;
+            }
         }
     }
 }

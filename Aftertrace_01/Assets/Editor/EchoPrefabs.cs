@@ -47,20 +47,38 @@ namespace EchoShift.EditorTools
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0f;
 
-            var sr = root.AddComponent<SpriteRenderer>();
-            sr.sprite = EchoBuildUtils.LoadSprite("echo");
-            sr.sharedMaterial = unlit;
-            sr.sortingLayerName = "Player";
-            sr.sortingOrder = -1;
-            Color ec = EchoBuildUtils.ColEcho; ec.a = 0.6f;
-            sr.color = ec;
-
             var col = root.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
             col.radius = 0.4f;
 
             root.AddComponent<PlateActivator>();
             var clone = root.AddComponent<EchoClone>();
+
+            // Visual lives on a child so it can be scaled up without resizing the trigger
+            // circle or the Standpoint child collider. White-on-dark preserves 1-Bit pop.
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("echo"), "Player", -1, root.transform, unlit, EchoBuildUtils.TintEcho);
+            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+            clone.visualRenderer = visual.GetComponent<SpriteRenderer>();
+
+            // Standpoint: one-way solid top surface so the player can ride the clone.
+            // BoxCollider2D on the Ground layer + PlatformEffector2D (surface arc up);
+            // delta carry runs in EchoClone.FixedUpdate. Trigger circle on the root stays
+            // for pressure-plate activation.
+            var stand = new GameObject("Standpoint");
+            stand.transform.SetParent(root.transform, false);
+            stand.layer = groundLayer;
+            var standCol = stand.AddComponent<BoxCollider2D>();
+            standCol.size = new Vector2(0.9f, 0.18f);
+            standCol.offset = new Vector2(0f, 0.46f);
+            standCol.usedByEffector = true;
+            var eff = stand.AddComponent<PlatformEffector2D>();
+            eff.useOneWay = true;
+            eff.useOneWayGrouping = true;
+            eff.surfaceArc = 170f;
+            eff.sideArc = 0f;
+            eff.useSideFriction = false;
+            eff.useSideBounce = false;
+            clone.standpointCollider = standCol;
 
             var tr = root.AddComponent<TrailRenderer>();
             tr.sharedMaterial = particle;
@@ -118,7 +136,8 @@ namespace EchoShift.EditorTools
             col.size = new Vector2(0.62f, 0.96f);
             col.offset = new Vector2(0f, -0.02f);
 
-            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("player"), "Player", 0, root.transform, unlit);
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("player"), "Player", 0, root.transform, unlit, EchoBuildUtils.TintPlayer);
+            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
 
             var pc = root.AddComponent<PlayerController>();
             pc.groundMask = 1 << groundLayer;
@@ -226,6 +245,7 @@ namespace EchoShift.EditorTools
             bsr.sharedMaterial = lit;
             bsr.sortingLayerName = "Environment";
             bsr.sortingOrder = 2;
+            bsr.color = EchoBuildUtils.TintDoor;
             var bcol = body.AddComponent<BoxCollider2D>();
             bcol.size = new Vector2(0.5f, 2.0f);
 
@@ -251,7 +271,7 @@ namespace EchoShift.EditorTools
             var col = root.AddComponent<BoxCollider2D>();
             col.size = new Vector2(2.0f, 0.6f);
 
-            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("platform"), "Environment", 1, root.transform, lit);
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("platform"), "Environment", 1, root.transform, lit, EchoBuildUtils.ColPlatform);
             visual.transform.localScale = new Vector3(2f, 0.6f, 1f);
 
             var mp = root.AddComponent<MovingPlatform>();
@@ -288,7 +308,7 @@ namespace EchoShift.EditorTools
             gpg.minScale = 0.85f;
             gpg.maxScale = 1.2f;
 
-            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("fragment"), "Environment", 3, root.transform, unlit);
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("fragment"), "Environment", 3, root.transform, unlit, EchoBuildUtils.TintFragment);
             var vpg = visual.AddComponent<PulseGlow>();
             vpg.target = visual.GetComponent<SpriteRenderer>();
             vpg.pulseScale = false;
@@ -316,7 +336,7 @@ namespace EchoShift.EditorTools
         static void BuildEndArch()
         {
             var root = new GameObject("EndArch");
-            EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("endarch"), "Environment", 0, root.transform, unlit);
+            EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("endarch"), "Environment", 0, root.transform, unlit, EchoBuildUtils.TintEnd);
 
             var lightGO = new GameObject("ArchLight");
             lightGO.transform.SetParent(root.transform, false);
@@ -385,7 +405,8 @@ namespace EchoShift.EditorTools
             var facing = new GameObject("Facing");
             facing.transform.SetParent(root.transform, false);
 
-            EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit);
+            var droneBody = EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit, EchoBuildUtils.TintDrone);
+            droneBody.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
             var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 0.45f, 0.2f, 0.28f));
             // Apex at the drone centre, mouth reaching viewRange (4.5u): the 48px (1.5u) sprite
             // scaled x3 spans 4.5u, centred so its left edge sits on the drone.
@@ -411,6 +432,17 @@ namespace EchoShift.EditorTools
             var col = root.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
             col.size = new Vector2(1.5f, 3f);
+
+            // 1-Bit flag pole visual (CraftPix checkpoint frame 0).
+            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("checkpoint"), "Environment", 1, root.transform, unlit, EchoBuildUtils.TintEnd);
+            visual.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+
+            var lightGO = new GameObject("CheckpointLight");
+            lightGO.transform.SetParent(root.transform, false);
+            lightGO.transform.localPosition = new Vector3(0f, 1.2f, 0f);
+            EchoBuildUtils.AddPointLight(lightGO, EchoBuildUtils.ColEnd, 0.6f, 2.6f);
+
             root.AddComponent<Checkpoint>();
             SavePrefab(root, "Checkpoint");
         }
