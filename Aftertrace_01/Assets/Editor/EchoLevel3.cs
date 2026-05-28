@@ -165,7 +165,7 @@ namespace EchoShift.EditorTools
             cam.orthographic = true;
             cam.orthographicSize = 6.5f;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.07f, 0.06f, 0.08f, 1f);
+            cam.backgroundColor = EchoBuildUtils.ColBackground; // pure black for 1-Bit contrast
             go.AddComponent<AudioListener>();
             go.AddComponent<UniversalAdditionalCameraData>().renderPostProcessing = true;
             go.AddComponent<CameraShake>();

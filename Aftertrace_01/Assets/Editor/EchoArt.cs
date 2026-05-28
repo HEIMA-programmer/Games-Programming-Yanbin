@@ -14,13 +14,11 @@ namespace EchoShift.EditorTools
         {
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SpriteDir);
 
-            BuildPlayer();
-            BuildEcho();
-            BuildPlatform();
+            // External CraftPix 1-Bit sprites supplant these — generators are kept
+            // as fallback (and as commit-history rollback) but no longer regenerate:
+            //   BuildPlayer / BuildEcho / BuildPlatform / BuildDoor /
+            //   BuildDrone / BuildEndArch / BuildFragment
             BuildPlate();
-            BuildDoor();
-            BuildFragment();
-            BuildEndArch();
             BuildParticle();
             BuildGlow();
             BuildRing();
@@ -28,11 +26,11 @@ namespace EchoShift.EditorTools
             BuildBgEquip();
             BuildKeycap();
             BuildVignette();
-            BuildDrone();
             BuildCone();
             BuildDiamondFilled();
             BuildDiamondOutline();
             BuildButtonBg();
+            BuildFrameBorder();
             BuildArrow();
 
             AssetDatabase.SaveAssets();
@@ -277,9 +275,23 @@ namespace EchoShift.EditorTools
         static void BuildButtonBg()
         {
             var c = new Canvas(32, 32);
-            c.RoundedBox(16f, 16f, 15f, 15f, 8f, new Color(0.06f, 0.1f, 0.18f, 0.85f));
-            c.RoundedBoxOutline(16f, 16f, 15f, 15f, 8f, new Color(0f, 0.83f, 1f, 0.7f));
+            // 1-Bit panel: dark fill + crisp white outline (replaces old cyan border).
+            c.RoundedBox(16f, 16f, 15f, 15f, 6f, new Color(0.0f, 0.0f, 0.0f, 0.92f));
+            c.RoundedBoxOutline(16f, 16f, 15f, 15f, 6f, new Color(0.92f, 0.96f, 1f, 0.95f));
             SaveSliced(c, "button", 32, 9);
+        }
+
+        // Closed rectangular frame — transparent middle + thick white border. Used
+        // as a 9-sliced scene-frame Image so it scales to any UI viewport.
+        static void BuildFrameBorder()
+        {
+            var c = new Canvas(48, 48);
+            Color line = new Color(0.92f, 0.96f, 1f, 1f);
+            // Triple-stroke rounded outline for a chunkier "lab frame" look.
+            c.RoundedBoxOutline(24f, 24f, 23f, 23f, 8f, line);
+            c.RoundedBoxOutline(24f, 24f, 22f, 22f, 7.5f, line);
+            c.RoundedBoxOutline(24f, 24f, 21f, 21f, 7f, line);
+            SaveSliced(c, "frame", 32, 14);
         }
 
         static void BuildArrow()

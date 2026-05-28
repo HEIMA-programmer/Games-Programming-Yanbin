@@ -55,22 +55,24 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.FullStretch(refs.hitFlash.rectTransform);
             refs.hitFlash.raycastTarget = false;
 
-            // ---- HUD (fragments + record indicator) ----
+            // ---- Scene border — single closed rounded-rectangle frame (1-Bit demo art look) ----
+            EchoBuildUtils.AddSceneFrame(root, new Color(0.92f, 0.96f, 1f, 0.92f), 10f);
+
+            // ---- HUD (gem icon + "X / Y" counter top-left) ----
             var hud = canvas.gameObject.AddComponent<HUDController>();
-            Sprite filled = EchoBuildUtils.LoadSprite("diamond_filled");
-            Sprite outline = EchoBuildUtils.LoadSprite("diamond_outline");
-            const int iconCount = 3;
-            var icons = new Image[iconCount];
-            for (int i = 0; i < iconCount; i++)
-            {
-                var ic = EchoBuildUtils.CreateImage("Frag" + i, root, outline, new Color(0f, 0.83f, 1f, 0.85f));
-                EchoBuildUtils.Place(ic.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(40f + i * 46f, -40f), new Vector2(34f, 34f));
-                ic.raycastTarget = false;
-                icons[i] = ic;
-            }
-            hud.fragmentIcons = icons;
-            hud.filledIcon = filled;
-            hud.outlineIcon = outline;
+            Sprite gem = EchoBuildUtils.LoadSprite("fragment");
+
+            var icon = EchoBuildUtils.CreateImage("FragIcon", root, gem, new Color(0.85f, 1f, 1f, 1f));
+            EchoBuildUtils.Place(icon.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(48f, -52f), new Vector2(54f, 54f));
+            icon.raycastTarget = false;
+            hud.iconImage = icon;
+
+            var counter = EchoBuildUtils.CreateTitleText("FragCounter", root, "0 / 3", 44f, new Color(0.85f, 1f, 1f, 1f), TextAlignmentOptions.Left);
+            EchoBuildUtils.Place(counter.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(95f, -52f), new Vector2(160f, 56f));
+            counter.fontStyle = FontStyles.Bold;
+            counter.characterSpacing = 4f;
+            EchoBuildUtils.ApplyOutline(counter, new Color(0f, 0.1f, 0.18f, 0.95f), 0.18f);
+            hud.counterText = counter;
 
             var rText = EchoBuildUtils.CreateText("RecordR", root, "R", 40f, new Color(1f, 1f, 1f, 0.22f), TextAlignmentOptions.Center);
             EchoBuildUtils.Place(rText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-44f, -44f), new Vector2(64f, 64f));
@@ -79,7 +81,7 @@ namespace EchoShift.EditorTools
 
             // ---- Pause panel ----
             var pausePanel = NewPanel("PausePanel", root, new Color(0.02f, 0.04f, 0.09f, 0.72f));
-            var pausedTitle = EchoBuildUtils.CreateText("PausedTitle", pausePanel.transform, "PAUSED", 70f, Cyan, TextAlignmentOptions.Center);
+            var pausedTitle = EchoBuildUtils.CreateTitleText("PausedTitle", pausePanel.transform, "PAUSED", 70f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(pausedTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(720f, 100f));
             EchoBuildUtils.ApplyOutline(pausedTitle, new Color(0f, 0.05f, 0.12f, 0.95f), 0.16f);
             Button resumeBtn = MakeMenuButton("Resume", pausePanel.transform, "Resume", buttonBg, uiSource, hover, click, 70f);
@@ -106,7 +108,7 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.Place(resultsRT, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 500f));
             var resultsCG = resultsGO.AddComponent<CanvasGroup>();
 
-            var lvlName = EchoBuildUtils.CreateText("LevelName", resultsGO.transform, "", 46f, Cyan, TextAlignmentOptions.Center);
+            var lvlName = EchoBuildUtils.CreateTitleText("LevelName", resultsGO.transform, "", 46f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(lvlName.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 175f), new Vector2(720f, 70f));
             EchoBuildUtils.ApplyOutline(lvlName, new Color(0f, 0.05f, 0.12f, 0.95f), 0.14f);
             var timeT = EchoBuildUtils.CreateText("TimeText", resultsGO.transform, "", 34f, Color.white, TextAlignmentOptions.Center);

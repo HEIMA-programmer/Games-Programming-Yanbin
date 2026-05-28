@@ -27,6 +27,11 @@ namespace EchoShift
         /// Builder assigns; disabled on dissolve so the rising echo cannot drag the player up.</summary>
         public Collider2D standpointCollider;
 
+        [Header("Visual")]
+        /// <summary>The Visual child SpriteRenderer (builder-assigned). Lets the visual scale
+        /// independently of the root's colliders.</summary>
+        public SpriteRenderer visualRenderer;
+
         /// <summary>The one clone currently in play, or null. Enemies use this to target the decoy.</summary>
         public static EchoClone Active { get; private set; }
 
@@ -43,7 +48,7 @@ namespace EchoShift
             rb = GetComponent<Rigidbody2D>();
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-            sr = GetComponent<SpriteRenderer>();
+            sr = visualRenderer != null ? visualRenderer : GetComponent<SpriteRenderer>();
         }
 
         public void Play(List<RecordedFrame> recorded)

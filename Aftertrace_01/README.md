@@ -60,19 +60,22 @@ About 5–8 minutes of play. Three memory fragments per level (9 total) reward e
 - **No harsh strobing** — lighting is soft glow / bloom. Calm, untimed pacing outside the
   one optional timed section.
 - **Privacy/security:** the game is fully offline and collects no data.
-- **Assets:** original except one licensed font — every sprite and sound is generated
-  procedurally; the UI font is **Exo 2** under the SIL Open Font License (see Credits /
-  `Assets/Fonts/OFL.txt`).
+- **Assets:** code, level design, audio, and tooling are original; sprites and fonts use
+  licensed CC0 / royalty-free / OFL packs from CraftPix, Kenney, and Google Fonts. Full
+  list in [`CREDITS.md`](CREDITS.md).
 
 ## Credits
 
-- **Design & programming:** Yanbin Xu
-- **Art, audio & music:** original, generated procedurally by this project's editor scripts
-  (sprites drawn pixel-by-pixel to PNG; sound synthesised as 16-bit PCM WAV). The **only**
-  third-party asset is the UI font below.
-- **Font:** [Exo 2](https://fonts.google.com/specimen/Exo+2) (Natanael Gama), under the SIL
-  Open Font License 1.1 — see `Assets/Fonts/OFL.txt`.
+- **Design, programming, level design, tooling, audio synthesis:** Yanbin Xu
+- **Sprites (1-Bit pixel-art baseline, M2+):**
+  [CraftPix Sci-Fi Platformer 1-Bit Game Kit](https://craftpix.net/freebies/free-sci-fi-platformer-1-bit-pixel-art-game-kit/)
+  (royalty-free) + [Kenney UI Pack: Sci-Fi](https://kenney.nl/assets/ui-pack-sci-fi) (CC0).
+- **Fonts (OFL):** [Exo 2](https://fonts.google.com/specimen/Exo+2) (body) ·
+  [VT323](https://fonts.google.com/specimen/VT323) (title) ·
+  [Orbitron](https://fonts.google.com/specimen/Orbitron) (fallback display).
+- **Audio:** generated procedurally (16-bit PCM WAV from a fixed seed).
 - **Engine & tools:** Unity 2022.3 LTS, Universal Render Pipeline, TextMesh Pro.
+- See [`CREDITS.md`](CREDITS.md) for licence details.
 
 ## How this project was built
 
