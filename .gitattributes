@@ -1,7 +1,7 @@
 # Normalise line endings: keep text files as LF in the repo AND the working tree.
 # Unity writes its YAML assets with LF, so this stops Windows' core.autocrlf from
 # rewriting them to CRLF and showing every scene/prefab as "modified".
-# (Generated assets here are produced by the EchoShift "Build All" editor pipeline.)
+# (Generated assets here are produced by the Aftertrace "Build All" editor pipeline.)
 
 * text=auto eol=lf
 

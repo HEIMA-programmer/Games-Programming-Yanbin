@@ -1,10 +1,10 @@
 # Development Log
 
-This folder is a session-by-session record of how **Echo Shift** was designed, built,
+This folder is a session-by-session record of how **Aftertrace** was designed, built,
 tested, and refined. It exists so that the *process* — not only the final build — can be
 followed and assessed.
 
-![Echo Shift main menu](screenshots/menu.png)
+![Aftertrace main menu](screenshots/menu.png)
 
 ## How it works
 
@@ -22,7 +22,7 @@ followed and assessed.
 ## Reading order
 
 Start at Session 01 and read forward. The log is meant to show how the idea moved from
-the [Game Concept Document](../../5.19-Echo%20Shift%20%E2%80%94%20Game%20Concept%20Document.md)
+the [Game Concept Document](../../5.19-Aftertrace%20%E2%80%94%20Game%20Concept%20Document.md)
 to a polished vertical slice.
 
 ## A note on the development model
