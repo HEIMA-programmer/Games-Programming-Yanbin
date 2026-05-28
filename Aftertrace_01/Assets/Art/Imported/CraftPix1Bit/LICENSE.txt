@@ -1,0 +1,21 @@
+Sci-Fi Platformer 1-Bit Pixel Art Game Kit
+==========================================
+
+Source: https://craftpix.net/freebies/free-sci-fi-platformer-1-bit-pixel-art-game-kit/
+Author: CraftPix.net (Free Game Assets / GUI, Sprite, Tilesets)
+License: CraftPix Free License — https://craftpix.net/file-licenses/
+
+Summary of permitted use (paraphrased):
+- Commercial and non-commercial use is allowed in unlimited projects.
+- Modification of the assets (recoloring, slicing, animating, remixing) is allowed.
+- Attribution is not required, but appreciated.
+- Resale or redistribution of the raw assets (as assets) is prohibited.
+  Shipping them embedded in a built game is fine — that is the intended use.
+
+Usage in this project (Aftertrace):
+- Sprites are tinted with the project's cyan palette via SpriteRenderer.color
+  (Unity material instance) to fit the in-game cyan-on-dark visual identity.
+- The kit covers: player + enemy spritesheets, 16x16 tileset, prop and trap
+  spritesheets, and a GUI atlas.
+
+For the full license text and any updates, consult the URL above.
