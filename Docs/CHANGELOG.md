@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **Echo Shift** are recorded here. Format follows
+All notable changes to **Aftertrace** are recorded here. Format follows
 [Keep a Changelog](https://keepachangelog.com/); the project aims to follow
 [Semantic Versioning](https://semver.org/). Each entry corresponds to a day's work logged
 in [`DevLog/`](DevLog/).
