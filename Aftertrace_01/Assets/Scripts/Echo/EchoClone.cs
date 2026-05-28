@@ -22,6 +22,11 @@ namespace EchoShift
         public AudioSource audioSource;
         public AudioClip dissolveClip;
 
+        [Header("Ride")]
+        /// <summary>One-way solid top surface (BoxCollider2D + PlatformEffector2D) the player can stand on.
+        /// Builder assigns; disabled on dissolve so the rising echo cannot drag the player up.</summary>
+        public Collider2D standpointCollider;
+
         /// <summary>The one clone currently in play, or null. Enemies use this to target the decoy.</summary>
         public static EchoClone Active { get; private set; }
 
@@ -68,9 +73,37 @@ namespace EchoShift
             }
 
             RecordedFrame f = frames[index];
-            rb.MovePosition(f.position);
+            Vector2 cur = rb.position;
+            Vector2 next = f.position;
+            Vector2 delta = next - cur;
+
+            rb.MovePosition(next);
             if (sr != null) sr.flipX = !f.facingRight;
             index++;
+
+            if (delta.sqrMagnitude > 0f) CarryRiders(delta);
+        }
+
+        // Carry whoever overlaps a thin strip above the standpoint (effector makes Enter/Exit unreliable).
+        void CarryRiders(Vector2 delta)
+        {
+            if (standpointCollider == null || !standpointCollider.enabled) return;
+
+            Bounds b = standpointCollider.bounds;
+            float topY = b.max.y;
+            Vector2 checkCenter = new Vector2(b.center.x, topY + 0.04f);
+            Vector2 checkSize = new Vector2(b.size.x - 0.04f, 0.12f);
+
+            var hits = Physics2D.OverlapBoxAll(checkCenter, checkSize, 0f);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                var p = hits[i].GetComponentInParent<PlayerController>();
+                if (p == null) continue;
+                // Ignore jumps passing through from below (feet below standpoint top).
+                if (hits[i].bounds.min.y < topY - 0.02f) continue;
+                var body = p.GetComponent<Rigidbody2D>();
+                if (body != null) body.MovePosition(body.position + delta);
+            }
         }
 
         public void BeginDissolve()
@@ -78,6 +111,7 @@ namespace EchoShift
             if (dissolving) return;
             dissolving = true;
             playing = false;
+            if (standpointCollider != null) standpointCollider.enabled = false;
             if (dissolveParticles != null) dissolveParticles.Play();
             if (audioSource != null && dissolveClip != null) audioSource.PlayOneShot(dissolveClip);
             StartCoroutine(DissolveRoutine());

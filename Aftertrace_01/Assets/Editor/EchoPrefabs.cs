@@ -62,6 +62,26 @@ namespace EchoShift.EditorTools
             root.AddComponent<PlateActivator>();
             var clone = root.AddComponent<EchoClone>();
 
+            // Standpoint: one-way solid top surface so the player can ride the clone.
+            // BoxCollider2D on the Ground layer + PlatformEffector2D (surface arc up);
+            // delta carry runs in EchoClone.FixedUpdate. Trigger circle on the root stays
+            // for pressure-plate activation.
+            var stand = new GameObject("Standpoint");
+            stand.transform.SetParent(root.transform, false);
+            stand.layer = groundLayer;
+            var standCol = stand.AddComponent<BoxCollider2D>();
+            standCol.size = new Vector2(0.9f, 0.18f);
+            standCol.offset = new Vector2(0f, 0.46f);
+            standCol.usedByEffector = true;
+            var eff = stand.AddComponent<PlatformEffector2D>();
+            eff.useOneWay = true;
+            eff.useOneWayGrouping = true;
+            eff.surfaceArc = 170f;
+            eff.sideArc = 0f;
+            eff.useSideFriction = false;
+            eff.useSideBounce = false;
+            clone.standpointCollider = standCol;
+
             var tr = root.AddComponent<TrailRenderer>();
             tr.sharedMaterial = particle;
             tr.time = 0.4f;
