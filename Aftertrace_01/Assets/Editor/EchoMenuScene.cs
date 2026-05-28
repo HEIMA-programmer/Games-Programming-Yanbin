@@ -111,6 +111,7 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 255f), new Vector2(1500f, 260f));
             title.fontStyle = FontStyles.Bold;
             title.characterSpacing = 14f;
+            EchoBuildUtils.ApplyOutline(title, new Color(0f, 0.05f, 0.12f, 0.95f), 0.18f);
 
             var subtitle = EchoBuildUtils.CreateText("Subtitle", root, "a memory in two bodies", 32f, new Color(Soft.r, Soft.g, Soft.b, 0.7f), TextAlignmentOptions.Center);
             EchoBuildUtils.Place(subtitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 150f), new Vector2(1000f, 60f));
@@ -124,10 +125,11 @@ namespace EchoShift.EditorTools
             var howPanel = new GameObject("HowToPanel");
             howPanel.transform.SetParent(root, false);
             EchoBuildUtils.FullStretch(howPanel.AddComponent<RectTransform>());
-            var dim = EchoBuildUtils.CreateImage("Dim", howPanel.transform, null, new Color(0.01f, 0.03f, 0.07f, 0.9f));
+            var dim = EchoBuildUtils.CreateImage("Dim", howPanel.transform, null, new Color(0.01f, 0.03f, 0.07f, 1f));
             EchoBuildUtils.FullStretch(dim.rectTransform);
             var howTitle = EchoBuildUtils.CreateText("Title", howPanel.transform, "HOW TO PLAY", 64f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(howTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(900f, 90f));
+            EchoBuildUtils.ApplyOutline(howTitle, new Color(0f, 0.05f, 0.12f, 0.95f), 0.16f);
             var body = EchoBuildUtils.CreateText("Body", howPanel.transform,
                 "A / D   or   ← / →      Move\n\nSpace / W      Jump\n\nR  (hold)      Record an echo, release to replay\n\nESC      Pause",
                 38f, new Color(0.85f, 0.95f, 1f, 1f), TextAlignmentOptions.Center);
@@ -139,10 +141,11 @@ namespace EchoShift.EditorTools
             var selPanel = new GameObject("LevelSelectPanel");
             selPanel.transform.SetParent(root, false);
             EchoBuildUtils.FullStretch(selPanel.AddComponent<RectTransform>());
-            var selDim = EchoBuildUtils.CreateImage("Dim", selPanel.transform, null, new Color(0.01f, 0.03f, 0.07f, 0.9f));
+            var selDim = EchoBuildUtils.CreateImage("Dim", selPanel.transform, null, new Color(0.01f, 0.03f, 0.07f, 1f));
             EchoBuildUtils.FullStretch(selDim.rectTransform);
             var selTitle = EchoBuildUtils.CreateText("Title", selPanel.transform, "SELECT LEVEL", 64f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(selTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(900f, 90f));
+            EchoBuildUtils.ApplyOutline(selTitle, new Color(0f, 0.05f, 0.12f, 0.95f), 0.16f);
             string[] scenes = { "Level_00", "Level_01", "Level_02", "Level_03" };
             string[] labels = { "0  ·  Awakening", "1  ·  Sector 01", "2  ·  Deep Labs", "3  ·  The Core" };
             for (int i = 0; i < scenes.Length; i++)

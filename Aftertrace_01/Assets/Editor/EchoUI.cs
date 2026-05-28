@@ -81,6 +81,7 @@ namespace EchoShift.EditorTools
             var pausePanel = NewPanel("PausePanel", root, new Color(0.02f, 0.04f, 0.09f, 0.72f));
             var pausedTitle = EchoBuildUtils.CreateText("PausedTitle", pausePanel.transform, "PAUSED", 70f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(pausedTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(720f, 100f));
+            EchoBuildUtils.ApplyOutline(pausedTitle, new Color(0f, 0.05f, 0.12f, 0.95f), 0.16f);
             Button resumeBtn = MakeMenuButton("Resume", pausePanel.transform, "Resume", buttonBg, uiSource, hover, click, 70f);
             Button restartBtn = MakeMenuButton("Restart", pausePanel.transform, "Restart Level", buttonBg, uiSource, hover, click, -20f);
             Button pmenuBtn = MakeMenuButton("Menu", pausePanel.transform, "Main Menu", buttonBg, uiSource, hover, click, -110f);
@@ -107,6 +108,7 @@ namespace EchoShift.EditorTools
 
             var lvlName = EchoBuildUtils.CreateText("LevelName", resultsGO.transform, "", 46f, Cyan, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(lvlName.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 175f), new Vector2(720f, 70f));
+            EchoBuildUtils.ApplyOutline(lvlName, new Color(0f, 0.05f, 0.12f, 0.95f), 0.14f);
             var timeT = EchoBuildUtils.CreateText("TimeText", resultsGO.transform, "", 34f, Color.white, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(timeT.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 105f), new Vector2(720f, 50f));
             var fragT = EchoBuildUtils.CreateText("FragText", resultsGO.transform, "", 34f, Color.white, TextAlignmentOptions.Center);

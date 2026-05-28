@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3420547398521142009
+--- !u!114 &-2149890935986202226
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,4 +60,4 @@ MonoBehaviour:
   m_Name: EchoBloomProfile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -3420547398521142009}
+  - {fileID: -2149890935986202226}

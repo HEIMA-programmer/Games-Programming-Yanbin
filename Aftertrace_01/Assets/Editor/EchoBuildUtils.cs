@@ -284,6 +284,15 @@ namespace EchoShift.EditorTools
             return t;
         }
 
+        // Per-instance material so the outline does not bake into the shared font asset.
+        public static void ApplyOutline(TMP_Text t, Color outlineColor, float widthNorm)
+        {
+            if (t == null || t.fontSharedMaterial == null) return;
+            t.fontMaterial = new Material(t.fontSharedMaterial);
+            t.outlineColor = outlineColor;
+            t.outlineWidth = widthNorm;
+        }
+
         public static Button CreateButton(string name, Transform parent, string label, Sprite bg,
             AudioSource uiSource, AudioClip hover, AudioClip click)
         {
