@@ -222,6 +222,9 @@ namespace EchoShift.EditorTools
             Save(c, "particle", 32, FilterMode.Bilinear);
         }
 
+        // Soft radial glow. (Tried a Bayer-dithered version for "1-Bit purity" but at the
+        // collectible's halo size the sparse rim dots just read as noise — smooth + small +
+        // dim is cleaner here; the proper fix is a crisp sparkle, deferred to the art pass.)
         static void BuildGlow()
         {
             var c = new Canvas(64, 64);

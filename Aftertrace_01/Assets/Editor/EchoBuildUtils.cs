@@ -412,38 +412,49 @@ namespace EchoShift.EditorTools
             UnityEngine.Random.state = prev;
         }
 
-        // Clean, restrained "sky" — the reference keeps backgrounds MOSTLY BLACK: just a
-        // sparse starfield and one or two dim dithered moons. The visual richness lives in
-        // the foreground (terrain, platforms, props), not in a cluttered parallax backdrop.
-        // Far moons are mildly alpha-dimmed for aerial depth. Deterministic (seeded).
+        // The CraftPix reference backdrop is ONE connected pattern tiled to FILL the whole
+        // space — a continuous grey facility wall (bolted panels + grid lines), mostly dark
+        // with thin 1-Bit line-work, NOT scattered pieces and NOT random noise. We tile one
+        // seamless facility-panel tile (bgpanel) across the level as that connected fill, dim
+        // so the white terrain stays the foreground, then layer a few brighter kit pipe/panel
+        // accents + far moons + a starfield on top for depth. All on the BACKGROUND layer
+        // (behind terrain). Deterministic (seeded).
         public static void BuildAtmosphere(Transform bgParent, Transform cameraTransform, float worldWidth, Material unlit)
         {
             UnityEngine.Random.State prev = UnityEngine.Random.state;
             UnityEngine.Random.InitState(Mathf.RoundToInt(worldWidth * 101f) + 9173);
 
-            // PLANETS — the kit's own dithered planet tile (Background_n_details variant 4),
-            // dim + far, a couple of them. Uses the real asset (the grey moons in the
-            // reference), not a generated sprite.
+            // CONNECTED WALL — a dim diagonal-girder facility wall painted from the kit's REAL
+            // diagonal-hatch tile onto a background Tilemap (with black gaps so it reads as a
+            // built wall, not a uniform fill). Replaces the old procedural bgpanel sprite.
+            EchoTilemap.BuildBackgroundWall(bgParent, cameraTransform, worldWidth, unlit);
+
+            // (Structure — pipes/panels — is now woven into the BgWall tilemap above, so the
+            // old separate scattered-accent layer was removed to avoid doubling up.)
+
+            // PLANETS — the kit's dithered moon tile (variant 4), dim + far, a couple.
             var sky = new GameObject("BG_Sky");
             sky.transform.SetParent(bgParent, false);
             var skyP = sky.AddComponent<Parallax>(); skyP.factor = 0.1f; skyP.cameraTransform = cameraTransform;
             int planets = worldWidth > 90f ? 3 : 2;
             for (int i = 0; i < planets; i++)
             {
-                var d = SpriteGO("Planet", GetBackgroundVariant(4), "Background", -6, sky.transform, unlit,
-                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.4f, 0.6f)));
-                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(0.1f, 0.9f) * worldWidth, UnityEngine.Random.Range(7f, 12f), 9f);
-                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(1.8f, 3.6f);
+                var d = SpriteGO("Planet", GetBackgroundVariant(4), "Background", -9, sky.transform, unlit,
+                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.30f, 0.50f)));
+                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(0.1f, 0.9f) * worldWidth, UnityEngine.Random.Range(7f, 12f), 11f);
+                // PPU unified at 32 (was 80 for this sheet) → 80px = 2.5u native; 0.72–1.44
+                // keeps the old on-screen planet size (was 1.8–3.6 at the old 1u native).
+                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.72f, 1.44f);
             }
 
             // STARFIELD — sparse white dots, varied brightness, mostly in the sky.
             var stars = new GameObject("BG_Stars");
             stars.transform.SetParent(bgParent, false);
-            var starP = stars.AddComponent<Parallax>(); starP.factor = 0.1f; starP.cameraTransform = cameraTransform;
+            var starP = stars.AddComponent<Parallax>(); starP.factor = 0.08f; starP.cameraTransform = cameraTransform;
             int dots = Mathf.Clamp(Mathf.RoundToInt(worldWidth * 0.5f), 16, 80);
             for (int i = 0; i < dots; i++)
             {
-                var d = SpriteGO("Star", LoadSprite("bgdot"), "Background", -7, stars.transform, unlit,
+                var d = SpriteGO("Star", LoadSprite("bgdot"), "Background", -10, stars.transform, unlit,
                     new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.25f, 0.85f)));
                 d.transform.localPosition = new Vector3(UnityEngine.Random.Range(-4f, worldWidth + 4f), UnityEngine.Random.Range(3.5f, 13f), 10f);
                 d.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.18f, 0.48f);
