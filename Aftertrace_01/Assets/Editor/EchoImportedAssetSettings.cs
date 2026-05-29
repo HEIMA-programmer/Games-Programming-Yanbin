@@ -33,28 +33,15 @@ namespace EchoShift.EditorTools
             ti.SetTextureSettings(settings);
         }
 
-        // Per-asset PPU so each sprite lands at roughly 1 world unit at its native scale.
-        static float PpuFor(string path)
-        {
-            // Object/character sheets with 16×16 frames (icons, items, cups).
-            if (path.Contains("/CraftPix1Bit/Objects/Items.png")) return 16f;
-            if (path.Contains("/CraftPix1Bit/Objects/Cups.png"))  return 16f;
-            // 32×32 frames.
-            if (path.Contains("/CraftPix1Bit/Objects/Boxes.png")) return 32f;
-            if (path.Contains("/CraftPix1Bit/Enemies/Alien2.png")) return 32f;
-            // 80×80 decoration tiles.
-            if (path.Contains("/CraftPix1Bit/Tileset/Background_n_details.png")) return 80f;
-            // Tileset_GUI frames at 16 — used as menu / pause / how-to-play panels.
-            if (path.Contains("/CraftPix1Bit/GUI/Tileset_GUI.png")) return 16f;
-            // 48 px cells for character / enemy / trap / object spritesheets.
-            if (path.Contains("/CraftPix1Bit/Main_Characters/")) return 48f;
-            if (path.Contains("/CraftPix1Bit/Enemies/"))         return 48f;
-            if (path.Contains("/CraftPix1Bit/Traps/"))           return 48f;
-            if (path.Contains("/CraftPix1Bit/Objects/"))         return 48f;
-            // 16 px tile cells.
-            if (path.Contains("/CraftPix1Bit/Tileset/"))         return 16f;
-            if (path.Contains("/CraftPix1Bit/GUI/"))             return 16f;
-            return 32f; // Kenney UI + anything else
-        }
+        // ONE project-wide PPU for ALL imported pixel art. Pixel-art golden rule: a source
+        // pixel must render at the SAME on-screen size everywhere, so every sheet shares one
+        // PPU and lets world SIZE vary instead — a 48px character spans 1.5u = exactly 3× a
+        // 16px tile's 0.5u, which is the kit's intended proportion. The old per-sheet scheme
+        // (16/32/48/80, "each sprite ≈ 1 unit") made a single pixel five different on-screen
+        // sizes and shattered the unified 1-Bit grid (the root cause of "doesn't match the
+        // showcase"). 32 is chosen so characters keep ≈their previous world size, leaving all
+        // level geometry and colliders untouched; terrain tiles just become 0.5u and tile
+        // denser (closer to the reference's fine dithering).
+        static float PpuFor(string path) => 32f;
     }
 }

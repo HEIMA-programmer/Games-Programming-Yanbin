@@ -59,26 +59,26 @@ namespace EchoShift.EditorTools
 
             // FAR — single huge planet hero behind everything.
             var hero = EchoBuildUtils.SpriteGO("BG_Hero", EchoBuildUtils.GetBackgroundVariant(4),
-                "Default", -30, null, unlitMat, EchoBuildUtils.TintBgFar);
+                "Default", -30, null, unlitMat, new Color(1f, 1f, 1f, 0.12f));  // faint ghost — full white read as a noisy blob behind the title
             hero.transform.position = new Vector3(0f, 0.8f, 8f);
-            hero.transform.localScale = Vector3.one * 8f;
+            hero.transform.localScale = Vector3.one * 3.2f;  // PPU 80→32 (×0.4) keeps size
 
             // Additional far backdrops in the TOP corners (out of button area).
             var topLeftBg = EchoBuildUtils.SpriteGO("BG_TL", EchoBuildUtils.GetBackgroundVariant(2),
                 "Default", -28, null, unlitMat, EchoBuildUtils.TintBgFar);
             topLeftBg.transform.position = new Vector3(-7f, 3.5f, 7f);
-            topLeftBg.transform.localScale = Vector3.one * 1.8f;
+            topLeftBg.transform.localScale = Vector3.one * 0.72f;  // PPU 80→32 (×0.4)
 
             var topRightBg = EchoBuildUtils.SpriteGO("BG_TR", EchoBuildUtils.GetBackgroundVariant(6),
                 "Default", -28, null, unlitMat, EchoBuildUtils.TintBgFar);
             topRightBg.transform.position = new Vector3(7f, 3.5f, 7f);
-            topRightBg.transform.localScale = Vector3.one * 1.8f;
+            topRightBg.transform.localScale = Vector3.one * 0.72f;  // PPU 80→32 (×0.4)
 
             // LEFT SCENE — NPC on box, with tileset detail above (mini diorama).
             var npcLeft = EchoBuildUtils.SpriteGO("NPC_Left", EchoBuildUtils.GetNpcBoy(0),
                 "Default", -18, null, unlitMat, EchoBuildUtils.TintNpc);
             npcLeft.transform.position = new Vector3(-7f, -1.3f, 4f);
-            npcLeft.transform.localScale = new Vector3(2.6f, 2.6f, 1f);
+            npcLeft.transform.localScale = new Vector3(1.73f, 1.73f, 1f);  // PPU 48→32 (×0.667)
 
             var leftBox = EchoBuildUtils.SpriteGO("LeftBox", EchoBuildUtils.GetBox(4),
                 "Default", -16, null, unlitMat, EchoBuildUtils.TintBgNear);
@@ -88,23 +88,23 @@ namespace EchoShift.EditorTools
             var leftDetail = EchoBuildUtils.SpriteGO("LeftDet", EchoBuildUtils.GetTilesetDetail(40),
                 "Default", -22, null, unlitMat, EchoBuildUtils.TintBgMid);
             leftDetail.transform.position = new Vector3(-9f, 1.2f, 5f);
-            leftDetail.transform.localScale = Vector3.one * 1.6f;
+            leftDetail.transform.localScale = Vector3.one * 3.2f;  // PPU 16→32 (×2)
 
             // RIGHT SCENE — NPC + machine + cable detail (mirrored composition).
             var npcRight = EchoBuildUtils.SpriteGO("NPC_Right", EchoBuildUtils.GetNpcGirl(0),
                 "Default", -18, null, unlitMat, EchoBuildUtils.TintNpc);
             npcRight.transform.position = new Vector3(7f, -1.3f, 4f);
-            npcRight.transform.localScale = new Vector3(-2.6f, 2.6f, 1f);
+            npcRight.transform.localScale = new Vector3(-1.73f, 1.73f, 1f);  // PPU 48→32 (×0.667)
 
             var rightMachine = EchoBuildUtils.SpriteGO("RightMachine", EchoBuildUtils.GetMachine(0),
                 "Default", -16, null, unlitMat, EchoBuildUtils.TintBgNear);
             rightMachine.transform.position = new Vector3(7f, -3.5f, 3f);
-            rightMachine.transform.localScale = Vector3.one * 1.8f;
+            rightMachine.transform.localScale = Vector3.one * 1.2f;  // PPU 48→32 (×0.667)
 
             var rightDetail = EchoBuildUtils.SpriteGO("RightDet", EchoBuildUtils.GetTilesetDetail(80),
                 "Default", -22, null, unlitMat, EchoBuildUtils.TintBgMid);
             rightDetail.transform.position = new Vector3(9f, 1.2f, 5f);
-            rightDetail.transform.localScale = Vector3.one * 1.6f;
+            rightDetail.transform.localScale = Vector3.one * 3.2f;  // PPU 16→32 (×2)
 
             // BOTTOM STRIP — small ground props well below buttons (y < -3.8 is safe).
             for (int i = 0; i < 5; i++)
@@ -114,7 +114,7 @@ namespace EchoShift.EditorTools
                 var d = EchoBuildUtils.SpriteGO("BotDet_" + i, sp,
                     "Default", -20, null, unlitMat, EchoBuildUtils.TintBgMid);
                 d.transform.position = new Vector3(-4.5f + i * 2.25f, -4.5f, 4f);
-                d.transform.localScale = Vector3.one * 0.9f;
+                d.transform.localScale = Vector3.one * 1.8f;  // PPU 16→32 (×2)
             }
 
             // TOP ACCENT — two small Icons floating above the title row.
@@ -122,13 +122,13 @@ namespace EchoShift.EditorTools
                 "Assets/Art/Imported/CraftPix1Bit/GUI/Icons.png", "Icons_5"),
                 "Default", -19, null, unlitMat, EchoBuildUtils.TintBgNear);
             iconLeft.transform.position = new Vector3(-5f, 4f, 4f);
-            iconLeft.transform.localScale = Vector3.one * 0.9f;
+            iconLeft.transform.localScale = Vector3.one * 1.8f;  // PPU 16→32 (×2)
 
             var iconRight = EchoBuildUtils.SpriteGO("IconR", EchoBuildUtils.LoadImportedSprite(
                 "Assets/Art/Imported/CraftPix1Bit/GUI/Icons.png", "Icons_11"),
                 "Default", -19, null, unlitMat, EchoBuildUtils.TintBgNear);
             iconRight.transform.position = new Vector3(5f, 4f, 4f);
-            iconRight.transform.localScale = Vector3.one * 0.9f;
+            iconRight.transform.localScale = Vector3.one * 1.8f;  // PPU 16→32 (×2)
 
             // Scene border frame is added on the MenuCanvas (screen-space) in BuildUI.
 

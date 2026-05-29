@@ -59,6 +59,8 @@ namespace EchoShift.EditorTools
 
         static void BuildGeometry()
         {
+            EchoTilemap.BeginTerrain(levelT, lit);
+
             SolidBlock(-4.6f, 3f, 1f, 14f, "LeftWall");
 
             // ---- Area 1: Gauntlet Remix (plate -> rising platform -> upper enemy) ----
@@ -203,17 +205,11 @@ namespace EchoShift.EditorTools
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = EchoBuildUtils.LoadSprite("platform");
-            sr.sharedMaterial = lit;
-            sr.drawMode = SpriteDrawMode.Tiled;
-            sr.size = new Vector2(w, h);
-            sr.sortingLayerName = "Environment";
-            sr.sortingOrder = 0;
+            // Visual: paint the kit's real rock tiles onto the shared terrain Tilemap
+            // (collision unchanged — the BoxCollider below still drives physics).
+            EchoTilemap.PaintSolid(cx, cy, w, h);
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
-            EchoBuildUtils.AddTopEdge(go, w, h, lit);
-            EchoBuildUtils.SprinkleCraters(go, w, h, lit);
             EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
             return go;
         }

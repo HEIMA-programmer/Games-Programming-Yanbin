@@ -57,7 +57,7 @@ namespace EchoShift.EditorTools
             // Visual lives on a child so it can be scaled up without resizing the trigger
             // circle or the Standpoint child collider. White-on-dark preserves 1-Bit pop.
             var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("echo"), "Player", -1, root.transform, unlit, EchoBuildUtils.TintEcho);
-            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+            visual.transform.localScale = new Vector3(1f, 1f, 1f);
             clone.visualRenderer = visual.GetComponent<SpriteRenderer>();
 
             // Standpoint: one-way solid top surface so the player can ride the clone.
@@ -137,7 +137,7 @@ namespace EchoShift.EditorTools
             col.offset = new Vector2(0f, -0.02f);
 
             var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("player"), "Player", 0, root.transform, unlit, EchoBuildUtils.TintPlayer);
-            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+            visual.transform.localScale = new Vector3(1f, 1f, 1f);
 
             var pc = root.AddComponent<PlayerController>();
             pc.groundMask = 1 << groundLayer;
@@ -304,8 +304,8 @@ namespace EchoShift.EditorTools
             audio.spatialBlend = 0f;
 
             var glow = EchoBuildUtils.SpriteGO("Glow", EchoBuildUtils.LoadSprite("glow"), "Environment", 2, root.transform, unlit,
-                new Color(1f, 1f, 1f, 0.6f));  // 1-Bit: white fragment halo
-            glow.transform.localScale = Vector3.one * 1.4f;
+                new Color(1f, 1f, 1f, 0.32f));  // small, dim aura (was a big bright halo that read as a blob/noise)
+            glow.transform.localScale = Vector3.one * 0.85f;
             var gpg = glow.AddComponent<PulseGlow>();
             gpg.target = glow.GetComponent<SpriteRenderer>();
             gpg.minScale = 0.85f;
@@ -409,7 +409,7 @@ namespace EchoShift.EditorTools
             facing.transform.SetParent(root.transform, false);
 
             var droneBody = EchoBuildUtils.SpriteGO("Body", EchoBuildUtils.LoadSprite("drone"), "Player", 1, facing.transform, unlit, EchoBuildUtils.TintDrone);
-            droneBody.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+            droneBody.transform.localScale = new Vector3(1f, 1f, 1f);
             var cone = EchoBuildUtils.SpriteGO("Cone", EchoBuildUtils.LoadSprite("cone"), "Player", 0, facing.transform, unlit, new Color(1f, 1f, 1f, 0.28f));
             // Apex at the drone centre, mouth reaching viewRange (4.5u): the 48px (1.5u) sprite
             // scaled x3 spans 4.5u, centred so its left edge sits on the drone.
@@ -439,7 +439,7 @@ namespace EchoShift.EditorTools
             // 1-Bit flag pole visual (CraftPix checkpoint frame 0).
             var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("checkpoint"), "Environment", 1, root.transform, unlit, EchoBuildUtils.TintEnd);
             visual.transform.localPosition = new Vector3(0f, 0.5f, 0f);
-            visual.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+            visual.transform.localScale = new Vector3(1f, 1f, 1f);
 
             var lightGO = new GameObject("CheckpointLight");
             lightGO.transform.SetParent(root.transform, false);

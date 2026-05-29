@@ -128,6 +128,10 @@ namespace EchoShift.EditorTools
         // ----------------------------------------------------------- level geometry
         static void BuildGeometry()
         {
+            // Shared terrain Tilemap painted from the kit's real rock tiles (VISUAL only;
+            // collision stays on each block's BoxCollider). Must precede the SolidBlocks.
+            EchoTilemap.BeginTerrain(levelT, lit);
+
             // --- floors & walls (top surface y = 0 unless noted) ---
             SolidBlock(-4.6f, 3f, 1f, 14f, "LeftWall");
             SolidBlock(2f, -1f, 12f, 2f, "GroundA");           // x -4..8
@@ -204,23 +208,15 @@ namespace EchoShift.EditorTools
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
 
-            var sr = go.AddComponent<SpriteRenderer>();
-            // Multi-tile variety: walls vs ground vs ceiling get different Tileset patterns
-            // so the level reads as a constructed lab rather than one repeated brick.
-            string tileKey = "platform";
-            if (h > w * 1.5f) tileKey = "platform_wall";       // tall vertical blocks → wall pattern
-            else if (cy > 6f && w > h) tileKey = "platform_ceiling"; // high horizontal blocks → ceiling pattern
-            sr.sprite = EchoBuildUtils.LoadSprite(tileKey);
-            sr.sharedMaterial = lit;
-            sr.drawMode = SpriteDrawMode.Tiled;
-            sr.size = new Vector2(w, h);
-            sr.sortingLayerName = "Environment";
-            sr.sortingOrder = 0;
+            // Visual: paint the kit's real rock tiles (top crest / dithered body / base) onto
+            // the shared terrain Tilemap — replaces the old single tiled sprite + white edge.
+            EchoTilemap.PaintSolid(cx, cy, w, h);
 
+            // Collision unchanged: per-block BoxCollider (gameplay identical to before).
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
-            EchoBuildUtils.AddTopEdge(go, w, h, lit);
-            EchoBuildUtils.SprinkleCraters(go, w, h, lit);
+
+            // Sparse kit crates resting on wide ground (the reference's "stuff on the floor").
             EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
             return go;
         }
