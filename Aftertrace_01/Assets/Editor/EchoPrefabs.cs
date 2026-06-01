@@ -436,16 +436,8 @@ namespace EchoShift.EditorTools
             col.isTrigger = true;
             col.size = new Vector2(1.5f, 3f);
 
-            // 1-Bit flag pole visual (CraftPix checkpoint frame 0).
-            var visual = EchoBuildUtils.SpriteGO("Visual", EchoBuildUtils.LoadSprite("checkpoint"), "Environment", 1, root.transform, unlit, EchoBuildUtils.TintEnd);
-            visual.transform.localPosition = new Vector3(0f, 0.5f, 0f);
-            visual.transform.localScale = new Vector3(1f, 1f, 1f);
-
-            var lightGO = new GameObject("CheckpointLight");
-            lightGO.transform.SetParent(root.transform, false);
-            lightGO.transform.localPosition = new Vector3(0f, 1.2f, 0f);
-            EchoBuildUtils.AddPointLight(lightGO, EchoBuildUtils.ColEnd, 0.6f, 2.6f);
-
+            // Flag-pole visual + light removed (decoration). Checkpoint stays an invisible
+            // trigger that still sets the respawn point (re-skin later if desired).
             root.AddComponent<Checkpoint>();
             SavePrefab(root, "Checkpoint");
         }

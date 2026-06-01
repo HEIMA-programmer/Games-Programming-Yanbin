@@ -49,7 +49,6 @@ namespace EchoShift.EditorTools
             player.transform.position = new Vector3(-2f, 0.6f, 0f);
             cam.GetComponent<CameraFollow>().target = player.transform;
 
-            BuildBackground(cam.transform);
             BuildGeometry();
 
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SceneDir);
@@ -59,8 +58,6 @@ namespace EchoShift.EditorTools
 
         static void BuildGeometry()
         {
-            EchoTilemap.BeginTerrain(levelT, lit);
-
             SolidBlock(-4.6f, 3f, 1f, 14f, "LeftWall");
 
             // ---- Area 1: Gauntlet Remix (plate -> rising platform -> upper enemy) ----
@@ -87,8 +84,6 @@ namespace EchoShift.EditorTools
             ConfigPlate(Inst("MovingPlatform", new Vector3(30f, 0.4f, 0f)), plateA, 3.3f, 3f); // top ~y4 = MidLedgeB
             SolidBlock(36f, 3.5f, 10f, 1f, "MidLedgeB");      // ledge top y4 (x31..41)
             InstFrag(34f, 6.3f);       // above the ledge: a jump from MidLedgeB (apex ~2.87) grabs it
-            Arrow(27f, 2f, -45f);      // points from plateA toward the rising platform
-            Arrow(34f, 5.2f, 0f);      // points up at the fragment
 
             // ---- Area 3: Stealth Corridor (detection + cover + decoy) ----
             // These drones CATCH you if their cone holds you in sight too long (a detection meter
@@ -104,9 +99,6 @@ namespace EchoShift.EditorTools
             // drones patrol the gaps between cover; detects:true makes their cones lethal-on-sight
             Drone(52f, 0.9f, 3f, 3.0f, false, 4f, true);        // patrol x49..55
             Drone(59f, 0.9f, 2.5f, 3.0f, false, 4f, true);      // patrol x56.5..61.5
-            // signpost the stealth play
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(43f, 3.0f, 0f), "Don't be seen — hide, time it, or send a decoy");
-            Arrow(45.5f, 1.0f, -90f);   // advance right, cover to cover
 
             // ---- Area 4: Memory Core ----
             SolidBlock(72f, -1f, 20f, 2f, "GroundD");         // x 62..82
@@ -131,8 +123,6 @@ namespace EchoShift.EditorTools
             AmbientLight(20f, 5f, Warm, 0.3f, 6f);
             AmbientLight(34f, 6f, Cyan, 0.3f, 7f);
             AmbientLight(54f, 0.8f, Warm, 0.3f, 6f);   // inside the tunnel now that the ceiling is solid up to y4.5
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(28f, 6.5f, 0f), "Memory restoration chamber — 200m ahead");
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(64f, 3.2f, 0f), "Welcome home, Echo.", new Color(1f, 0.8f, 0.5f, 1f));
         }
 
         // ---- platform config ----
@@ -192,25 +182,22 @@ namespace EchoShift.EditorTools
             gm.hitFlashImage = ui.hitFlash;
         }
 
-        static void BuildBackground(Transform cameraTransform)
-        {
-            Random.InitState(31337);
-            var bg = new GameObject("Background");
-            EchoBuildUtils.BuildAtmosphere(bg.transform, cameraTransform, 72f, unlit);
-        }
-
+        // Blockout: collider + a flat grey GREYBOX fill so the level STRUCTURE is visible while
+        // you hand-author terrain art on tilemap layers over it. The "BlockoutFill" children are
+        // a temporary placeholder (sorting order -5, so painted art on top hides them; or delete
+        // them per region). Gameplay/physics unchanged.
         static GameObject SolidBlock(float cx, float cy, float w, float h, string name)
         {
             var go = new GameObject(name);
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
-            // Visual: paint the kit's real rock tiles onto the shared terrain Tilemap
-            // (collision unchanged — the BoxCollider below still drives physics).
-            EchoTilemap.PaintSolid(cx, cy, w, h);
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
-            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
+
+            var fill = EchoBuildUtils.SpriteGO("BlockoutFill", EchoBuildUtils.LoadSprite("white"),
+                "Environment", -5, go.transform, unlit, new Color(0.36f, 0.39f, 0.45f, 1f));
+            fill.transform.localScale = new Vector3(w, h, 1f);
             return go;
         }
 
@@ -261,18 +248,5 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.AddPointLight(go, c, intensity, radius);
         }
 
-        static void Arrow(float x, float y, float zRot)
-        {
-            var a = EchoBuildUtils.SpriteGO("Guide", EchoBuildUtils.LoadSprite("arrow"), "Foreground", 4, levelT, unlit,
-                new Color(0.6f, 0.9f, 1f, 0.9f));
-            a.transform.localPosition = new Vector3(x, y, 0f);
-            a.transform.localRotation = Quaternion.Euler(0f, 0f, zRot);
-            a.AddComponent<FloatingBob>();
-            var pg = a.AddComponent<PulseGlow>();
-            pg.target = a.GetComponent<SpriteRenderer>();
-            pg.pulseScale = false;
-            pg.minAlpha = 0.5f;
-            pg.maxAlpha = 1f;
-        }
     }
 }

@@ -45,7 +45,6 @@ namespace EchoShift.EditorTools
             GameObject player = InstantiatePlayer();
             cam.GetComponent<CameraFollow>().target = player.transform;
 
-            BuildBackground(cam.transform);
             BuildGeometry();
 
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SceneDir);
@@ -114,24 +113,9 @@ namespace EchoShift.EditorTools
             gm.hitFlashImage = ui.hitFlash;
         }
 
-        // ----------------------------------------------------------- background
-        static void BuildBackground(Transform cameraTransform)
-        {
-            Random.InitState(20240517);
-            var bg = new GameObject("Background");
-            EchoBuildUtils.BuildAtmosphere(bg.transform, cameraTransform, 136f, unlit);
-
-            // Note: foreground richness comes from terrain + platforms + gameplay objects,
-            // not a cluttered parallax backdrop (the reference keeps backgrounds mostly black).
-        }
-
         // ----------------------------------------------------------- level geometry
         static void BuildGeometry()
         {
-            // Shared terrain Tilemap painted from the kit's real rock tiles (VISUAL only;
-            // collision stays on each block's BoxCollider). Must precede the SolidBlocks.
-            EchoTilemap.BeginTerrain(levelT, lit);
-
             // --- floors & walls (top surface y = 0 unless noted) ---
             SolidBlock(-4.6f, 3f, 1f, 14f, "LeftWall");
             SolidBlock(2f, -1f, 12f, 2f, "GroundA");           // x -4..8
@@ -150,7 +134,6 @@ namespace EchoShift.EditorTools
             DoorWall(25f);
             door2.GetComponent<Door>().requiredPlates = new[] { plate2.GetComponent<PressurePlate>() };
             Gate(27f, door2.GetComponent<Door>());
-            RPrompt(new Vector3(20f, 2.3f, 0f));
 
             // --- Area 3: timed run, plate far from door ---
             var plate3 = Inst("PressurePlate", new Vector3(36f, 0.13f, 0f));
@@ -187,10 +170,6 @@ namespace EchoShift.EditorTools
             SolidBlock(70f, 1.8f, 2f, 0.4f, "FragLedge4");
             Inst("Collectible", new Vector3(70f, 2.6f, 0f)).GetComponent<Collectible>().endsLevel = false;
 
-            // --- corridor environmental narrative ---
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(30f, 3.2f, 0f), "Echo Protocol: Active");
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(88f, 3.4f, 0f), "Core Access — Authorized Personnel Only");
-
             // --- ambient mood lights ---
             AmbientLight(6f, 4f, EchoBuildUtils.ColPlayer, 0.35f, 6f);
             AmbientLight(30f, 4.5f, new Color(1f, 0.8f, 0.5f, 1f), 0.3f, 6f);
@@ -201,23 +180,22 @@ namespace EchoShift.EditorTools
         }
 
         // ----------------------------------------------------------- helpers
+        // Blockout: collider + a flat grey GREYBOX fill so the level STRUCTURE is visible while
+        // you hand-author terrain art on tilemap layers over it. The "BlockoutFill" children are
+        // a temporary placeholder (sorting order -5, so painted art on top hides them; or delete
+        // them per region). Gameplay/physics unchanged.
         static GameObject SolidBlock(float cx, float cy, float w, float h, string name)
         {
             var go = new GameObject(name);
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
-
-            // Visual: paint the kit's real rock tiles (top crest / dithered body / base) onto
-            // the shared terrain Tilemap — replaces the old single tiled sprite + white edge.
-            EchoTilemap.PaintSolid(cx, cy, w, h);
-
-            // Collision unchanged: per-block BoxCollider (gameplay identical to before).
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
 
-            // Sparse kit crates resting on wide ground (the reference's "stuff on the floor").
-            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
+            var fill = EchoBuildUtils.SpriteGO("BlockoutFill", EchoBuildUtils.LoadSprite("white"),
+                "Environment", -5, go.transform, unlit, new Color(0.36f, 0.39f, 0.45f, 1f));
+            fill.transform.localScale = new Vector3(w, h, 1f);
             return go;
         }
 
@@ -249,39 +227,6 @@ namespace EchoShift.EditorTools
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(x, y, 0f);
             EchoBuildUtils.AddPointLight(go, c, intensity, radius);
-        }
-
-        static void RPrompt(Vector3 pos)
-        {
-            var root = new GameObject("RPrompt");
-            root.transform.SetParent(levelT, false);
-            root.transform.localPosition = pos;
-
-            var keycap = EchoBuildUtils.SpriteGO("Keycap", EchoBuildUtils.LoadSprite("keycap"), "Foreground", 5, root.transform, unlit);
-            keycap.transform.localScale = Vector3.one * 1.3f;
-            var pg = keycap.AddComponent<PulseGlow>();
-            pg.target = keycap.GetComponent<SpriteRenderer>();
-            pg.pulseAlpha = false;
-            pg.minScale = 0.92f;
-            pg.maxScale = 1.08f;
-
-            var rgo = new GameObject("R");
-            rgo.transform.SetParent(root.transform, false);
-            rgo.transform.localPosition = new Vector3(0f, 0f, -0.02f);
-            var tmp = rgo.AddComponent<TextMeshPro>();
-            tmp.text = "R";
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.fontSize = 6f;
-            tmp.color = Color.white;
-            tmp.rectTransform.sizeDelta = new Vector2(3f, 3f);
-            var mr = rgo.GetComponent<MeshRenderer>();
-            if (mr != null)
-            {
-                mr.sortingLayerID = SortingLayer.NameToID("Foreground");
-                mr.sortingOrder = 6;
-            }
-
-            root.AddComponent<FloatingBob>();
         }
 
         static void CreateGuideParticles(Vector3 pos)

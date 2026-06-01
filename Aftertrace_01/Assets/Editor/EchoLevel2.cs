@@ -48,7 +48,6 @@ namespace EchoShift.EditorTools
             player.transform.position = new Vector3(-2f, 0.6f, 0f);
             cam.GetComponent<CameraFollow>().target = player.transform;
 
-            BuildBackground(cam.transform);
             BuildGeometry();
 
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.SceneDir);
@@ -89,17 +88,8 @@ namespace EchoShift.EditorTools
             gm.hitFlashImage = ui.hitFlash;
         }
 
-        static void BuildBackground(Transform cameraTransform)
-        {
-            Random.InitState(73210);
-            var bg = new GameObject("Background");
-            EchoBuildUtils.BuildAtmosphere(bg.transform, cameraTransform, 126f, unlit);
-        }
-
         static void BuildGeometry()
         {
-            EchoTilemap.BeginTerrain(levelT, lit);
-
             // --- floors / walls ---
             SolidBlock(-4.6f, 3f, 1f, 14f, "LeftWall");
             SolidBlock(39f, -1f, 86f, 2f, "GroundMain");        // x -4..82 (areas 1-3)
@@ -159,10 +149,6 @@ namespace EchoShift.EditorTools
             SolidBlock(66f, 2.1f, 2f, 0.4f, "FragLedge3");   // alcove on the timed sprint
             Inst("Collectible", new Vector3(66f, 2.8f, 0f)).GetComponent<Collectible>().endsLevel = false;
 
-            // --- corridor environmental narrative ---
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(31f, 3.2f, 0f), "Security drones: patrol mode enabled");
-            EchoBuildUtils.CreateWallNarrative(levelT, new Vector3(78f, 3.2f, 0f), "Is anyone still here?");
-
             // --- ambient mood lights (cool, sparse) ---
             AmbientLight(8f, 4f, Cold, 0.3f, 6f);
             AmbientLight(40f, 4.5f, Cold, 0.25f, 6f);
@@ -172,18 +158,22 @@ namespace EchoShift.EditorTools
         }
 
         // ---- helpers ----
+        // Blockout: collider + a flat grey GREYBOX fill so the level STRUCTURE is visible while
+        // you hand-author terrain art on tilemap layers over it. The "BlockoutFill" children are
+        // a temporary placeholder (sorting order -5, so painted art on top hides them; or delete
+        // them per region). Gameplay/physics unchanged.
         static GameObject SolidBlock(float cx, float cy, float w, float h, string name)
         {
             var go = new GameObject(name);
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
-            // Visual: paint the kit's real rock tiles onto the shared terrain Tilemap
-            // (collision unchanged — the BoxCollider below still drives physics).
-            EchoTilemap.PaintSolid(cx, cy, w, h);
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
-            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
+
+            var fill = EchoBuildUtils.SpriteGO("BlockoutFill", EchoBuildUtils.LoadSprite("white"),
+                "Environment", -5, go.transform, unlit, new Color(0.36f, 0.39f, 0.45f, 1f));
+            fill.transform.localScale = new Vector3(w, h, 1f);
             return go;
         }
 

@@ -113,15 +113,6 @@ namespace EchoShift.EditorTools
                 AssetDatabase.DeleteAsset(assetPath);
         }
 
-        public static void CleanGenerated()
-        {
-            DeleteIfExists(SpriteDir);
-            DeleteIfExists(MaterialDir);
-            DeleteIfExists(PrefabDir);
-            DeleteIfExists(AudioDir);
-            DeleteIfExists(ScenePath);
-        }
-
         // ---- Sorting layers (via TagManager) -------------------------------
         public static void EnsureSortingLayers()
         {
@@ -231,55 +222,6 @@ namespace EchoShift.EditorTools
         public static Sprite LoadImportedSprite(string assetPath, string frameName)
             => LoadImportedFrame(assetPath, frameName);
 
-        // Rotates through the 8 sliced backdrop variants in Background_n_details.png.
-        public static Sprite GetBackgroundVariant(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Tileset/Background_n_details.png",
-                $"Background_n_details_{((index % 8) + 8) % 8}");
-
-        // Rotates through Tileset_details frames (304 × 144 → 19 × 9 = 171 frames) for
-        // foreground prop sprinkling — circuits, pipes, panels.
-        public static Sprite GetTilesetDetail(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset_details.png",
-                $"Tileset_details_{((index % 171) + 171) % 171}");
-
-        // Tileset_Borders: 11×13 = 143 framed square/rect tiles for accents.
-        public static Sprite GetBorder(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset_Borders.png",
-                $"Tileset_Borders_{((index % 143) + 143) % 143}");
-
-        // Boxes: 4×4 = 16 crate variants at 32×32.
-        public static Sprite GetBox(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Objects/Boxes.png",
-                $"Boxes_{((index % 16) + 16) % 16}");
-
-        // Trap6: 8×6 = 48 grinder/crusher / dome machine frames at 48×48.
-        public static Sprite GetMachine(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Traps/Trap6.png",
-                $"Trap6_{((index % 48) + 48) % 48}");
-
-        // Char_Boy: spritesheet for background NPC silhouettes — 48 frames.
-        public static Sprite GetNpcBoy(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Main_Characters/Char_Boy.png",
-                $"Char_Boy_{((index % 48) + 48) % 48}");
-
-        // Char_Girl alternative NPC.
-        public static Sprite GetNpcGirl(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/Main_Characters/Char_Girl.png",
-                $"Char_Girl_{((index % 48) + 48) % 48}");
-
-        // Tileset_GUI: 11×23 = 253 panel/button/frame tiles — for menu UI.
-        public static Sprite GetGuiTile(int index)
-            => LoadImportedFrame(
-                "Assets/Art/Imported/CraftPix1Bit/GUI/Tileset_GUI.png",
-                $"Tileset_GUI_{((index % 253) + 253) % 253}");
-
         public static Sprite LoadSprite(string fileName)
         {
             if (ImportedSprites.TryGetValue(fileName, out var info))
@@ -339,128 +281,6 @@ namespace EchoShift.EditorTools
                 block.transform, material, Color.white);
             edge.transform.localScale = new Vector3(w, t, 1f);
             edge.transform.localPosition = new Vector3(0f, h * 0.5f - t * 0.5f, -0.01f);
-        }
-
-        // Sprinkles a few dark "craters" across a large terrain mass so it reads as textured
-        // rock with depth instead of a flat uniform slab (the dark holes in the CraftPix
-        // reference rock). Only big ground blocks get them; thin platforms / walls are skipped.
-        // Deterministic: seeded from the block's position so rebuilds are stable.
-        public static void SprinkleCraters(GameObject block, float w, float h, Material material)
-        {
-            if (w < 5f || h < 2f) return;
-            var bsr = block.GetComponent<SpriteRenderer>();
-            string layer = bsr != null ? bsr.sortingLayerName : "Environment";
-            int baseOrder = bsr != null ? bsr.sortingOrder : 0;
-
-            // 1) Shadow band along the bottom → volume (lit top, shadowed underside).
-            float bandH = Mathf.Min(h, 1.5f);
-            var shade = SpriteGO("RockShade", LoadSprite("rockshade"), layer, baseOrder + 1, block.transform, material, Color.white);
-            var ssr = shade.GetComponent<SpriteRenderer>();
-            ssr.drawMode = SpriteDrawMode.Tiled;                       // tile horizontally; native 1.5u height = no vertical repeat
-            ssr.size = new Vector2(w, bandH);
-            shade.transform.localPosition = new Vector3(0f, -h * 0.5f + bandH * 0.5f, -0.004f);
-
-            // 2) Dark cavities, biased toward the lower (shadowed) half. Deterministic per block.
-            UnityEngine.Random.State prev = UnityEngine.Random.state;
-            Vector3 p = block.transform.position;
-            UnityEngine.Random.InitState(Mathf.RoundToInt(p.x * 13.1f + p.y * 7.7f + w * 3.3f));
-
-            int count = Mathf.Clamp(Mathf.FloorToInt(w / 6f), 1, 6);
-            float maxR = Mathf.Min(0.6f, h * 0.32f);
-            for (int i = 0; i < count; i++)
-            {
-                float r = UnityEngine.Random.Range(maxR * 0.4f, maxR);
-                float yTop = h * 0.5f - 0.35f - r;        // stay below the top-edge surface line
-                float yBot = -h * 0.5f + r + 0.1f;
-                if (yBot >= yTop) continue;
-                float bias = Mathf.Pow(UnityEngine.Random.value, 1.6f);  // skew toward the bottom
-                float y = Mathf.Lerp(yBot, yTop, bias);
-                float x = UnityEngine.Random.Range(-w * 0.5f + r + 0.2f, w * 0.5f - r - 0.2f);
-                string sprite = (i % 2 == 0) ? "crater" : "crater2";
-                var cr = SpriteGO("Crater", LoadSprite(sprite), layer, baseOrder + 2, block.transform, material, Color.white);
-                cr.transform.localScale = new Vector3(r * 2f, r * 2f, 1f);  // crater sprite is 1u diameter
-                cr.transform.localPosition = new Vector3(x, y, -0.005f);
-            }
-            UnityEngine.Random.state = prev;
-        }
-
-        // Sparse decorative props (kit crates) resting ON a large ground block's surface —
-        // the deliberate "stuff on the floor" the reference scenes use, drawn from the kit's
-        // Boxes sheet (not procedural). Decoration only (no collider). Deterministic per block.
-        public static void PlaceGroundProps(GameObject block, float w, float h, Material unlit)
-        {
-            if (w < 10f || h < 2f) return;
-            var bsr = block.GetComponent<SpriteRenderer>();
-            string layer = bsr != null ? bsr.sortingLayerName : "Environment";
-            int order = (bsr != null ? bsr.sortingOrder : 0) + 3;
-
-            UnityEngine.Random.State prev = UnityEngine.Random.state;
-            Vector3 p = block.transform.position;
-            UnityEngine.Random.InitState(Mathf.RoundToInt(p.x * 7.3f + p.y * 3.1f + w) + 555);
-
-            int n = Mathf.Clamp(Mathf.RoundToInt(w / 18f), 1, 3);
-            for (int i = 0; i < n; i++)
-            {
-                var sp = GetBox(UnityEngine.Random.Range(0, 16));
-                if (sp == null) continue;
-                float scale = UnityEngine.Random.Range(0.75f, 1.05f);  // box sprite is 1u @ PPU 32
-                var d = SpriteGO("Prop", sp, layer, order, block.transform, unlit, Color.white);
-                float x = UnityEngine.Random.Range(-w * 0.5f + 1.2f, w * 0.5f - 1.2f);
-                d.transform.localPosition = new Vector3(x, h * 0.5f + scale * 0.5f - 0.06f, -0.02f);
-                d.transform.localScale = new Vector3((UnityEngine.Random.value > 0.5f ? 1f : -1f) * scale, scale, 1f);
-            }
-            UnityEngine.Random.state = prev;
-        }
-
-        // The CraftPix reference backdrop is ONE connected pattern tiled to FILL the whole
-        // space — a continuous grey facility wall (bolted panels + grid lines), mostly dark
-        // with thin 1-Bit line-work, NOT scattered pieces and NOT random noise. We tile one
-        // seamless facility-panel tile (bgpanel) across the level as that connected fill, dim
-        // so the white terrain stays the foreground, then layer a few brighter kit pipe/panel
-        // accents + far moons + a starfield on top for depth. All on the BACKGROUND layer
-        // (behind terrain). Deterministic (seeded).
-        public static void BuildAtmosphere(Transform bgParent, Transform cameraTransform, float worldWidth, Material unlit)
-        {
-            UnityEngine.Random.State prev = UnityEngine.Random.state;
-            UnityEngine.Random.InitState(Mathf.RoundToInt(worldWidth * 101f) + 9173);
-
-            // CONNECTED WALL — a dim diagonal-girder facility wall painted from the kit's REAL
-            // diagonal-hatch tile onto a background Tilemap (with black gaps so it reads as a
-            // built wall, not a uniform fill). Replaces the old procedural bgpanel sprite.
-            EchoTilemap.BuildBackgroundWall(bgParent, cameraTransform, worldWidth, unlit);
-
-            // (Structure — pipes/panels — is now woven into the BgWall tilemap above, so the
-            // old separate scattered-accent layer was removed to avoid doubling up.)
-
-            // PLANETS — the kit's dithered moon tile (variant 4), dim + far, a couple.
-            var sky = new GameObject("BG_Sky");
-            sky.transform.SetParent(bgParent, false);
-            var skyP = sky.AddComponent<Parallax>(); skyP.factor = 0.1f; skyP.cameraTransform = cameraTransform;
-            int planets = worldWidth > 90f ? 3 : 2;
-            for (int i = 0; i < planets; i++)
-            {
-                var d = SpriteGO("Planet", GetBackgroundVariant(4), "Background", -9, sky.transform, unlit,
-                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.30f, 0.50f)));
-                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(0.1f, 0.9f) * worldWidth, UnityEngine.Random.Range(7f, 12f), 11f);
-                // PPU unified at 32 (was 80 for this sheet) → 80px = 2.5u native; 0.72–1.44
-                // keeps the old on-screen planet size (was 1.8–3.6 at the old 1u native).
-                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.72f, 1.44f);
-            }
-
-            // STARFIELD — sparse white dots, varied brightness, mostly in the sky.
-            var stars = new GameObject("BG_Stars");
-            stars.transform.SetParent(bgParent, false);
-            var starP = stars.AddComponent<Parallax>(); starP.factor = 0.08f; starP.cameraTransform = cameraTransform;
-            int dots = Mathf.Clamp(Mathf.RoundToInt(worldWidth * 0.5f), 16, 80);
-            for (int i = 0; i < dots; i++)
-            {
-                var d = SpriteGO("Star", LoadSprite("bgdot"), "Background", -10, stars.transform, unlit,
-                    new Color(1f, 1f, 1f, UnityEngine.Random.Range(0.25f, 0.85f)));
-                d.transform.localPosition = new Vector3(UnityEngine.Random.Range(-4f, worldWidth + 4f), UnityEngine.Random.Range(3.5f, 13f), 10f);
-                d.transform.localScale = Vector3.one * UnityEngine.Random.Range(0.18f, 0.48f);
-            }
-
-            UnityEngine.Random.state = prev;
         }
 
         public static Light2D AddPointLight(GameObject go, Color color, float intensity, float outerRadius, float innerRadius = 0f)
@@ -561,23 +381,6 @@ namespace EchoShift.EditorTools
             return t;
         }
 
-        // Closed rounded-rectangle frame using the procedural "frame" sliced sprite.
-        // One Image stretched to fill the parent canvas with optional edge inset.
-        public static GameObject AddSceneFrame(Transform parent, Color color, float inset = 6f)
-        {
-            var go = new GameObject("SceneFrame");
-            go.transform.SetParent(parent, false);
-            var img = go.AddComponent<Image>();
-            img.sprite = LoadSprite("frame");
-            img.type = Image.Type.Sliced;
-            img.color = color;
-            img.raycastTarget = false;
-            FullStretch(img.rectTransform);
-            img.rectTransform.offsetMin = new Vector2(inset, inset);
-            img.rectTransform.offsetMax = new Vector2(-inset, -inset);
-            return go;
-        }
-
         public enum FrameSide { Top, Bottom, Left, Right }
 
         // Thin white strip anchored to one side of the parent canvas — call 4× to frame the viewport.
@@ -662,47 +465,5 @@ namespace EchoShift.EditorTools
             return btn;
         }
 
-        // World-space environmental display: 9-sliced rounded panel + Orbitron text + outline.
-        // Reads like a tactical/comms screen rather than a stretched lab tile.
-        public static GameObject CreateWallNarrative(Transform parent, Vector3 pos, string text, Color? color = null, bool flicker = true)
-        {
-            var root = new GameObject("WallNarrative");
-            if (parent != null) root.transform.SetParent(parent, false);
-            root.transform.position = pos;
-
-            // Tactical panel — the procedural button sprite (rounded rect + cyan border) sliced to size.
-            var panel = SpriteGO("Panel", LoadSprite("button"), "Midground", 2, root.transform,
-                LoadMaterial(EchoMaterials.UnlitName), new Color(0.03f, 0.08f, 0.14f, 0.88f));
-            var psr = panel.GetComponent<SpriteRenderer>();
-            psr.drawMode = SpriteDrawMode.Sliced;
-            psr.size = new Vector2(7.6f, 2.6f);
-
-            var tgo = new GameObject("Text");
-            tgo.transform.SetParent(root.transform, false);
-            tgo.transform.localPosition = new Vector3(0f, 0f, -0.02f);
-            var tmp = tgo.AddComponent<TextMeshPro>();
-            tmp.text = text;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.fontSize = 2.1f;
-            tmp.color = color ?? new Color(0.75f, 0.95f, 1f, 1f);
-            if (TitleFont != null) tmp.font = TitleFont;
-            else if (CustomFont != null) tmp.font = CustomFont;
-            tmp.fontStyle = FontStyles.Bold;
-            tmp.characterSpacing = 4f;
-            tmp.rectTransform.sizeDelta = new Vector2(7.0f, 2.4f);
-            var mr = tgo.GetComponent<MeshRenderer>();
-            if (mr != null) { mr.sortingLayerID = SortingLayer.NameToID("Foreground"); mr.sortingOrder = 3; }
-
-            ApplyOutline(tmp, new Color(0f, 0.05f, 0.12f, 0.98f), 0.22f);
-
-            if (flicker)
-            {
-                var fl = root.AddComponent<Flicker>();
-                fl.spriteTarget = psr;
-                fl.min = 0.78f;
-                fl.max = 1f;
-            }
-            return root;
-        }
     }
 }

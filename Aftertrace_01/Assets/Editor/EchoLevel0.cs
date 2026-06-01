@@ -37,7 +37,6 @@ namespace EchoShift.EditorTools
 
             var levelGO = new GameObject("Level");
             levelT = levelGO.transform;
-            EchoTilemap.BeginTerrain(levelT, lit);
 
             // room + corridor (top y = 0); gap x[6.5..8.2] forces a jump
             SolidBlock(0f, -1f, 7f, 2f, "GroundRoom");        // x -3.5..3.5
@@ -123,7 +122,8 @@ namespace EchoShift.EditorTools
             var ad = root.AddComponent<AutoDoorExit>();
             ad.doorBody = body.transform;
             ad.audioSource = audio;
-            ad.slideClip = EchoBuildUtils.LoadAudio("doorslide");
+            ad.openClip = EchoBuildUtils.LoadAudio("doorslide");
+            ad.closeClip = EchoBuildUtils.LoadAudio("doorclose");
             ad.targetScene = "Level_01";
         }
 
@@ -143,18 +143,22 @@ namespace EchoShift.EditorTools
             intro.lineText = line;
         }
 
+        // Blockout: collider + a flat grey GREYBOX fill so the level STRUCTURE is visible while
+        // you hand-author terrain art on tilemap layers over it. The "BlockoutFill" children are
+        // a temporary placeholder (sorting order -5, so painted art on top hides them; or delete
+        // them per region). Gameplay/physics unchanged.
         static GameObject SolidBlock(float cx, float cy, float w, float h, string name)
         {
             var go = new GameObject(name);
             go.transform.SetParent(levelT, false);
             go.transform.localPosition = new Vector3(cx, cy, 0f);
             go.layer = groundLayer;
-            // Visual: paint the kit's real rock tiles onto the shared terrain Tilemap
-            // (collision unchanged — the BoxCollider below still drives physics).
-            EchoTilemap.PaintSolid(cx, cy, w, h);
             var col = go.AddComponent<BoxCollider2D>();
             col.size = new Vector2(w, h);
-            EchoBuildUtils.PlaceGroundProps(go, w, h, unlit);
+
+            var fill = EchoBuildUtils.SpriteGO("BlockoutFill", EchoBuildUtils.LoadSprite("white"),
+                "Environment", -5, go.transform, unlit, new Color(0.36f, 0.39f, 0.45f, 1f));
+            fill.transform.localScale = new Vector3(w, h, 1f);
             return go;
         }
     }

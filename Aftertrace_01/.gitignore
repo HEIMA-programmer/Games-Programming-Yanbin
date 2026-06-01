@@ -47,6 +47,10 @@ ExportedObj/
 *.opendb
 *.VC.db
 
+# Visual Studio project-upgrade report (generated when VS retargets the .csproj/.sln)
+UpgradeLog*.htm
+_UpgradeReport_Files/
+
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta

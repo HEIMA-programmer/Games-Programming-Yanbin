@@ -114,9 +114,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 80
-        width: 80
-        height: 80
+        y: 96
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -135,9 +135,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 80
-        y: 80
-        width: 80
-        height: 80
+        y: 96
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,9 +156,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 160
-        y: 80
-        width: 80
-        height: 80
+        y: 96
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -177,9 +177,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 240
-        y: 80
-        width: 80
-        height: 80
+        y: 96
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -198,9 +198,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 80
-        height: 80
+        y: 32
+        width: 47
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -277,6 +277,90 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Background_n_details_8
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 48
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d8f09df527b1d544a3a3c61d0cf4f7a
+      internalID: -1113102151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Background_n_details_9
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 20
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef666631524c41a46a79140119b062c3
+      internalID: -471589156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Background_n_details_10
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 17
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74d766c2a2651a748904e19b82818c4e
+      internalID: 1857387657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Background_n_details_11
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 7
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8e9c3ed911d989409fdd9648ec39fbf
+      internalID: 1806770027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -290,12 +374,16 @@ TextureImporter:
     nameFileIdTable:
       Background_n_details_0: -3073144674060424274
       Background_n_details_1: -6273968276759271574
+      Background_n_details_10: 1857387657
+      Background_n_details_11: 1806770027
       Background_n_details_2: 2224820185471284364
       Background_n_details_3: 4563790585332724933
       Background_n_details_4: 582964840189869942
       Background_n_details_5: -6134779246773424878
       Background_n_details_6: -3653031815901341588
       Background_n_details_7: -172843647374912176
+      Background_n_details_8: -1113102151
+      Background_n_details_9: -471589156
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
