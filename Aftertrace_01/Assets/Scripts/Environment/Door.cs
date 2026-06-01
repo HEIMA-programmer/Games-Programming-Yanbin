@@ -4,9 +4,14 @@ using UnityEngine;
 namespace EchoShift
 {
     /// <summary>
-    /// Slides its body upward to open. Opens when its required plate(s) are pressed
-    /// (AND or OR), or via Open()/Close() for scripted gates. LockClosed() forces it
-    /// shut permanently for one-way progression.
+    /// Puzzle door. Opens when its required plate(s) are pressed (AND or OR), or via
+    /// Open()/Close() for scripted gates. LockClosed() forces it shut permanently for
+    /// one-way progression.
+    ///
+    /// Presentation: if openFrames are assigned it plays an OPEN/CLOSE sprite animation
+    /// (frame-based); otherwise it falls back to the legacy slide-up motion. Either way the
+    /// gameplay (when it opens/closes, and the blocking collider) is unchanged — only the
+    /// visual of going from shut to open differs.
     /// </summary>
     public class Door : MonoBehaviour
     {
@@ -14,12 +19,25 @@ namespace EchoShift
         public bool requireAll = true;
         public bool latch = false;   // once opened by plates, stay open even if released
         public Transform doorBody;
+
+        [Header("Open/Close animation (preferred)")]
+        [Tooltip("Frames in order CLOSED -> OPEN. If empty, the door uses the legacy slide-up instead.")]
+        public Sprite[] openFrames;
+        [Tooltip("Frames OPEN -> CLOSED. Empty = openFrames reversed.")]
+        public Sprite[] closeFrames;
+        public float animTime = 0.3f;
+
+        [Header("Legacy slide (used only when openFrames is empty)")]
         public float openDistance = 4.6f;
         public float openTime = 0.3f;
-        public AudioSource audioSource;
-        public AudioClip slideClip;
-        public AudioClip closeClip;
 
+        [Header("Audio")]
+        public AudioSource audioSource;
+        public AudioClip slideClip;   // played on OPEN
+        public AudioClip closeClip;   // played on CLOSE (falls back to slideClip)
+
+        SpriteRenderer doorRenderer;
+        Collider2D bodyCollider;
         Vector3 closedPos;
         Vector3 openPos;
         bool isOpen;
@@ -27,9 +45,13 @@ namespace EchoShift
         bool latched;
         Coroutine anim;
 
+        bool UseFrames => openFrames != null && openFrames.Length > 0;
+
         void Awake()
         {
             if (doorBody == null) doorBody = transform;
+            doorRenderer = doorBody.GetComponent<SpriteRenderer>();
+            bodyCollider = doorBody.GetComponent<Collider2D>();
             closedPos = doorBody.localPosition;
             openPos = closedPos + Vector3.up * openDistance;
         }
@@ -83,8 +105,34 @@ namespace EchoShift
                 AudioClip clip = open ? slideClip : (closeClip != null ? closeClip : slideClip);
                 if (clip != null) audioSource.PlayOneShot(clip);
             }
+            // Frame doors don't move the body, so the blocking collider must be toggled here:
+            // off the instant it opens (let the player through), on the instant it closes.
+            // (Legacy slide doors move the whole body away, so they keep their collider.)
+            if (UseFrames && bodyCollider != null)
+            {
+                if (open) bodyCollider.enabled = false;
+                else bodyCollider.enabled = true;
+            }
             if (anim != null) StopCoroutine(anim);
-            anim = StartCoroutine(Slide(open ? openPos : closedPos));
+            anim = StartCoroutine(UseFrames ? AnimateFrames(open) : Slide(open ? openPos : closedPos));
+        }
+
+        // Frame-based open/close. Holds the final frame; gameplay collider is untouched.
+        IEnumerator AnimateFrames(bool open)
+        {
+            Sprite[] frames = open ? openFrames
+                            : (closeFrames != null && closeFrames.Length > 0 ? closeFrames : Reversed(openFrames));
+            if (doorRenderer == null || frames == null || frames.Length == 0) yield break;
+
+            float t = 0f;
+            while (t < animTime)
+            {
+                t += Time.deltaTime;
+                int i = Mathf.Clamp(Mathf.FloorToInt(t / animTime * frames.Length), 0, frames.Length - 1);
+                doorRenderer.sprite = frames[i];
+                yield return null;
+            }
+            doorRenderer.sprite = frames[frames.Length - 1];
         }
 
         IEnumerator Slide(Vector3 target)
@@ -98,6 +146,14 @@ namespace EchoShift
                 yield return null;
             }
             doorBody.localPosition = target;
+        }
+
+        static Sprite[] Reversed(Sprite[] src)
+        {
+            if (src == null) return null;
+            var r = (Sprite[])src.Clone();
+            System.Array.Reverse(r);
+            return r;
         }
     }
 }

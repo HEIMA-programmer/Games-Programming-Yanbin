@@ -31,11 +31,25 @@ namespace EchoShift
         public float landRecoverRate = 4.0f;
         public float landDustThreshold = 9f;
 
+        [Header("Sprite Frames (optional — leave empty to stay fully procedural)")]
+        public Sprite defaultSprite;          // shown for a state whose frame list is empty
+        public Sprite[] idleFrames;
+        public Sprite[] runFrames;
+        public Sprite[] jumpFrames;           // rising  (velocity.y up)
+        public Sprite[] fallFrames;           // falling (velocity.y down)
+        public float frameIdleFps = 6f;
+        public float frameRunFps = 12f;
+        public float frameJumpFps = 12f;
+        public float frameFallFps = 10f;
+
         Vector3 baseScale;
         SpriteRenderer sr;
         float bobTimer;
         float landStrength;
         float runDustTimer;
+        Sprite[] curFrames;
+        int curFrame;
+        float frameTimer;
 
         void Reset() { visual = transform; }
 
@@ -74,6 +88,20 @@ namespace EchoShift
             float dir = controller.FacingRight ? 1f : -1f;
 
             if (sr != null) sr.flipX = !controller.FacingRight;
+            bool framed = UpdateFrames(grounded, move, v.y, dt);
+
+            // When sprite frames drive the look, keep the visual neutral — procedural
+            // stretch/tilt/bob would distort the frame and rotate pixels (blurry on 1-bit art).
+            if (framed)
+            {
+                float kf = 1f - Mathf.Exp(-25f * dt);
+                visual.localScale = Vector3.Lerp(visual.localScale, baseScale, kf);
+                visual.localRotation = Quaternion.Lerp(visual.localRotation, Quaternion.identity, kf);
+                Vector3 lpf = visual.localPosition;
+                lpf.y = Mathf.Lerp(lpf.y, 0f, kf);
+                visual.localPosition = lpf;
+                return;
+            }
 
             Vector3 scale = baseScale;
             float tilt = 0f;
@@ -118,6 +146,38 @@ namespace EchoShift
             Vector3 lp = visual.localPosition;
             lp.y = Mathf.Lerp(lp.y, bobY, 1f - Mathf.Exp(-20f * dt));
             visual.localPosition = lp;
+        }
+
+        // Optional sprite-frame animation. Returns TRUE if it drove a frame this update
+        // (so Update can suppress the procedural squash/tilt that would distort the frame).
+        // Ground states (idle/run) LOOP; air states (jump/fall) play once and HOLD the last
+        // frame — looping a jump is what makes the pose look "scrambled".
+        bool UpdateFrames(bool grounded, float move, float vy, float dt)
+        {
+            if (sr == null) return false;
+            Sprite[] want = !grounded ? (vy > 0.1f ? jumpFrames : fallFrames)
+                          : (move > 0.1f ? runFrames : idleFrames);
+            float fps = !grounded ? (vy > 0.1f ? frameJumpFps : frameFallFps)
+                      : (move > 0.1f ? frameRunFps : frameIdleFps);
+            bool loop = grounded; // jump/fall do not loop
+
+            if (want == null || want.Length == 0)
+            {
+                if (defaultSprite != null) { sr.sprite = defaultSprite; curFrames = null; return true; }
+                curFrames = null;
+                return false; // nothing to drive -> stay fully procedural
+            }
+            if (want != curFrames) { curFrames = want; curFrame = 0; frameTimer = 0f; sr.sprite = want[0]; return true; }
+
+            frameTimer += dt;
+            if (frameTimer >= 1f / Mathf.Max(1f, fps))
+            {
+                frameTimer -= 1f / Mathf.Max(1f, fps);
+                if (loop) curFrame = (curFrame + 1) % want.Length;
+                else curFrame = Mathf.Min(curFrame + 1, want.Length - 1); // hold last frame
+                sr.sprite = want[curFrame];
+            }
+            return true;
         }
     }
 }

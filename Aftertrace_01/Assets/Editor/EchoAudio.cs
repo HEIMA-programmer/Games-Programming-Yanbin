@@ -14,6 +14,16 @@ namespace EchoShift.EditorTools
     {
         const int SampleRate = 44100;
 
+        // Safe standalone regen: rewrites the .wav files in place (same paths/GUIDs, so every
+        // AudioSource reference stays valid) WITHOUT rebuilding any scene. Use this after tweaking
+        // a sound so you don't have to run Build All (which would wipe hand-authored tiles).
+        [MenuItem("Aftertrace/Art/Regenerate Audio Only", false, 103)]
+        public static void RegenerateAudioOnly()
+        {
+            GenerateAll();
+            Debug.Log("[Aftertrace/Art] Audio regenerated in place (scenes & tiles untouched).");
+        }
+
         public static void GenerateAll()
         {
             EchoBuildUtils.EnsureFolder(EchoBuildUtils.AudioDir);
@@ -76,22 +86,23 @@ namespace EchoShift.EditorTools
             return d;
         }
 
+        // Crisp mechanical door OPEN: a short bright "tk-chick" — a tiny latch tick followed
+        // by a quick high-to-mid click with a metallic overtone. No low slide drone.
         static float[] DoorSlide()
         {
-            float dur = 0.34f;
+            float dur = 0.16f;
             int n = Mathf.CeilToInt(dur * SampleRate);
             var d = new float[n];
-            float phase = 0f;
             for (int i = 0; i < n; i++)
             {
                 float t = (float)i / SampleRate;
-                float k = t / dur;
-                float freq = 130f + k * 80f;
-                phase += 2f * Mathf.PI * freq / SampleRate;
-                float env = Mathf.Sin(Mathf.PI * k);
-                float tone = Mathf.Sin(phase) * env * 0.4f;
-                float air = (Random.value * 2f - 1f) * env * 0.18f;
-                d[i] = tone + air;
+                // latch tick right at the start
+                float tick = (Random.value * 2f - 1f) * Mathf.Exp(-t * 220f) * 0.35f;
+                // bright click body
+                float click = Mathf.Sin(2f * Mathf.PI * 1900f * t) * Mathf.Exp(-t * 48f) * 0.4f;
+                // metallic ring overtone (inharmonic) for a "sci-fi panel" snap
+                float ring = Mathf.Sin(2f * Mathf.PI * 3000f * t) * Mathf.Exp(-t * 70f) * 0.18f;
+                d[i] = tick + click + ring;
             }
             return d;
         }
@@ -191,15 +202,22 @@ namespace EchoShift.EditorTools
             return d;
         }
 
+        // Crisp door CLOSE: a quick downward click that ends in a firm "clack" thunk as it
+        // seats shut — brighter/snappier than the old low slide, with a solid tail.
         static float[] DoorClose()
         {
-            float dur = 0.34f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n]; float ph = 0f;
+            float dur = 0.18f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
             for (int i = 0; i < n; i++)
             {
-                float t = (float)i / SampleRate; float k = t / dur;
-                float f = Mathf.Lerp(210f, 120f, k); ph += 2f * Mathf.PI * f / SampleRate;
-                float env = Mathf.Sin(Mathf.PI * k);
-                d[i] = (Mathf.Sin(ph) * 0.4f + (Random.value * 2f - 1f) * 0.16f) * env;
+                float t = (float)i / SampleRate;
+                // descending click as the door swings to
+                float f = Mathf.Lerp(1600f, 700f, Mathf.Clamp01(t / 0.06f));
+                float click = Mathf.Sin(2f * Mathf.PI * f * t) * Mathf.Exp(-t * 40f) * 0.32f;
+                // seating "clack": a short mid thunk + grit, delayed slightly to read as impact
+                float td = Mathf.Max(0f, t - 0.05f);
+                float clack = Mathf.Sin(2f * Mathf.PI * 320f * td) * Mathf.Exp(-td * 38f) * 0.4f;
+                float grit = (Random.value * 2f - 1f) * Mathf.Exp(-td * 90f) * 0.18f;
+                d[i] = click + clack + grit;
             }
             return d;
         }

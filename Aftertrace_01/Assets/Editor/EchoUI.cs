@@ -56,9 +56,6 @@ namespace EchoShift.EditorTools
             EchoBuildUtils.FullStretch(refs.hitFlash.rectTransform);
             refs.hitFlash.raycastTarget = false;
 
-            // ---- Scene border — single closed rounded-rectangle frame (1-Bit demo art look) ----
-            EchoBuildUtils.AddSceneFrame(root, new Color(0.92f, 0.96f, 1f, 0.92f), 10f);
-
             // ---- HUD (gem icon + "X / Y" counter top-left) ----
             var hud = canvas.gameObject.AddComponent<HUDController>();
             Sprite gem = EchoBuildUtils.LoadSprite("fragment");
