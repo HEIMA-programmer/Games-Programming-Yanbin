@@ -32,6 +32,7 @@ namespace EchoShift
         Rigidbody2D rb;
         BoxCollider2D box;
         float vy;
+        float chainDx;   // horizontal shove handed over by a neighbour this tick; consume-or-discard
 
         void Awake()
         {
@@ -69,17 +70,36 @@ namespace EchoShift
                 supported = false;
             }
 
-            // --- horizontal: the player walking into a side face pushes the crate
-            if (supported)
+            // --- horizontal: player push + chain shove from a neighbouring crate, one move.
+            // A crate pushed into another hands its full intent over via ChainPush; the
+            // receiver consumes it in its OWN tick (kinematic MovePosition is deferred to
+            // the physics step, so both update orders see identical geometry — the train
+            // just ramps one frame per link and then runs at full pushSpeed).
+            float maxStep = pushSpeed * dt;
+            float playerDx = supported ? PushDirection(pos) * maxStep : 0f;
+            // Opposite shoves cancel (Sokoban squeeze); same-direction player+ghost can't
+            // exceed pushSpeed. Discard unconditionally — a shove received while falling
+            // or blocked must not fire on some later frame.
+            float want = Mathf.Clamp(playerDx + chainDx, -maxStep, maxStep);
+            chainDx = 0f;
+
+            if (supported && Mathf.Abs(want) > 1e-6f)
             {
-                float dir = PushDirection(pos);
-                if (dir != 0f)
+                float d = Mathf.Sign(want);
+                // detect 2*Skin past the move: at chain steady state the leading crate sits
+                // exactly one step ahead — a tighter cast misses it every other frame (stutter)
+                RaycastHit2D wall = Cast(pos, new Vector2(d, 0f), Mathf.Abs(want) + Skin * 2f);
+                float dx = want;
+                if (wall.collider != null)
                 {
-                    float dx = dir * pushSpeed * dt;
-                    RaycastHit2D wall = Cast(pos, new Vector2(dir, 0f), Mathf.Abs(dx) + Skin);
-                    if (wall.collider != null) dx = dir * Mathf.Max(0f, wall.distance - Skin);
-                    pos.x += dx;
+                    float gap = Mathf.Max(0f, wall.distance - Skin);
+                    dx = d * Mathf.Min(Mathf.Abs(want), gap);   // explicit cap — the extended cast can return gap > |want|
+                    var next = wall.collider.GetComponent<PushableCrate>();
+                    if (next != null && !next.IsReplaying) next.ChainPush(want);
+                    // terrain or a replaying ghost: plain wall — the stall propagates back
+                    // through the train one link per frame, which is correct Sokoban feel.
                 }
+                pos.x += dx;
             }
 
             rb.MovePosition(pos);
@@ -119,6 +139,16 @@ namespace EchoShift
             return best;
         }
 
+        /// <summary>
+        /// Horizontal shove handed over by a neighbouring crate (or a replaying ghost).
+        /// Accumulated, then consumed-or-discarded in our own next FixedUpdate.
+        /// </summary>
+        public void ChainPush(float wantDx)
+        {
+            if (IsReplaying) return;   // a ghost-bound crate is a wall to live pushers
+            chainDx += wantDx;
+        }
+
         // ---- echo replay control (driven by EchoRecorder / EchoClone) ----
 
         /// <summary>Lock the crate and teleport it back to where the recording began.</summary>
@@ -126,19 +156,59 @@ namespace EchoShift
         {
             IsReplaying = true;
             vy = 0f;
+            chainDx = 0f;   // drop shoves queued before the rewind teleport
             rb.position = rewindTo;
             transform.position = rewindTo;   // don't let interpolation smear the rewind
             Physics2D.SyncTransforms();
         }
 
         /// <summary>Advance one recorded tick (called from EchoClone.FixedUpdate with the player's frame index).</summary>
-        public void ApplyReplayFrame(Vector2 framePos) => rb.MovePosition(framePos);
+        public void ApplyReplayFrame(Vector2 framePos)
+        {
+            // The ghost re-enacts the recording verbatim — it never deviates — but it
+            // displaces any LIVE crate standing in its horizontal path (the live world
+            // yields to recorded reality). Per-tick delta <= pushSpeed*dt, so the shoved
+            // crate keeps pace; squeezed-against-a-wall overlap resolves in EndReplay.
+            float deltaX = framePos.x - rb.position.x;
+            if (Mathf.Abs(deltaX) > 1e-6f)
+            {
+                float d = Mathf.Sign(deltaX);
+                RaycastHit2D hit = Cast(rb.position, new Vector2(d, 0f), Mathf.Abs(deltaX) + Skin * 2f);
+                var live = hit.collider != null ? hit.collider.GetComponent<PushableCrate>() : null;
+                if (live != null && !live.IsReplaying) live.ChainPush(deltaX);
+            }
+            rb.MovePosition(framePos);
+        }
 
         /// <summary>Unlock at the current pose; gravity resumes, the puzzle result stays.</summary>
         public void EndReplay()
         {
             IsReplaying = false;
             vy = 0f;
+            chainDx = 0f;
+            DepenetrateLiveCrates();
+        }
+
+        // A ghost squeezed a live crate against a wall during replay (the live crate
+        // clamps to 0 while the verbatim ghost keeps advancing — transient overlap is
+        // unavoidable). On unlock, nudge the intruder out along the shorter horizontal
+        // exit, mirroring EchoRecorder.NudgePlayerOutOfCrates.
+        void DepenetrateLiveCrates()
+        {
+            Physics2D.SyncTransforms();
+            Bounds mine = box.bounds;
+            foreach (var c in All)
+            {
+                if (c == this || c.IsReplaying) continue;
+                Bounds theirs = c.box.bounds;
+                if (!mine.Intersects(theirs)) continue;
+                float side = theirs.center.x >= mine.center.x ? 1f : -1f;
+                float centerX = mine.center.x + side * (mine.extents.x + theirs.extents.x + Skin);
+                Vector2 p = new Vector2(centerX - c.box.offset.x, c.rb.position.y);
+                c.rb.position = p;
+                c.transform.position = p;
+                Physics2D.SyncTransforms();
+            }
         }
     }
 }

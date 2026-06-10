@@ -79,10 +79,11 @@ namespace EchoShift.EditorTools
             var subtitle = EchoBuildUtils.CreateText("Subtitle", root, "a memory in two bodies", 32f, MenuTextDim, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(subtitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 150f), new Vector2(1000f, 60f));
 
+            // Step 110 = button height 92 + 18 px gap (85 used to OVERLAP the 92-tall buttons by 7 px).
             Button startBtn = MakeButton("Start", root, "Start Game", buttonBg, uiSource, hover, click, -30f);
-            Button howBtn = MakeButton("HowTo", root, "How to Play", buttonBg, uiSource, hover, click, -115f);
-            Button selectBtn = MakeButton("Select", root, "Level Select", buttonBg, uiSource, hover, click, -200f);
-            Button quitBtn = MakeButton("Quit", root, "Quit", buttonBg, uiSource, hover, click, -285f);
+            Button howBtn = MakeButton("HowTo", root, "How to Play", buttonBg, uiSource, hover, click, -140f);
+            Button selectBtn = MakeButton("Select", root, "Level Select", buttonBg, uiSource, hover, click, -250f);
+            Button quitBtn = MakeButton("Quit", root, "Quit", buttonBg, uiSource, hover, click, -360f);
 
             // How to Play overlay
             var howPanel = new GameObject("HowToPanel");
@@ -109,14 +110,14 @@ namespace EchoShift.EditorTools
             var selTitle = EchoBuildUtils.CreateTitleText("Title", selPanel.transform, "SELECT LEVEL", 64f, MenuText, TextAlignmentOptions.Center);
             EchoBuildUtils.Place(selTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(900f, 90f));
             EchoBuildUtils.ApplyOutline(selTitle, new Color(0f, 0f, 0f, 1f), 0.20f);
-            string[] scenes = { "Level_00", "Level_01", "Level_02", "Level_03" };
-            string[] labels = { "0  ·  Awakening", "1  ·  Sector 01", "2  ·  Deep Labs", "3  ·  The Core" };
+            string[] scenes = { "Level_00", "Level_01", "Level_02" };
+            string[] labels = { "0  ·  Awakening", "1  ·  Playroom", "2  ·  Hide and Seek" };
             for (int i = 0; i < scenes.Length; i++)
             {
-                Button lb = MakeButton("Lv" + i, selPanel.transform, labels[i], buttonBg, uiSource, hover, click, 120f - i * 90f);
+                Button lb = MakeButton("Lv" + i, selPanel.transform, labels[i], buttonBg, uiSource, hover, click, 145f - i * 110f);
                 lb.gameObject.AddComponent<LevelButton>().sceneName = scenes[i];
             }
-            Button selBack = MakeButton("Back", selPanel.transform, "Back", buttonBg, uiSource, hover, click, -260f);
+            Button selBack = MakeButton("Back", selPanel.transform, "Back", buttonBg, uiSource, hover, click, -205f);
             selPanel.SetActive(false);
 
             var ctrl = canvas.gameObject.AddComponent<MainMenuController>();

@@ -33,12 +33,11 @@ namespace EchoShift.EditorTools
                 EchoLevel0.Build();
                 EchoScene.Build();
                 EchoLevel2.Build();
-                EchoLevel3.Build();
                 RegisterScenes();
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 EditorSceneManager.OpenScene(EchoBuildUtils.MenuScenePath);
-                Debug.Log("✅ Aftertrace built: shared assets + MainMenu + 4 level BLOCKOUTS (colliders + entities, no terrain art). Hand-author art on tilemap layers in each level.");
+                Debug.Log("✅ Aftertrace built: shared assets + MainMenu + 3 level BLOCKOUTS (colliders + entities, no terrain art). Hand-author art on tilemap layers in each level.");
             }
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build All failed: " + e); }
         }
@@ -103,20 +102,8 @@ namespace EchoShift.EditorTools
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Level 0 failed: " + e); }
         }
 
-        [MenuItem(LegacyMenu + "Build Level 3", false, 24)]
-        public static void BuildLevel3()
-        {
-            if (!EnsureTmp()) return;
-            if (!ConfirmRegen("Build Level 3", "the Level 3 scene")) return;
-            try
-            {
-                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                EchoLevel3.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
-                RegisterScenes();
-                Done("Level 3", EchoBuildUtils.Level3ScenePath);
-            }
-            catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Level 3 failed: " + e); }
-        }
+        // "Build Level 3" was removed 2026-06-10: Level 3 is CUT from the game (the story now
+        // ends after Level 2 with a cutscene). EchoLevel3.cs remains on disk as history only.
 
         // SAFE clean: only removes the orphaned Tile cache left by the retired procedural
         // terrain painter. Never touches prefabs/materials/sprites/audio/fonts/scenes, so it
@@ -166,7 +153,6 @@ namespace EchoShift.EditorTools
             AddScene(list, EchoBuildUtils.Level0ScenePath);
             AddScene(list, EchoBuildUtils.Level1ScenePath);
             AddScene(list, EchoBuildUtils.Level2ScenePath);
-            AddScene(list, EchoBuildUtils.Level3ScenePath);
             EditorBuildSettings.scenes = list.ToArray();
         }
 

@@ -37,8 +37,8 @@ namespace EchoShift.EditorTools
             vol.sharedProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(EchoBuildUtils.BloomProfilePath);
 
             EchoUI.GameplayUIRefs ui = EchoUI.BuildGameplayCanvas();
-            BuildGameManager(ui, "Sector 02 — Deep Labs", "Level_03",
-                "I remember... I wasn't always alone.", "", 3);
+            BuildGameManager(ui, "Sector 02 — Deep Labs", "MainMenu",
+                "I remember... I wasn't always alone.", "Thank you for playing.", 3);
 
             var levelGO = new GameObject("Level");
             levelT = levelGO.transform;

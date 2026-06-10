@@ -45,10 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eda53d04f6212b44bd6dadb2e544e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuBgm: {fileID: 8300000, guid: 4271c8d8db5e64b47b1bd61dda7563ce, type: 3}
+  menuBgm: {fileID: 8300000, guid: a2f03d7da2cfe6b47a84fab0e91898e3, type: 3}
   levelBgm: {fileID: 8300000, guid: 11f0074a92d5f5c449051aa17973fb93, type: 3}
   victoryBgm: {fileID: 8300000, guid: ee2b9467f5430e142a7ecbba7ec5876a, type: 3}
   musicVolume: 0.55
+  fadeOutTime: 2.5
+  silenceGap: 0.35
+  fadeInTime: 2.5
+  driftOutTime: 4.5
 --- !u!114 &7707543184228221959
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,8 +7,8 @@ namespace EchoShift
     /// </summary>
     public static class GameProgress
     {
-        public const int MaxFragments = 12;
-        static readonly string[] Levels = { "Level_00", "Level_01", "Level_02", "Level_03" };
+        public const int MaxFragments = 3;
+        static readonly string[] Levels = { "Level_00", "Level_01", "Level_02" };
 
         const string CompletedKey = "echo_completed";
         static string FragKey(string scene) => "echo_frag_" + scene;
