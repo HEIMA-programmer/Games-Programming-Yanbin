@@ -43,6 +43,7 @@ namespace EchoShift
         public float frameFallFps = 10f;
 
         Vector3 baseScale;
+        float baseY;   // authored visual rest offset (feet-grounding) — bob/squash oscillate around it
         SpriteRenderer sr;
         float bobTimer;
         float landStrength;
@@ -58,6 +59,7 @@ namespace EchoShift
             if (!controller) controller = GetComponentInParent<PlayerController>();
             if (!visual) visual = transform;
             baseScale = visual.localScale;
+            baseY = visual.localPosition.y;
             sr = visual.GetComponent<SpriteRenderer>();
         }
 
@@ -98,7 +100,7 @@ namespace EchoShift
                 visual.localScale = Vector3.Lerp(visual.localScale, baseScale, kf);
                 visual.localRotation = Quaternion.Lerp(visual.localRotation, Quaternion.identity, kf);
                 Vector3 lpf = visual.localPosition;
-                lpf.y = Mathf.Lerp(lpf.y, 0f, kf);
+                lpf.y = Mathf.Lerp(lpf.y, baseY, kf);
                 visual.localPosition = lpf;
                 return;
             }
@@ -144,7 +146,7 @@ namespace EchoShift
             visual.localScale = Vector3.Lerp(visual.localScale, scale, k);
             visual.localRotation = Quaternion.Lerp(visual.localRotation, Quaternion.Euler(0f, 0f, tilt), 1f - Mathf.Exp(-15f * dt));
             Vector3 lp = visual.localPosition;
-            lp.y = Mathf.Lerp(lp.y, bobY, 1f - Mathf.Exp(-20f * dt));
+            lp.y = Mathf.Lerp(lp.y, baseY + bobY, 1f - Mathf.Exp(-20f * dt));
             visual.localPosition = lp;
         }
 
