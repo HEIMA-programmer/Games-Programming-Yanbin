@@ -47,13 +47,21 @@ namespace EchoShift
         public bool destroysClone = true;
 
         [Header("Visuals")]
-        [Tooltip("Parent holding the drone sprite + detection cone; flipped to face travel direction.")]
+        [Tooltip("Parent holding the drone sprite + searchlight; flipped to face travel direction.")]
         public Transform facing;
+        [Tooltip("Legacy hard cone sprite — superseded by the searchlight. Leave null on new prefabs.")]
         public SpriteRenderer coneRenderer;
         // 1-Bit: cone state reads via ALPHA (brightness), not hue. Brighter = more alert.
         public Color coneNormal = new Color(1f, 1f, 1f, 0.22f);   // faint white — passive sweep
         public Color coneAlert = new Color(1f, 1f, 1f, 0.6f);     // bright white — spotted you
         public Color coneStunned = new Color(1f, 1f, 1f, 0.08f);  // near-invisible — disabled
+        [Tooltip("Soft Light2D beam replacing the hard cone — brightness = alertness; dies when stunned.")]
+        public UnityEngine.Rendering.Universal.Light2D searchLight;
+        public float lightPassive = 0.8f;
+        public float lightAlert = 2.2f;
+        public float lightStunned = 0.05f;
+        [Tooltip("Body sprite, dimmed while stunned so 'safe to pass through' reads at a glance.")]
+        public SpriteRenderer bodyRenderer;
 
         Rigidbody2D rb;
         Vector2 origin;
@@ -70,6 +78,12 @@ namespace EchoShift
             rb = GetComponent<Rigidbody2D>();
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            // Contact is handled in OnTriggerEnter2D: the collider must be a trigger (a solid
+            // collider just shoves the player and never reports), and full kinematic contacts
+            // are needed so the kinematic echo clone still raises trigger events against us.
+            rb.useFullKinematicContacts = true;
+            var contact = GetComponent<Collider2D>();
+            if (contact != null) contact.isTrigger = true;
             origin = rb.position;
             dir = startMovingRight ? 1 : -1;
             state = State.Patrol;
@@ -112,7 +126,10 @@ namespace EchoShift
                     currentSpeed = Mathf.MoveTowards(currentSpeed, chaseSpeed, chaseAccel * dt);
                     MoveToward(lastKnownX, currentSpeed, dt, clampToLeash: true);
                     if (seen == null) { state = State.Search; stateTimer = searchTime; }
-                    else if (BeyondLeash()) EnterReturn();
+                    // leash 0 = stationary gaze sentinel: pinned at its zone edge it keeps
+                    // STARING (and reporting) instead of breaking off to walk home — walking
+                    // home faces away and would reset the detection meter every sweep.
+                    else if (leash > 0f && BeyondLeash()) EnterReturn();
                     break;
 
                 case State.Search:
@@ -224,20 +241,33 @@ namespace EchoShift
 
         void ApplyConeColour()
         {
-            if (coneRenderer == null) return;
+            Color c;
+            float intensity;
             switch (state)
             {
                 case State.Alert:
                 case State.Chase:
-                case State.Search: coneRenderer.color = coneAlert; break;
-                case State.Stunned: coneRenderer.color = coneStunned; break;
-                default: coneRenderer.color = coneNormal; break;   // Patrol, Return
+                case State.Search: c = coneAlert; intensity = lightAlert; break;
+                case State.Stunned: c = coneStunned; intensity = lightStunned; break;
+                default: c = coneNormal; intensity = lightPassive; break;   // Patrol, Return
+            }
+            if (coneRenderer != null) coneRenderer.color = c;
+            if (searchLight != null) searchLight.intensity = intensity;
+            if (bodyRenderer != null)
+            {
+                Color bc = bodyRenderer.color;
+                bc.a = state == State.Stunned ? 0.45f : 1f;
+                bodyRenderer.color = bc;
             }
         }
 
-        // ---- decoy / contact (semantics unchanged) ----
+        // ---- decoy / contact ----
         void OnTriggerEnter2D(Collider2D other)
         {
+            // Powered down: harmless until it reboots. This is what makes the decoy loop
+            // work on flat ground — the player escapes THROUGH the sleeping body.
+            if (state == State.Stunned) return;
+
             EchoClone clone = other.GetComponentInParent<EchoClone>();
             if (clone != null)
             {
