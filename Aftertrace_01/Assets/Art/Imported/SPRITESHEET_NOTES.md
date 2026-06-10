@@ -203,9 +203,22 @@ panels (`85/102/119` 9-slice), dark circuit traces (`179-181/196-198`), dark lou
 greys reserved for background depth (BackWall tilemap.color 0.42, murals 0.26–0.5),
 foreground stays pure white. Tile assets for all of these live in `Assets/Art/Tiles/`.
 
+## Objects/Boxes.png — 128×128, grid 32×32 (4×4) ✔ — supply chests (audited 2026-06-10)
+
+| Frames | Content |
+|---|---|
+| 0, 2 | closed chest w/ clasps, flat top — **the pushable crate** (content 16×14 px, padBottom 13) |
+| 1, 3 | ornate chest w/ lock emblem (closed) |
+| 4, 8, 12 | simpler closed chest variants |
+| 5, 9, 13 | chest OPEN (lid up) — future "loot/reveal" beats |
+| 6, 7, 10, 11 | broken/crumbling chest |
+| 14, 15 | scattered debris |
+
+PushableCrate.prefab uses `Boxes_0` at ×2 scale (1×0.875u collider), Visual child local (0,-0.25).
+
 ## Wave 2 — TODO (audit before use)
 
 `Main_Characters/Char_Boy.png` (48×48), `Char_Girl.png` (48×48), `Char_fire.png` (32×32 — verify!),
-`Enemies/Alien2–6`, `Objects/Boxes.png` (32×32: crates closed/open/stacked/debris — audit at Phase 3),
-`Objects/Cups.png` (16×16 vials), `Traps/Trap2.png` (16×16), `Trap4.png` (48×48), `Trap5.png` (32×32), `Trap6.png` (48×48),
+`Enemies/Alien2–6`, `Objects/Cups.png` (16×16 vials),
+`Traps/Trap2.png` (16×16), `Trap4.png` (48×48), `Trap5.png` (32×32), `Trap6.png` (48×48),
 `GUI/Numbers.png`, `GUI/Text1/2_*.png`.

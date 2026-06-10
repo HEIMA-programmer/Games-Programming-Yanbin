@@ -51,8 +51,12 @@ namespace EchoShift
             }
             else // PingPong
             {
-                if (waitTimer > 0f) { waitTimer -= dt; target = cur; }
-                else target = (pingDir > 0) ? pointB : pointA;
+                // Parked at an endpoint: just burn the timer. Returning here keeps the
+                // arrival-flip below from re-firing on the expiry tick (target would still
+                // equal the current position, which used to flip the direction right back
+                // and freeze the platform at the endpoint forever).
+                if (waitTimer > 0f) { waitTimer -= dt; return; }
+                target = (pingDir > 0) ? pointB : pointA;
             }
 
             Vector2 next = Vector2.MoveTowards(cur, target, moveSpeed * dt);
@@ -72,7 +76,7 @@ namespace EchoShift
                 }
             }
 
-            if (mode == PlatformMode.PingPong && waitTimer <= 0f && (next - target).sqrMagnitude < 0.0001f)
+            if (mode == PlatformMode.PingPong && (next - target).sqrMagnitude < 0.0001f)
             {
                 pingDir = -pingDir;
                 waitTimer = waitTime;

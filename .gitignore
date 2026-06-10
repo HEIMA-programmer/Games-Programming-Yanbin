@@ -1,0 +1,23 @@
+# Repo-root ignores. Unity-specific rules live in Aftertrace_01/.gitignore.
+
+# AI-assistant workspace state — machine-local, never source
+.claude/
+**/.claude/
+.agents/
+**/.agents/
+.codex/
+**/.codex/
+.cursor/
+**/.cursor/
+
+# Local MCP server configuration (machine-specific paths/ports)
+.mcp.json
+**/.mcp.json
+
+# OS junk at any level
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini

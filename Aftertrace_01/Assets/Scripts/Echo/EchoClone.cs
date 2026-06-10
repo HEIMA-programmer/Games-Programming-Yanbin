@@ -35,9 +35,18 @@ namespace EchoShift
         /// <summary>The one clone currently in play, or null. Enemies use this to target the decoy.</summary>
         public static EchoClone Active { get; private set; }
 
+        /// <summary>A disturbed crate and its per-tick recorded positions (same indices as the player frames).</summary>
+        public struct CrateTrack
+        {
+            public PushableCrate crate;
+            public List<Vector2> frames;
+        }
+
         Rigidbody2D rb;
         SpriteRenderer sr;
         List<RecordedFrame> frames;
+        List<CrateTrack> crateTracks;
+        bool cratesReleased;
         int index;
         bool playing;
         bool dissolving;
@@ -67,6 +76,20 @@ namespace EchoShift
             StartCoroutine(Materialize());
         }
 
+        /// <summary>
+        /// Hand over the disturbed crates: each is locked and rewound to its recording-start
+        /// pose, then driven frame-by-frame in FixedUpdate alongside the player frames.
+        /// </summary>
+        public void AttachCrates(List<CrateTrack> tracks)
+        {
+            crateTracks = tracks;
+            cratesReleased = false;
+            if (tracks == null) return;
+            foreach (var t in tracks)
+                if (t.crate != null && t.frames != null && t.frames.Count > 0)
+                    t.crate.BeginReplay(t.frames[0]);
+        }
+
         void FixedUpdate()
         {
             if (!playing) return;
@@ -84,6 +107,13 @@ namespace EchoShift
 
             rb.MovePosition(next);
             if (sr != null) sr.flipX = !f.facingRight;
+
+            // crates replay on the same tick index the player frame was captured on
+            if (crateTracks != null)
+                foreach (var t in crateTracks)
+                    if (t.crate != null && index < t.frames.Count)
+                        t.crate.ApplyReplayFrame(t.frames[index]);
+
             index++;
 
             if (delta.sqrMagnitude > 0f) CarryRiders(delta);
@@ -116,6 +146,7 @@ namespace EchoShift
             if (dissolving) return;
             dissolving = true;
             playing = false;
+            ReleaseCrates();   // crates stay at their replayed pose — the puzzle result persists
             if (standpointCollider != null) standpointCollider.enabled = false;
             if (dissolveParticles != null) dissolveParticles.Play();
             if (audioSource != null && dissolveClip != null) audioSource.PlayOneShot(dissolveClip);
@@ -168,6 +199,14 @@ namespace EchoShift
             Destroy(gameObject);
         }
 
+        void ReleaseCrates()
+        {
+            if (cratesReleased || crateTracks == null) return;
+            cratesReleased = true;
+            foreach (var t in crateTracks)
+                if (t.crate != null) t.crate.EndReplay();
+        }
+
         void Unregister()
         {
             if (Active == this) Active = null;
@@ -180,6 +219,7 @@ namespace EchoShift
 
         void OnDestroy()
         {
+            ReleaseCrates();   // scene unload / direct destroy must never leave a crate locked
             Unregister();
         }
     }
