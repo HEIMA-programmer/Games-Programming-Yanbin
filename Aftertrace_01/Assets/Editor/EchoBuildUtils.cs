@@ -216,6 +216,19 @@ namespace EchoShift.EditorTools
                 { "diamond_outline", ("Assets/Art/Imported/CraftPix1Bit/Objects/Items.png",              "Items_4") },
                 // Background: first of 8 sliced 80×80 decoration variants.
                 { "background",      ("Assets/Art/Imported/CraftPix1Bit/Tileset/Background_n_details.png", "Background_n_details_0") },
+                { "box_lab",         ("Assets/Art/Imported/CraftPix1Bit/Objects/Boxes.png",              "Boxes_0") },
+                { "box_stack",       ("Assets/Art/Imported/CraftPix1Bit/Objects/Boxes.png",              "Boxes_4") },
+                { "debris",          ("Assets/Art/Imported/CraftPix1Bit/Objects/Boxes.png",              "Boxes_12") },
+                { "memory_vial",     ("Assets/Art/Imported/CraftPix1Bit/Objects/Cups.png",               "Cups_12") },
+                { "memory_core",     ("Assets/Art/Imported/CraftPix1Bit/Objects/Cups.png",               "Cups_24") },
+                { "wall_pipe",       ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset_details.png",    "Tileset_details_2") },
+                { "wall_console",    ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset_details.png",    "Tileset_details_13") },
+                { "panel_border",    ("Assets/Art/Imported/CraftPix1Bit/Tileset/Tileset_Borders.png",    "Tileset_Borders_2") },
+                { "gui_meter",       ("Assets/Art/Imported/CraftPix1Bit/GUI/GUI_Elements.png",           "GUI_Elements_0") },
+                { "gui_faceplate",   ("Assets/Art/Imported/CraftPix1Bit/GUI/GUI_Elements.png",           "GUI_Elements_16") },
+                { "trap_burst",      ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap1.png",                "Trap1_4") },
+                { "trap_flame",      ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap2.png",                "Trap2_20") },
+                { "trap_arc",        ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap3.png",                "Trap3_4") },
             };
 
         // Public read access so level/menu builders can grab specific decoration frames.

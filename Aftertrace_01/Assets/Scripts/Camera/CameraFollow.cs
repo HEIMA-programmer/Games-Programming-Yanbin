@@ -28,6 +28,10 @@ namespace EchoShift
         public Vector3 offset = new Vector3(2.5f, 1.2f, -10f);
         public float smoothTime = 0.18f;
         public float minY = -1.5f;
+        // Horizontal clamp so the view never leaves the dressed part of the level
+        // (set per scene; defaults follow freely).
+        public float minX = float.NegativeInfinity;
+        public float maxX = float.PositiveInfinity;
 
         [Header("Clone pull-back — when NO Pixel Perfect Camera")]
         public float baseOrthoSize = 6.5f;
@@ -73,6 +77,7 @@ namespace EchoShift
 
             Vector3 desired = target.position + offset;
             if (desired.y < minY) desired.y = minY;
+            desired.x = Mathf.Clamp(desired.x, minX, maxX);
             desired.z = offset.z;
 
             if (!inited) { basePos = desired; inited = true; }

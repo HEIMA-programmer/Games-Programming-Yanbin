@@ -41,6 +41,14 @@ namespace EchoShift
         void Update()
         {
             if (GameManager.Paused) return;
+            // Recording is gated by player control: while control is disabled — the intro,
+            // a blocking narrative beat, or the victory sequence — you can't start (and any
+            // in-progress recording stops), so a story beat is never interrupted by an echo.
+            if (pc != null && !pc.ControlEnabled)
+            {
+                if (IsRecording) StopRecording();
+                return;
+            }
             if (Input.GetKeyDown(recordKey)) StartRecording();
             else if (IsRecording && (Input.GetKeyUp(recordKey) || elapsed >= maxRecordSeconds)) StopRecording();
         }

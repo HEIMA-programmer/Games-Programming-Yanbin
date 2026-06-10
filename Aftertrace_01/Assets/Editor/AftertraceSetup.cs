@@ -8,13 +8,19 @@ using UnityEngine;
 namespace EchoShift.EditorTools
 {
     /// <summary>
-    /// One-click builders for Aftertrace. "Build All" generates shared assets (art,
-    /// materials, audio, prefabs, persistent App) plus the three scenes and registers
-    /// them in Build Settings. Individual scene builders are also exposed. Idempotent.
+    /// LEGACY one-click builders for Aftertrace — RETIRED as of 2026-06-10.
+    ///
+    /// The project pivoted from generated scenes to HAND-AUTHORED scenes (built directly in
+    /// the editor). The scenes in Assets/_Scenes are now the source of truth; running any
+    /// builder below DESTROYS hand-authored work in the scenes it touches. The code is kept
+    /// for project history (the M1 procedural pipeline) and as a reference, parked under the
+    /// "Aftertrace ▸ Legacy (DANGER)" menu behind an extra warning dialog.
     /// </summary>
     public static class AftertraceSetup
     {
-        [MenuItem("Aftertrace/Build All", false, 0)]
+        const string LegacyMenu = "Aftertrace/Legacy (DANGER — overwrites hand-made scenes)/";
+
+        [MenuItem(LegacyMenu + "Build All", false, 0)]
         public static void BuildAll()
         {
             if (!EnsureTmp()) return;
@@ -37,7 +43,7 @@ namespace EchoShift.EditorTools
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build All failed: " + e); }
         }
 
-        [MenuItem("Aftertrace/Build Main Menu", false, 20)]
+        [MenuItem(LegacyMenu + "Build Main Menu", false, 20)]
         public static void BuildMainMenu()
         {
             if (!EnsureTmp()) return;
@@ -45,15 +51,14 @@ namespace EchoShift.EditorTools
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                BuildShared();
-                EchoMenuScene.Build();
+                EchoMenuScene.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
                 RegisterScenes();
                 Done("Main Menu", EchoBuildUtils.MenuScenePath);
             }
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Main Menu failed: " + e); }
         }
 
-        [MenuItem("Aftertrace/Build Level 1", false, 21)]
+        [MenuItem(LegacyMenu + "Build Level 1", false, 21)]
         public static void BuildLevel1()
         {
             if (!EnsureTmp()) return;
@@ -61,15 +66,14 @@ namespace EchoShift.EditorTools
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                BuildShared();
-                EchoScene.Build();
+                EchoScene.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
                 RegisterScenes();
                 Done("Level 1", EchoBuildUtils.Level1ScenePath);
             }
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Level 1 failed: " + e); }
         }
 
-        [MenuItem("Aftertrace/Build Level 2", false, 22)]
+        [MenuItem(LegacyMenu + "Build Level 2", false, 22)]
         public static void BuildLevel2()
         {
             if (!EnsureTmp()) return;
@@ -77,15 +81,14 @@ namespace EchoShift.EditorTools
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                BuildShared();
-                EchoLevel2.Build();
+                EchoLevel2.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
                 RegisterScenes();
                 Done("Level 2", EchoBuildUtils.Level2ScenePath);
             }
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Level 2 failed: " + e); }
         }
 
-        [MenuItem("Aftertrace/Build Level 0", false, 23)]
+        [MenuItem(LegacyMenu + "Build Level 0", false, 23)]
         public static void BuildLevel0()
         {
             if (!EnsureTmp()) return;
@@ -93,15 +96,14 @@ namespace EchoShift.EditorTools
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                BuildShared();
-                EchoLevel0.Build();
+                EchoLevel0.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
                 RegisterScenes();
                 Done("Level 0", EchoBuildUtils.Level0ScenePath);
             }
             catch (System.Exception e) { Debug.LogError("[Aftertrace] Build Level 0 failed: " + e); }
         }
 
-        [MenuItem("Aftertrace/Build Level 3", false, 24)]
+        [MenuItem(LegacyMenu + "Build Level 3", false, 24)]
         public static void BuildLevel3()
         {
             if (!EnsureTmp()) return;
@@ -109,8 +111,7 @@ namespace EchoShift.EditorTools
             try
             {
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-                BuildShared();
-                EchoLevel3.Build();
+                EchoLevel3.Build();   // scoped: reuse existing shared prefabs (Build All regenerates them)
                 RegisterScenes();
                 Done("Level 3", EchoBuildUtils.Level3ScenePath);
             }
@@ -120,7 +121,7 @@ namespace EchoShift.EditorTools
         // SAFE clean: only removes the orphaned Tile cache left by the retired procedural
         // terrain painter. Never touches prefabs/materials/sprites/audio/fonts/scenes, so it
         // can't wipe hand-authored work. (The old "delete everything" clean was removed.)
-        [MenuItem("Aftertrace/Clean Orphaned Tile Cache", false, 40)]
+        [MenuItem(LegacyMenu + "Clean Orphaned Tile Cache", false, 40)]
         public static void CleanGenerated()
         {
             if (!EditorUtility.DisplayDialog("Delete orphaned tile cache?",
@@ -174,16 +175,24 @@ namespace EchoShift.EditorTools
             if (File.Exists(path)) list.Add(new EditorBuildSettingsScene(path, true));
         }
 
-        // Scene builders OVERWRITE their scene with a freshly-generated gameplay blockout
-        // (colliders + entities only — terrain/background art is hand-authored on tilemap
-        // layers). Guard every builder behind a confirm so a stray click can't wipe hand art.
+        // LEGACY GUARD. Scenes are hand-authored now (2026-06-10 pivot) — these builders
+        // OVERWRITE them with bare code-generated blockouts. Double confirmation, Cancel default.
         static bool ConfirmRegen(string label, string what)
-            => EditorUtility.DisplayDialog(
-                "Regenerate gameplay blockout?",
-                $"\"{label}\" rebuilds {what} from code as a clean gameplay BLOCKOUT — colliders " +
-                "+ entities only, no terrain/background art.\n\nThis OVERWRITES any hand-authored " +
-                "art already in those scenes. Continue?",
-                "Regenerate (overwrite)", "Cancel");
+        {
+            if (!EditorUtility.DisplayDialog(
+                "⚠ LEGACY BUILDER — scenes are hand-authored now",
+                $"\"{label}\" would regenerate {what} from RETIRED builder code and DESTROY the " +
+                "hand-authored scene content (terrain art, animations, UI, story triggers).\n\n" +
+                "Only proceed if you really want to reset to a bare blockout.",
+                "I understand — continue", "Cancel"))
+                return false;
+
+            return EditorUtility.DisplayDialog(
+                "⚠ Really overwrite hand-made scenes?",
+                $"Last chance: \"{label}\" permanently replaces {what} in the working tree. " +
+                "Anything not committed to git is LOST.",
+                "Overwrite", "Cancel");
+        }
 
         // ---- TMP gate ----
         static bool EnsureTmp()

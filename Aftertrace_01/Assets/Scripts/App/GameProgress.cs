@@ -3,14 +3,12 @@ using UnityEngine;
 namespace EchoShift
 {
     /// <summary>
-    /// Cross-scene / cross-session progress, persisted via PlayerPrefs:
-    /// per-level fragment counts (deduped by max) and times, plus a "game completed"
-    /// flag that the main menu reads to warm up its visuals.
+    /// Cross-scene progress, persisted with PlayerPrefs.
     /// </summary>
     public static class GameProgress
     {
-        public const int MaxFragments = 9;
-        static readonly string[] Levels = { "Level_01", "Level_02", "Level_03" };
+        public const int MaxFragments = 12;
+        static readonly string[] Levels = { "Level_00", "Level_01", "Level_02", "Level_03" };
 
         const string CompletedKey = "echo_completed";
         static string FragKey(string scene) => "echo_frag_" + scene;

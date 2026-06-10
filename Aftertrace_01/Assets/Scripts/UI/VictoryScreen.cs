@@ -43,9 +43,9 @@ namespace EchoShift
             if (panelRoot != null) panelRoot.SetActive(true);
             if (levelNameText != null) levelNameText.text = levelName;
             if (timeText != null)
-                timeText.text = isFinal ? "Total Time   " + FormatTime(totalTime) : "Time   " + FormatTime(timeTaken);
+                timeText.text = isFinal ? "Archive Time   " + FormatTime(totalTime) : "Room Time   " + FormatTime(timeTaken);
             if (fragmentsText != null)
-                fragmentsText.text = "Fragments   " + collected + " / " + total + "        Total   " + totalCollected + " / " + maxFragments;
+                fragmentsText.text = "Recovered Traces   " + collected + " / " + total + "        Archive   " + totalCollected + " / " + maxFragments;
             if (finalMessageText != null)
             {
                 finalMessageText.text = finalMessage ?? "";
@@ -67,7 +67,7 @@ namespace EchoShift
                     narrativeText.text = line;
                     SetTextAlpha(narrativeText, 0f);
                     yield return Fade(narrativeText, 0f, 1f, 0.9f);
-                    yield return WaitUnscaled(1.4f);
+                    yield return WaitUnscaled(narrativeHold);
                 }
                 yield return Fade(narrativeText, 1f, 0f, 0.7f);
             }
