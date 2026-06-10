@@ -55,21 +55,28 @@ namespace EchoShift
             StartCoroutine(LoadRoutine(sceneName));
         }
 
-        public void FadeInNow()
-        {
-            StopAllCoroutines();
-            SetAlpha(1f);
-            StartCoroutine(FadeRoutine(1f, 0f, fadeTime));
-        }
+        // (FadeInNow was removed: dead code whose StopAllCoroutines could kill a
+        //  mid-flight LoadRoutine and leave isFading stuck true = every later
+        //  FadeToScene silently no-ops. Nothing ever called it.)
 
         IEnumerator LoadRoutine(string sceneName)
         {
             isFading = true;
+            // the old music starts drifting away WITH the black — if the next scene
+            // wants a different track, it should already be receding when we get there
+            if (AudioManager.Instance != null) AudioManager.Instance.DriftOut();
             yield return FadeRoutine(image.color.a, 1f, fadeTime);
 
             Time.timeScale = 1f; // make sure gameplay resumes after a paused transition
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
             while (op != null && !op.isDone) yield return null;
+
+            // Hold full black for two rendered frames so first-frame initialization
+            // (camera snap, player ground-settle, pixel-perfect RT creation, Light2D
+            // warm-up) all happens under cover instead of flashing on screen.
+            SetAlpha(1f);
+            yield return null;
+            yield return null;
 
             yield return FadeRoutine(1f, 0f, fadeTime);
             isFading = false;
@@ -81,7 +88,10 @@ namespace EchoShift
             SetAlpha(from);
             while (t < dur)
             {
-                t += Time.unscaledDeltaTime;
+                // Clamp the step: the frame right after a scene load carries the whole
+                // load hitch in its delta (hundreds of ms) and would swallow the entire
+                // fade in one jump — the "flash" the fade exists to prevent.
+                t += Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
                 SetAlpha(Mathf.Lerp(from, to, dur <= 0f ? 1f : t / dur));
                 yield return null;
             }

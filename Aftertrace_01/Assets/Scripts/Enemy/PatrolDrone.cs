@@ -11,7 +11,7 @@ namespace EchoShift
     /// walks home if it loses the trail. A leash caps how far it may chase so it never wanders
     /// off its zone or corners the player. Clones are seen first, so a recorded echo reliably
     /// draws the cone away — the decoy. Touching the player respawns them; touching a clone
-    /// destroys it (Level 2) or only stuns (Level 3 decoy corridor).
+    /// destroys it (default) or only stuns, per destroysClone.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class PatrolDrone : MonoBehaviour
@@ -43,7 +43,7 @@ namespace EchoShift
 
         [Header("Decoy / contact")]
         public float stunTime = 2.5f;
-        [Tooltip("True = touching a clone destroys it (Level 2). False = clone survives and only stuns the drone, so one clone can draw several enemies (Level 3 decoy corridor).")]
+        [Tooltip("True = touching a clone destroys it. False = clone survives and only stuns the drone, so one clone can draw several enemies in sequence.")]
         public bool destroysClone = true;
 
         [Header("Visuals")]

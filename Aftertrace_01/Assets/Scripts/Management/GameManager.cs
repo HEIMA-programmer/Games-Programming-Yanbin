@@ -66,7 +66,9 @@ namespace EchoShift
             player = FindObjectOfType<PlayerController>();
             cameraShake = FindObjectOfType<CameraShake>();
             if (hud != null) { hud.SetCollected(0, totalFragments); hud.SetRecording(false); }
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayLevelMusic();
+            // generic level track is only the fallback — a SceneMusic in the scene wins
+            if (AudioManager.Instance != null && FindObjectOfType<SceneMusic>() == null)
+                AudioManager.Instance.PlayLevelMusic();
         }
 
         void OnDestroy()

@@ -71,14 +71,36 @@ namespace EchoShift
             }
         }
 
-        void LateUpdate()
+        // Snap during scene activation: the serialized camera pose is wherever the scene
+        // was last saved in the editor, and any render that happens before the first
+        // LateUpdate (load-hitch editor repaints, play-mode first paint) would show it —
+        // a one-frame flash of some random mid-level view.
+        void OnEnable() { SnapToTarget(); }
+
+        public void SnapToTarget()
         {
             if (target == null) return;
+            Vector3 desired = ClampedDesired();
+            basePos = desired;
+            vel = Vector3.zero;
+            inited = true;
+            transform.position = desired;
+        }
 
+        Vector3 ClampedDesired()
+        {
             Vector3 desired = target.position + offset;
             if (desired.y < minY) desired.y = minY;
             desired.x = Mathf.Clamp(desired.x, minX, maxX);
             desired.z = offset.z;
+            return desired;
+        }
+
+        void LateUpdate()
+        {
+            if (target == null) return;
+
+            Vector3 desired = ClampedDesired();
 
             if (!inited) { basePos = desired; inited = true; }
             basePos = Vector3.SmoothDamp(basePos, desired, ref vel, smoothTime);

@@ -281,8 +281,8 @@ MonoBehaviour:
   - {fileID: 289144848352645085, guid: 7d959cf52405d51449ccd2bc296c6578, type: 3}
   closeFrames: []
   audioSource: {fileID: 4719392757215687369}
-  openClip: {fileID: 0}
-  closeClip: {fileID: 0}
+  openClip: {fileID: 8300000, guid: 9704150e1ce779045b1af3acbe383144, type: 3}
+  closeClip: {fileID: 8300000, guid: 1f576d5b6201cb940b719a3764151ddf, type: 3}
   targetScene: Level_01
   openTime: 0.4
   closeTime: 0.3

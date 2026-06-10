@@ -28,7 +28,11 @@ namespace EchoShift
 
         [Header("Ground Check")]
         public Vector2 groundCheckOffset = new Vector2(0f, -0.52f);
-        public Vector2 groundCheckSize = new Vector2(0.72f, 0.14f);
+        // Narrower than the 0.62 capsule on purpose: walls share the Ground layer, so a
+        // box poking past the capsule's flanks reads a hugged wall as "ground" and refills
+        // coyote time every frame — infinite wall-climb. 0.5 keeps a 0.05+ margin to a
+        // touching wall while the box still reaches 0.09 below the feet for real floors.
+        public Vector2 groundCheckSize = new Vector2(0.5f, 0.14f);
         public LayerMask groundMask;
 
         [Header("Landing")]
