@@ -29,20 +29,39 @@ namespace EchoShift.EditorTools
             ("Assets/Art/Imported/CraftPix1Bit/Tileset/Background_n_details.png", 80, 80),
             ("Assets/Art/Imported/CraftPix1Bit/Objects/Door.png",               48, 48),
             ("Assets/Art/Imported/CraftPix1Bit/Objects/Items.png",              16, 16),
-            ("Assets/Art/Imported/CraftPix1Bit/Objects/checkpoint.png",         48, 48),
+            // 9-frame activation strip (pole grows: ball → sparks → arrow flag), one 16px column per frame.
+            ("Assets/Art/Imported/CraftPix1Bit/Objects/checkpoint.png",         16, 48),
             ("Assets/Art/Imported/CraftPix1Bit/Objects/Boxes.png",              32, 32),
             ("Assets/Art/Imported/CraftPix1Bit/Objects/Cups.png",               16, 16),
             ("Assets/Art/Imported/CraftPix1Bit/GUI/Icons.png",                  16, 16),
             ("Assets/Art/Imported/CraftPix1Bit/GUI/GUI_Elements.png",           16, 16),
             ("Assets/Art/Imported/CraftPix1Bit/GUI/Tileset_GUI.png",            16, 16),
             // Architectural props — crusher / dome machines (48×48 grid).
+            ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap1.png",                48, 48),
+            ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap2.png",                16, 16),
+            ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap3.png",                48, 80),
+            ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap4.png",                48, 48),
+            ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap5.png",                32, 32),
             ("Assets/Art/Imported/CraftPix1Bit/Traps/Trap6.png",                48, 48),
         };
 
         // Single-mode (un-sliced) sheets that still need FullRect mesh for Tiled drawMode.
         static readonly string[] SingleSheets = new string[0];
 
-        [MenuItem("Aftertrace/Slice Imported Spritesheets", false, 30)]
+        [MenuItem("Aftertrace/Slice Imported Spritesheets (ALL — overwrites custom rects)", false, 30)]
+        public static void SliceAllFromMenu()
+        {
+            if (!EditorUtility.DisplayDialog(
+                "Re-slice ALL spritesheets?",
+                "This rewrites the sprite grid of EVERY sheet in the table — including sheets " +
+                "whose slicing was hand-corrected with custom rects after visual inspection. " +
+                "Those corrections would be lost.\n\nPrefer slicing single sheets via " +
+                "EchoSpriteSlicer.Slice(path, w, h) from script.",
+                "Re-slice everything", "Cancel"))
+                return;
+            SliceAll();
+        }
+
         public static void SliceAll()
         {
             int ok = 0, skipped = 0;
@@ -56,7 +75,7 @@ namespace EchoShift.EditorTools
             Debug.Log($"[EchoSpriteSlicer] Sliced {ok}/{Sheets.Length} sheets ({skipped} skipped); {SingleSheets.Length} single sheets reimported.");
         }
 
-        static bool Slice(string path, int cellW, int cellH)
+        public static bool Slice(string path, int cellW, int cellH)
         {
             var ti = AssetImporter.GetAtPath(path) as TextureImporter;
             if (ti == null) { Debug.LogWarning($"[EchoSpriteSlicer] No importer: {path}"); return false; }
