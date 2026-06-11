@@ -132,6 +132,8 @@ namespace EchoShift
         void Affect(Collider2D other)
         {
             if (!active) return;
+            // flames keep animating during a story beat but can't hurt a frozen player
+            if (NarrativeTerminal.StoryFreeze) return;
 
             if (dissolveEcho)
             {

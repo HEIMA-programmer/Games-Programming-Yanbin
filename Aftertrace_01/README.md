@@ -67,8 +67,8 @@ gameplay blockouts only — don't run them on the shipped scenes.
 Flow: Menu → Act 1 → Level 0 → Act 2 → Level 1 → Act 3 → Level 2 → Act 4 → Menu.
 One memory fragment ("recovered trace") per level — 3 in total; progress persists across
 runs. About 10–15 minutes of play. (A fourth level existed as a blockout and was
-deliberately cut to keep depth over count — `Level_03.unity` remains in the repo,
-unreferenced, as part of the project's history.)
+deliberately cut to keep depth over count; the blockout and its retired generator
+were removed — the decision is documented in the Docs/ dev logs.)
 
 ## Accessibility, legal & ethical notes
 
@@ -119,9 +119,9 @@ build — can be followed:
 ```
 Aftertrace_01/
 ├── Assets/
-│   ├── _Scenes/     MainMenu, Cut_00…Cut_03, Level_00…Level_02 (+ the cut Level_03)
-│   ├── Scripts/     Player, Echo, Environment, Enemy, UI, App, Management, Camera, Effects, Level
-│   ├── Editor/      Aftertrace tooling (cutscene/art/audio) + retired legacy builders
+│   ├── _Scenes/     MainMenu, Cut_00…Cut_03, Level_00…Level_02
+│   ├── Scripts/     Player, Echo, Environment, Enemy, UI, App, Management, Camera, Effects
+│   ├── Editor/      Aftertrace tooling: cutscene builder, gameplay-UI builder, art/audio generators
 │   ├── Art/         Imported/ (CraftPix, Kenney) · Sprites/ · Palettes/ · images/ (cutscenes)
 │   ├── Audio/       procedural SFX WAVs · Music/ (licensed OGG/MP3 tracks)
 │   ├── Fonts/  Prefabs/  Resources/  Settings/

@@ -99,7 +99,7 @@ namespace EchoShift
 
         void FixedUpdate()
         {
-            if (state == State.Stunned || GameManager.Paused) return;
+            if (state == State.Stunned || GameManager.Paused || NarrativeTerminal.StoryFreeze) return;
 
             float dt = Time.fixedDeltaTime;
             bool seesPlayer = CanSee(playerT, playerCol);
@@ -266,7 +266,8 @@ namespace EchoShift
         {
             // Powered down: harmless until it reboots. This is what makes the decoy loop
             // work on flat ground — the player escapes THROUGH the sleeping body.
-            if (state == State.Stunned) return;
+            // Also harmless while a story beat freezes the world (player can't dodge).
+            if (state == State.Stunned || NarrativeTerminal.StoryFreeze) return;
 
             EchoClone clone = other.GetComponentInParent<EchoClone>();
             if (clone != null)

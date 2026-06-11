@@ -23,6 +23,15 @@ as fallback (see `Assets/Editor/EchoArt.cs`).
   attribution not required. See `Assets/Art/Imported/KenneyUI/LICENSE.txt`. Available as a
   full atlas for menu / panel work.
 
+- **[Industrial Parallax Background](https://opengameart.org/content/industrial-parallax-background)**
+  — Luis Zuno ([@ansimuz](https://ansimuz.com)). **CC0** (stated on the OpenGameArt page and
+  in the bundled `Assets/Art/Backgrounds/industrial_LICENSE.txt`). Silhouette layers used as
+  the dimmed backdrops in the main menu and Levels 0–2 (downloaded 2026-06-12).
+
+- **[Stars — Parallax Backgrounds](https://opengameart.org/content/stars-parallax-backgrounds)**
+  — Bonsaiheldin. **CC0** (stated on the OpenGameArt page). Starfield layers behind the main
+  menu (downloaded 2026-06-12).
+
 ## Cutscene illustrations (AI-generated)
 - The ten story-interlude images in `Assets/Art/images/` (acts 1-4, shown by the
   `Cut_00`–`Cut_03` scenes) were generated with an AI image model from prompts written
@@ -35,7 +44,12 @@ as fallback (see `Assets/Editor/EchoArt.cs`).
 - **[Orbitron](https://fonts.google.com/specimen/Orbitron)** — Matt McInerney. Available
   display font (fallback for VT323). See `Assets/Fonts/Orbitron-OFL.txt`.
 - **[VT323](https://fonts.google.com/specimen/VT323)** — Peter Hull. Retro pixel terminal
-  display font used for the menu title and HUD counter. See `Assets/Fonts/VT323-OFL.txt`.
+  display font used for the HUD counter, cutscene captions and menu subtitle. See
+  `Assets/Fonts/VT323-OFL.txt`.
+- **[Jersey 10](https://fonts.google.com/specimen/Jersey+10)** — The Soft Type Project
+  (Sarah Cadigan-Fried). Chunky pixel display font used for the menu title (the cyan
+  "3D" extrusion is a TextMesh Pro underlay, not part of the font). See
+  `Assets/Fonts/Jersey10-OFL.txt` (downloaded 2026-06-12 from the google/fonts repo).
 
 ## Audio
 
@@ -63,10 +77,10 @@ this project is the one stated below.
   <https://opengameart.org/content/spooky-dungeon>
 - **Schumann, "Scenes from Childhood" arranged for music box — Gregor Quendel**
   (arr.; after Robert Schumann; source notes credit Bernd Krueger /
-  piano-midi.de). Movements used: *A Tale of Distant Lands*
-  (`cut0_distant_lands.mp3`), *Pleading Child* (`cut1_pleading_child.mp3`),
-  *The Poet Speaks* (`cut2_poet_speaks.mp3`), *Reverie* (`cut3_reverie.mp3`),
-  *Blind Man's Buff* / *Hobgoblin* (`alt_*.mp3`, unused alternates). License:
+  piano-midi.de). Movement used: *Reverie* (`cut3_reverie.mp3`, ending cutscene
+  — cutscene acts 1–3 share their following level's track instead). Shipped
+  unused alternates: *A Tale of Distant Lands*, *Pleading Child*, *The Poet
+  Speaks*, *Blind Man's Buff*, *Hobgoblin*. License:
   **CC-BY 4.0** <https://creativecommons.org/licenses/by/4.0/>.
   <https://opengameart.org/content/schumann-scenes-from-childhood-arranged-for-music-box>
 
