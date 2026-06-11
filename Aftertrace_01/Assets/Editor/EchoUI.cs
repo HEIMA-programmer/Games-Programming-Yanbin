@@ -1,3 +1,4 @@
+using System.Linq;
 using EchoShift;
 using TMPro;
 using UnityEngine;
@@ -58,7 +59,11 @@ namespace EchoShift.EditorTools
 
             // ---- HUD (gem icon + "X / Y" counter top-left) ----
             var hud = canvas.gameObject.AddComponent<HUDController>();
-            Sprite gem = EchoBuildUtils.LoadSprite("fragment");
+            // kit diamond (Items_5) — the old procedural heart read as a HEALTH icon
+            Sprite gem = UnityEditor.AssetDatabase
+                .LoadAllAssetsAtPath("Assets/Art/Imported/CraftPix1Bit/Objects/Items.png")
+                .OfType<Sprite>().FirstOrDefault(s => s.name == "Items_5");
+            if (gem == null) gem = EchoBuildUtils.LoadSprite("fragment");
 
             var icon = EchoBuildUtils.CreateImage("FragIcon", root, gem, Color.white);
             EchoBuildUtils.Place(icon.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(48f, -52f), new Vector2(54f, 54f));

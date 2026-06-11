@@ -67,6 +67,8 @@ namespace EchoShift
 
         void FixedUpdate()
         {
+            // story beats freeze the player — the fuse must not keep burning at them
+            if (NarrativeTerminal.StoryFreeze) return;
             float dt = Time.fixedDeltaTime;
             switch (state)
             {

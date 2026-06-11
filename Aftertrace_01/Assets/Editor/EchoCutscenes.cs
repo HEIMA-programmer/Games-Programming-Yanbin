@@ -40,10 +40,11 @@ namespace EchoShift.EditorTools
             new Act
             {
                 scenePath = "Assets/_Scenes/Cut_00.unity", nextScene = "Level_00",
-                // the cycle's OPENING piece — and it puts ALL four cutscenes in the
-                // music-box family: chip = the machine's present, music box = the
-                // child's recordings. The menu chip stays a "UI sound" apart.
-                music = "Assets/Audio/Music/cut0_distant_lands.mp3", musicScale = 0.75f,
+                // Acts 1-3 share their FOLLOWING level's track (the act is the level's
+                // prelude): the short cutscenes don't outlive a standalone piece, and
+                // AudioManager's same-clip dedupe carries the music seamlessly across
+                // the act -> level boundary. Scales match the level's for a level hand-off.
+                music = "Assets/Audio/Music/l0_first_light.ogg", musicScale = 0.9f,
                 images = new[] { "1-1.png", "1-2.png", "1-3.png" },
                 lines = new[]
                 {
@@ -55,7 +56,7 @@ namespace EchoShift.EditorTools
             new Act
             {
                 scenePath = "Assets/_Scenes/Cut_01.unity", nextScene = "Level_01",
-                music = "Assets/Audio/Music/cut1_pleading_child.mp3", musicScale = 0.75f,
+                music = "Assets/Audio/Music/l1_forgotten_lullaby.ogg", musicScale = 0.7f,
                 images = new[] { "2-1.png", "2-2.png" },
                 lines = new[]
                 {
@@ -66,7 +67,7 @@ namespace EchoShift.EditorTools
             new Act
             {
                 scenePath = "Assets/_Scenes/Cut_02.unity", nextScene = "Level_02",
-                music = "Assets/Audio/Music/cut2_poet_speaks.mp3", musicScale = 0.75f,
+                music = "Assets/Audio/Music/l2_spooky_dungeon.ogg", musicScale = 0.9f,
                 images = new[] { "3-1.png", "3-2.png" },
                 lines = new[]
                 {
@@ -148,6 +149,10 @@ namespace EchoShift.EditorTools
             var plateGO = new GameObject("CaptionPlate");
             plateGO.transform.SetParent(rootGO.transform, false);
             var plate = plateGO.AddComponent<Image>();
+            // translucent black band, the original design: scene stays visible through it,
+            // captions stay readable. Backed by a real sprite (a plain white texture,
+            // tinted) because a sprite-less Image refuses to render on this canvas.
+            plate.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Sprites/UI/white.png");
             plate.color = new Color(0f, 0f, 0f, 0.78f);
             plate.raycastTarget = false;
             var plateRT = plate.rectTransform;
@@ -184,7 +189,9 @@ namespace EchoShift.EditorTools
             var hintRT = hint.rectTransform;
             hintRT.anchorMin = hintRT.anchorMax = new Vector2(1f, 0f);
             hintRT.pivot = new Vector2(1f, 0f);
-            hintRT.anchoredPosition = new Vector2(-44f, 26f);
+            // inside the riveted screen frame (it draws ABOVE this canvas and its border
+            // strip swallows anything within ~55px of the screen edge)
+            hintRT.anchoredPosition = new Vector2(-84f, 72f);
             hintRT.sizeDelta = new Vector2(280f, 40f);
 
             if (!string.IsNullOrEmpty(act.music))

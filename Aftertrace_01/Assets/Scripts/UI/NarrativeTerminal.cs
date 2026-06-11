@@ -65,6 +65,8 @@ namespace EchoShift
         void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            // scene change mid-beat must not leave the world frozen
+            StoryFreeze = false;
         }
 
         public void Play(string[] lines, bool blocking, Sprite memory = null, Action onComplete = null)
@@ -112,6 +114,14 @@ namespace EchoShift
             runner = null;
         }
 
+        /// <summary>
+        /// True while a BLOCKING beat is on screen. The player is frozen then, so the
+        /// world's threats freeze with them — drones, mines, traps and echo playback all
+        /// gate on this. Without it, a story beat next to a hazard is a death sentence
+        /// (frozen player, live mine).
+        /// </summary>
+        public static bool StoryFreeze { get; private set; }
+
         IEnumerator Run(Beat beat)
         {
             busy = true;
@@ -124,9 +134,13 @@ namespace EchoShift
                 prevControl = player.ControlEnabled;
                 player.ControlEnabled = false;
             }
+            if (blocking) StoryFreeze = true;
 
             SetText(titleText, beat.title);
             SetText(speakerText, beat.speaker);
+            // clear the PREVIOUS beat's last line — it stays in the TMP after fade-out,
+            // and fading the panel back in would flash it before TypeLine resets the text
+            SetText(bodyText, "");
 
             if (portraitImage != null)
             {
@@ -168,6 +182,7 @@ namespace EchoShift
                 group.blocksRaycasts = false;
             }
 
+            StoryFreeze = false;
             if (player != null) player.ControlEnabled = prevControl;
             busy = false;
             beat.onComplete?.Invoke();

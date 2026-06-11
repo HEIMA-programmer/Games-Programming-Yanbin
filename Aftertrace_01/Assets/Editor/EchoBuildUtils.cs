@@ -29,7 +29,6 @@ namespace EchoShift.EditorTools
         public const string Level2ScenePath = "Assets/_Scenes/Level_02.unity";
         public const string MenuScenePath = "Assets/_Scenes/MainMenu.unity";
         public const string Level0ScenePath = "Assets/_Scenes/Level_00.unity";
-        public const string Level3ScenePath = "Assets/_Scenes/Level_03.unity";
 
         public const string GroundLayer = "Ground";
 

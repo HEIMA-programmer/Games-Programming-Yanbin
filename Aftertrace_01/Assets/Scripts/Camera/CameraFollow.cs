@@ -1,7 +1,7 @@
 using UnityEngine;
 // URP's Pixel Perfect Camera. Aliased because UnityEngine.U2D also ships a same-named
-// (built-in RP) component; this project's 2D Renderer uses the URP one (see
-// Assets/Editor/EchoPixelPerfectCamera.cs, which adds + configures it per scene).
+// (built-in RP) component; this project's 2D Renderer uses the URP one. Every gameplay
+// scene carries one configured to the project standard (384x216 reference, PPU 32).
 using PPC = UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera;
 
 namespace EchoShift

@@ -93,6 +93,9 @@ namespace EchoShift
         void FixedUpdate()
         {
             if (!playing) return;
+            // story beats freeze the world — the echo's 5s replay must not burn away
+            // while the player stands locked in a dialogue
+            if (NarrativeTerminal.StoryFreeze) return;
 
             if (index >= frames.Count)
             {
