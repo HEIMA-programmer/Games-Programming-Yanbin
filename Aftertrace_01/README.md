@@ -84,9 +84,26 @@ gameplay blockouts only — don't run them on the shipped scenes.
 
 Flow: Menu → Act 1 → Level 0 → Act 2 → Level 1 → Act 3 → Level 2 → Act 4 → Menu.
 One memory fragment ("recovered trace") per level — 3 in total; progress persists across
-runs. About 10–15 minutes of play. (A fourth level existed as a blockout and was
+runs. About 5–10 minutes of play. (A fourth level existed as a blockout and was
 deliberately cut to keep depth over count; the blockout and its retired generator
 were removed — the decision is documented in the Docs/ dev logs.)
+
+- **Objective:** solve each room with your echo, recover the memory fragments, and
+  reach each level's exit — the four story acts reveal whose recordings you keep
+  finding.
+- **Win / completion:** reaching the exit door finishes a level; finishing Act 4 marks
+  the game complete and returns to the menu (progress persists between runs).
+- **Lose:** there is no permanent fail state — hazards, mines and drones respawn you at
+  the last checkpoint.
+
+## Known issues & limitations
+
+No open gameplay bugs are known in the shipped build (v1.1.1 — see
+[`Docs/CHANGELOG.md`](../Docs/CHANGELOG.md)). Current limitations, with how they are
+managed, are listed in [`Docs/PROJECT_REPORT.md`](../Docs/PROJECT_REPORT.md) §9 — the
+short version: keyboard/mouse only (no gamepad), desktop builds only, in-game text is
+English only, one save profile, and fresh clones must restore the CraftPix kit before
+first open (see *How to run* above).
 
 ## Accessibility, legal & ethical notes
 
@@ -121,13 +138,18 @@ were removed — the decision is documented in the Docs/ dev logs.)
 - **Cutscene illustrations:** AI-generated to the project's 1-Bit + cyan style guide,
   curated and integrated by the developer (disclosed in [`CREDITS.md`](CREDITS.md)).
 - **Engine & tools:** Unity 2022.3 LTS, Universal Render Pipeline, TextMesh Pro.
+- **Full declarations:** field-by-field external-resource and AI-assistance
+  declarations (including AI coding support) live in
+  [`Docs/DECLARATIONS.md`](../Docs/DECLARATIONS.md).
 
 ## How this project was built
 
 Developed in the open with a session-by-session record so the process — not just the final
 build — can be followed:
 
-- **Concept:** [Game Concept Document](../5.19-Aftertrace%20%E2%80%94%20Game%20Concept%20Document.md)
+- **Design document:** [`Docs/DESIGN.md`](../Docs/DESIGN.md) — the design as shipped
+  (supersedes the original concept document, which lives in git history)
+- **Plan:** [`Docs/PLAN.md`](../Docs/PLAN.md) — week-by-week plan and outcomes
 - **Dev log:** [`../Docs/DevLog/`](../Docs/DevLog/) — ten sessions, from one-day prototype
   to the v1.0.0 presentation build
 - **Playtest notes:** [`../Docs/PlayTestNotes/`](../Docs/PlayTestNotes/) — five rounds,

@@ -25,8 +25,8 @@ followed and assessed.
 ## Reading order
 
 Start at Session 01 and read forward. The log is meant to show how the idea moved from
-the [Game Concept Document](../../5.19-Aftertrace%20%E2%80%94%20Game%20Concept%20Document.md)
-to a polished vertical slice.
+the original 19 May concept document (since superseded by [`Docs/DESIGN.md`](../DESIGN.md);
+the original file lives in git history) to a polished vertical slice.
 
 ## A note on the development model
 
