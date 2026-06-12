@@ -37,7 +37,25 @@ replay ends.
 ## How to run
 
 The game targets **Unity 2022.3.62f3 (LTS)** with the Universal Render Pipeline (2D
-renderer). All assets are committed, so it runs straight from a clone:
+renderer).
+
+**One asset must be downloaded separately — the CraftPix art kit.** Its free licence
+allows shipping the sprites inside a game but forbids redistributing the source PNGs, so
+this public repository carries only the project's `.png.meta` files (import settings +
+sprite slicing), not the images themselves. To restore them in a fresh clone:
+
+1. Download the free
+   [Sci-Fi Platformer 1-Bit Game Kit](https://craftpix.net/freebies/free-sci-fi-platformer-1-bit-pixel-art-game-kit/)
+   from CraftPix.
+2. Copy its PNGs into `Assets/Art/Imported/CraftPix1Bit/`, next to the committed
+   `.png.meta` files — same subfolders and file names as in the kit
+   (`Enemies/`, `GUI/`, `Main_Characters/`, `Objects/`, `Tileset/`, `Traps/`).
+3. Do this **before opening the project in Unity for the first time** — Unity deletes
+   orphaned `.meta` files on open, and with them the GUIDs and sprite slicing that every
+   scene and prefab references. (A copy that already includes the PNGs — e.g. a
+   submitted archive — just runs.)
+
+Then:
 
 1. Open the `Aftertrace_01` folder in Unity Hub (Unity 2022.3.62f3).
 2. Open `Assets/_Scenes/MainMenu.unity`.
@@ -83,15 +101,16 @@ were removed — the decision is documented in the Docs/ dev logs.)
 - **Privacy/security:** the game is fully offline and collects no data.
 - **Assets:** code, level design, tooling and all sound effects are original; sprites and
   fonts use licensed CC0 / royalty-free / OFL packs; music is licensed from OpenGameArt;
-  the ten cutscene illustrations are AI-generated and disclosed. Full per-asset details in
-  [`CREDITS.md`](CREDITS.md).
+  the ten cutscene illustrations are AI-generated and disclosed. The CraftPix kit's source
+  PNGs are excluded from the public repository per its licence (see *How to run*). Full
+  per-asset details in [`CREDITS.md`](CREDITS.md).
 
 ## Credits
 
 - **Design, programming, level design, tooling, audio synthesis:** Yanbin Xu
 - **Sprites (1-Bit baseline):**
   [CraftPix Sci-Fi Platformer 1-Bit Game Kit](https://craftpix.net/freebies/free-sci-fi-platformer-1-bit-pixel-art-game-kit/)
-  (royalty-free) + [Kenney UI Pack: Sci-Fi](https://kenney.nl/assets/ui-pack-sci-fi) (CC0).
+  (royalty-free; source PNGs not redistributed here — see *How to run*).
 - **Fonts (OFL):** [VT323](https://fonts.google.com/specimen/VT323) (titles/terminal) ·
   [Exo 2](https://fonts.google.com/specimen/Exo+2) (body) ·
   [Orbitron](https://fonts.google.com/specimen/Orbitron) (fallback display).
@@ -122,7 +141,7 @@ Aftertrace_01/
 │   ├── _Scenes/     MainMenu, Cut_00…Cut_03, Level_00…Level_02
 │   ├── Scripts/     Player, Echo, Environment, Enemy, UI, App, Management, Camera, Effects
 │   ├── Editor/      Aftertrace tooling: cutscene builder, gameplay-UI builder, art/audio generators
-│   ├── Art/         Imported/ (CraftPix, Kenney) · Sprites/ · Palettes/ · images/ (cutscenes)
+│   ├── Art/         Imported/ (CraftPix — PNGs local-only) · Sprites/ · Palettes/ · images/ (cutscenes)
 │   ├── Audio/       procedural SFX WAVs · Music/ (licensed OGG/MP3 tracks)
 │   ├── Fonts/  Prefabs/  Resources/  Settings/
 │   └── ...

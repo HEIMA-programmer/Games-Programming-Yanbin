@@ -17,11 +17,10 @@ as fallback (see `Assets/Editor/EchoArt.cs`).
   backgrounds, door, checkpoint, items, props (boxes, machines), GUI tiles, icons.
   Full licence: <https://craftpix.net/file-licenses/> (see also
   `Assets/Art/Imported/CraftPix1Bit/LICENSE.txt`).
-
-- **[UI Pack: Sci-Fi](https://kenney.nl/assets/ui-pack-sci-fi)** — Kenney
-  ([kenney.nl](https://kenney.nl)). **CC0 1.0 Universal** — public domain, free for any use,
-  attribution not required. See `Assets/Art/Imported/KenneyUI/LICENSE.txt`. Available as a
-  full atlas for menu / panel work.
+  **Note:** that licence forbids redistributing the source art files, so the kit's PNGs
+  are **not committed to this public repository** — only the project's `.png.meta` files
+  (import settings / sprite slicing) are. The README's *How to run* section explains how
+  to restore the kit in a fresh clone.
 
 - **[Industrial Parallax Background](https://opengameart.org/content/industrial-parallax-background)**
   — Luis Zuno ([@ansimuz](https://ansimuz.com)). **CC0** (stated on the OpenGameArt page and

@@ -18,7 +18,10 @@ run it.
   (10 sessions, prototype → v1.0.0)
 - **Playtest notes:** [Docs/PlayTestNotes/](Docs/PlayTestNotes/) — five rounds, self and
   peer, each tied to the changes it caused
-- **Credits & licences:** [Aftertrace_01/CREDITS.md](Aftertrace_01/CREDITS.md)
+- **Credits & licences:** [Aftertrace_01/CREDITS.md](Aftertrace_01/CREDITS.md) — the
+  repository's MIT licence covers the original code and content only; third-party assets
+  keep their own licences, and the CraftPix art kit's source PNGs are not redistributed
+  here (the Aftertrace README explains the one-step download)
 
 ## Other coursework
 

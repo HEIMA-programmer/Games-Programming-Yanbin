@@ -188,7 +188,7 @@ namespace EchoShift.EditorTools
 
         // ---- Loading -------------------------------------------------------
 
-        // Maps the project's logical sprite names to imported CraftPix / Kenney frames.
+        // Maps the project's logical sprite names to imported CraftPix frames.
         // EchoSpriteSlicer slices the source PNGs into named sprites ("{base}_{index}");
         // anything missing here falls back to the procedural Assets/Art/Sprites/ asset.
         static readonly System.Collections.Generic.Dictionary<string, (string path, string frame)> ImportedSprites =

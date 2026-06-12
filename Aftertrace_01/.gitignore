@@ -88,3 +88,10 @@ Desktop.ini
 # and want to commit it (e.g. for hosting/hand-in), force-add the folder, e.g.:
 #   !/[Bb]uild/WebGL/
 # or simply: git add -f Build/WebGL
+
+# --- CraftPix 1-Bit kit (licence forbids redistributing source files) --------
+# The CraftPix Free License allows the art inside a built game but not making
+# the source PNGs available to others, so they stay local-only in this public
+# repo. The .png.meta files REMAIN tracked: they carry the GUIDs and sprite
+# slicing, so dropping the downloaded kit back in restores every reference.
+/[Aa]ssets/Art/Imported/CraftPix1Bit/**/*.png
