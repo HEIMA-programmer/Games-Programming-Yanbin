@@ -282,10 +282,19 @@ namespace EchoShift
                 GameManager.Instance.RespawnPlayer();
         }
 
+        /// <summary>
+        /// Raised each time a drone powers down from a decoy hit. Level scripting
+        /// listens for the FIRST stun — e.g. L2's "rub eyes" coaching beat fires on
+        /// this instead of on a position trigger, so the lesson lands exactly when
+        /// the player first proves the mechanic.
+        /// </summary>
+        public static event System.Action<PatrolDrone> OnStunned;
+
         void Stun()
         {
             StopAllCoroutines();
             StartCoroutine(StunRoutine());
+            OnStunned?.Invoke(this);
         }
 
         IEnumerator StunRoutine()
@@ -294,7 +303,14 @@ namespace EchoShift
             currentSpeed = 0f;
             ApplyConeColour();
             float t = 0f;
-            while (t < stunTime) { t += Time.deltaTime; yield return null; }
+            while (t < stunTime)
+            {
+                // story time freezes world time: the "rub eyes" beat fires at the moment
+                // of the stun, and the escape window it advertises must not burn away
+                // while the player stands frozen reading it
+                if (!NarrativeTerminal.StoryFreeze) t += Time.deltaTime;
+                yield return null;
+            }
             EnterReturn();   // shake it off and head home; re-aggros once back on patrol
         }
 

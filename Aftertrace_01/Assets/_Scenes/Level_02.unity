@@ -278,6 +278,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &25189223
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11037,6 +11038,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &922883588
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12693,6 +12695,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &1267028394
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13754,6 +13757,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &1645707543
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14122,6 +14126,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 1
 --- !u!61 &1724384814
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14280,6 +14285,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &1821435968
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14719,6 +14725,7 @@ MonoBehaviour:
   oneShot: 1
   memoryImage: {fileID: 0}
   portrait: {fileID: 0}
+  fireOnDroneStun: 0
 --- !u!61 &1875430867
 BoxCollider2D:
   m_ObjectHideFlags: 0
