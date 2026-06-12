@@ -9,6 +9,124 @@ in [`DevLog/`](DevLog/).
 
 _Nothing yet._
 
+## [1.1.1] — 2026-06-12
+
+PR #156 + licence-compliance commit `0d56e63`.
+
+### Changed
+
+- L2's "rub eyes" coaching beat now fires the first time a drone is **decoy-stunned**
+  (new `StoryTrigger.fireOnDroneStun` mode subscribed to a `PatrolDrone.OnStunned`
+  event) instead of at a mid-corridor position — the lesson lands when the player first
+  proves the mechanic.
+- Drone stun timers pause during story freeze, so the escape window the beat advertises
+  is still intact when control returns.
+
+### Removed
+
+- **CraftPix kit source PNGs untracked from the public repo** — the kit's licence
+  forbids redistributing source files. `.png.meta` files (GUIDs + slicing) stay tracked;
+  the game README documents the one-step kit restore for fresh clones.
+- Unused **Kenney UI pack** (528 tracked files, zero scene/prefab references).
+
+### Docs
+
+- README / CREDITS licence notes for the above; root README clarifies the MIT licence
+  covers original content only.
+
+## [1.1.0] — 2026-06-12
+
+Session 10 follow-up · PR #155 — presentation polish across the whole flow.
+
+### Added
+
+- **Level 1 expansion (34u → 50u):** S3 freight minefield — two chained crates pushed
+  through proximity mines that key on *your* mass (cargo rolls through clean); S4
+  three-lock finale — a latching gate that needs **crate + echo + player** on three
+  plates in the same instant, paced by a sprint mine.
+- **Jersey 10** menu title with a cyan TMP-underlay "3D" extrusion (OFL, licence
+  committed).
+- CC0 backdrops: ansimuz industrial skyline silhouettes + Bonsaiheldin starfield,
+  tinted dim as camera-following layers in the menu and all levels.
+- Diamond fragment art unified: world pickup, spin animation frames, HUD icon.
+
+### Changed
+
+- **Story freeze now freezes the world:** while a blocking beat is on screen, drones
+  (movement + contact), mine fuses, trap damage and echo replay all pause with the
+  player — a beat next to a hazard is no longer a death sentence.
+- Cutscene acts 1–3 share their following level's music track, making each act the
+  level's seamless prelude (same-clip dedupe ramps instead of restarting).
+
+### Fixed
+
+- L2 exit door had lost its AudioSource/clips in the saved scene — re-wired and
+  verified from disk.
+- Narrative terminal flashed the previous beat's last line while fading in.
+- Cutscene caption plate now actually renders (sprite-backed translucent band) and the
+  `[ SPACE ]` hint sits inside the riveted screen frame.
+- L1 floor seam (old end-cap tile column) and the final door/plate overlap.
+
+## [1.0.1] — 2026-06-11
+
+PR #154 — process record brought up to date: Session 03–10 dev logs, Playtests 03–05,
+Session 01/02 + Playtest 02 errata, READMEs updated to the v1.0.0 build.
+
+## [1.0.0] — 2026-06-11
+
+Session 10 · PR #153 — **the presentation build**: the story gets an ending.
+
+### Added
+
+- **Four illustrated cutscene acts** (`Cut_00`–`Cut_03`) between levels: AI-generated
+  stills (disclosed in CREDITS), 0.6 s cross-fades, typewriter captions with per-glyph
+  blips, SPACE to reveal/advance, ESC to skip; Act 4 marks the game completed and
+  returns to the menu.
+- **Licensed soundtrack** (OpenGameArt, per-track licences in CREDITS): C64 lullaby
+  (menu), *First Light Particles* (L0), *Forgotten Lullaby* music box (L1), *Spooky
+  Dungeon* (L2), Quendel's music-box *Reverie* (ending) — with **drift-through-silence**
+  transitions (4.5 s squared drift-out begun at scene-fade start, a beat of silence,
+  2.5 s bloom-in) replacing hard crossfades.
+
+### Changed
+
+- **Level 3 cut.** The story now ends after Level 2; scene list, progression and level
+  select updated. Decision and reasoning recorded in DevLog Session 10 (depth over
+  count; finish the *story*, not a fourth blockout).
+
+### Fixed
+
+- Wall-climb exploit (narrowed ground-check so walls stopped counting as floor),
+  jump-over-drone cheese, Sokoban crate-chain push hand-over, scene-load flash,
+  L0 HUD counter + pause issues, exit-door audio.
+
+## [0.9.1] — 2026-06-10
+
+Session 09 · PR #152 — **Level 2 rebuilt as "Hide and Seek"**, a five-segment stealth
+composite: volumetric searchlight drones with a unified gaze-alarm meter, a decoy-stun
+pass, an echo step-stool wall, and a crate-as-mobile-cover sentinel zone. Fixed drone
+contact triggering, endpoint chase-break, and stunned-contact lethality.
+
+## [0.9.0] — 2026-06-10
+
+Session 08 · PR #151 — **echo-recorded crate system + Level 1 rebuilt as "Playroom"**:
+crates pushed during a recording rewind and replay their path; proximity mines; kit-art
+lift; a dual-plate gate that provably needs crate *and* echo. Fixed `MovingPlatform`
+endpoint freeze and player grounding.
+
+## [0.8.0] — 2026-06-10
+
+Session 07 · PR #150 — **Level 0 hand-authored** over the frozen blockout via editor
+tooling; the procedural scene builders retired behind `Aftertrace ▸ Legacy (DANGER)`.
+Diegetic dialogue box + portraits, riveted screen-frame UI, and the project-wide
+**384×216 / PPU 32 pixel-perfect camera** standard. Sprite grounding fixes.
+
+## [0.7.0] — 2026-06-01
+
+Session 06 · PR #149 — pixel-perfect rendering + a real sprite-animation set for the
+player/echo, and environment art switched to hand-authored tile palettes over clean
+gameplay blockouts (the bridge between generated and hand-made scenes).
+
 ## [0.6.0] — 2026-05-29
 
 Session 3 · M2 opener — Ride Your Echo mechanic + 1-Bit art baseline + menu/HUD polish.
