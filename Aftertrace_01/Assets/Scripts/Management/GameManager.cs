@@ -6,43 +6,35 @@ using UnityEngine.UI;
 namespace EchoShift
 {
     /// <summary>
-    /// Per-level coordinator: holds level config, tracks fragments + time, drives the
-    /// recording vignette/HUD, owns pause + white flash + victory + (Level 2) respawn.
-    /// One instance per gameplay scene; referenced by UI components wired by the builder.
+    /// Per-level coordinator: holds level config, tracks fragments, drives the
+    /// recording vignette/HUD, owns pause + stealth detection + checkpoint respawn.
+    /// One instance per gameplay scene; referenced by the scene's UI components.
+    /// (Levels end at the AutoDoorExit into the next cutscene act — there is no
+    /// in-level victory flow; the removed VictoryScreen path lives in git history.)
     /// </summary>
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
         public static bool Paused { get; private set; }
 
-        [Header("Level config (set by the build script)")]
-        public string levelName = "Sector 01";
-        public string nextSceneName = "MainMenu";
-        [TextArea] public string narrativeLine = "I remember...";
-        [TextArea] public string finalMessage = "";
+        [Header("Level config")]
         public int totalFragments = 1;
 
         [Header("UI references")]
         public HUDController hud;
         public PauseMenu pauseMenu;
-        public VictoryScreen victoryScreen;
         public RecordingVignette vignette;
-        public Image flashImage;
         public Image hitFlashImage;
-
-        public float flashTime = 0.45f;
 
         [Header("Detection (stealth)")]
         public float detectionFillTime = 1.6f;    // seconds of continuous sight before caught
         public float detectionDecayMult = 1.8f;   // how fast the meter empties when unseen
 
         public bool IsCloneActive => activeClones > 0;
-        public bool IsVictory => completed;
         public int Collected => collected;
 
         int activeClones;
         int collected;
-        bool completed;
         bool respawning;
         Vector3 checkpoint;
         bool hasCheckpoint;
@@ -56,8 +48,6 @@ namespace EchoShift
             Instance = this;
             Paused = false;
             Time.timeScale = 1f;
-            completed = false;
-            if (flashImage != null) SetAlpha(flashImage, 0f);
             if (hitFlashImage != null) SetAlpha(hitFlashImage, 0f);
         }
 
@@ -91,7 +81,7 @@ namespace EchoShift
 
         void FixedUpdate()
         {
-            if (Paused || completed || respawning)
+            if (Paused || respawning)
             {
                 if (respawning) detection = 0f;
                 seenThisFrame = false;
@@ -119,44 +109,7 @@ namespace EchoShift
             Time.timeScale = p ? 0f : 1f;
         }
 
-        // ---- white flash on pickup ----
-        public void Flash()
-        {
-            if (flashImage != null) StartCoroutine(FlashRoutine(flashImage, 0.92f, flashTime));
-        }
-
-        IEnumerator FlashRoutine(Image img, float peak, float dur)
-        {
-            SetAlpha(img, peak);
-            float t = 0f;
-            while (t < dur)
-            {
-                t += Time.unscaledDeltaTime;
-                SetAlpha(img, Mathf.Lerp(peak, 0f, t / dur));
-                yield return null;
-            }
-            SetAlpha(img, 0f);
-        }
-
-        // ---- victory ----
-        public void CompleteLevel()
-        {
-            if (completed) return;
-            completed = true;
-            if (player != null) player.ControlEnabled = false;
-            float timeTaken = Time.timeSinceLevelLoad;
-            string scene = SceneManager.GetActiveScene().name;
-            GameProgress.SetTime(scene, timeTaken);
-            bool isFinal = string.IsNullOrEmpty(nextSceneName) || nextSceneName == "MainMenu";
-            if (isFinal) GameProgress.MarkCompleted();
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayVictoryMusic();
-            if (victoryScreen != null)
-                victoryScreen.Show(levelName, timeTaken, collected, totalFragments, narrativeLine,
-                    nextSceneName, finalMessage, GameProgress.TotalFragments(), GameProgress.MaxFragments,
-                    GameProgress.TotalTime(), isFinal);
-        }
-
-        // ---- checkpoints / respawn (Level 2) ----
+        // ---- checkpoints / respawn ----
         public void SetCheckpoint(Vector3 pos)
         {
             checkpoint = pos;
@@ -165,7 +118,7 @@ namespace EchoShift
 
         public void RespawnPlayer()
         {
-            if (respawning || completed || !hasCheckpoint) return;
+            if (respawning || !hasCheckpoint) return;
             StartCoroutine(RespawnRoutine());
         }
 

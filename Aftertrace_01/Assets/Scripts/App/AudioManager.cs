@@ -15,7 +15,6 @@ namespace EchoShift
         [Header("Background tracks (assigned on the App prefab)")]
         public AudioClip menuBgm;
         public AudioClip levelBgm;
-        public AudioClip victoryBgm;
 
         [Range(0f, 1f)] public float musicVolume = 0.55f;
 
@@ -69,7 +68,6 @@ namespace EchoShift
 
         public void PlayMenuMusic() => PlayMusic(menuBgm);
         public void PlayLevelMusic() => PlayMusic(levelBgm);
-        public void PlayVictoryMusic() => PlayMusic(victoryBgm);
 
         // volumeScale: per-track loudness trim (sourced tracks aren't mastered to one
         // level - a music box pierces, an ambient pad whispers). Final = musicVolume * scale.

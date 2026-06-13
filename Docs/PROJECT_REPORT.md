@@ -41,10 +41,13 @@ cycles, failure is a checkpoint respawn. The intended experience (DESIGN.md §3)
 - **Hand-authored scenes as the source of truth.** The project began 100% procedural
   (editor scripts generated every sprite, sound, prefab and scene — ideal for a one-day
   MVP). As art direction became a requirement, generated *composition* became the
-  bottleneck, so shipped scenes moved to hand-authoring and the level generators were
-  retired behind an explicit `Legacy (DANGER)` menu. The remaining generators
-  (UI sprites, SFX, cutscene scaffolding) still document the provenance of every
-  non-imported asset.
+  bottleneck, so the shipped gameplay scenes moved to hand-authoring; the level
+  generators were first retired behind a guarded `Legacy (DANGER)` menu (v0.8.0) and
+  then **deleted outright in v1.1.0** — they survive in git history. What remains in
+  `Assets/Editor/` is the tooling still in use — the cutscene-scene builder (the four
+  cutscene scenes stay tool-built from its data table) and the deterministic SFX
+  synthesiser — plus the retained sprite-generator source, which together document the
+  provenance of every non-imported asset.
 - **A persistent App layer** (audio, fades, progress) bootstrapped from `Resources`, so
   any scene can be played directly in the editor — a small decision that paid for
   itself every testing hour.
@@ -63,7 +66,8 @@ cycles, failure is a checkpoint respawn. The intended experience (DESIGN.md §3)
   git.
 - **Licence-gated public repo:** nothing enters the repository unless its licence
   permits redistribution; the one exception (the CraftPix kit) is handled by keeping
-  its source PNGs local-only with tracked import metadata (§3, §7).
+  its source PNGs — and the seven UI sprites cropped from its sheets — local-only with
+  tracked import metadata (§7; remediation story in §8).
 
 ## 3. Problems and limitations
 
@@ -85,6 +89,12 @@ Problems that cost real time, and what fixed them (full detail in the DevLog):
   flashed through on the next one; the cutscene `[ SPACE ]` hint clipped under the
   screen frame; a mid-corridor trigger fired a lesson about a mechanic the player had
   not used yet (now event-driven).
+- **Residue found by the post-docs audit (v1.1.2):** the early builds completed a level
+  through an in-level victory screen, but shipped levels end at the **exit door** into
+  the next story act and every memory fragment is optional — which had quietly made the
+  whole `VictoryScreen`/`CompleteLevel` path (plus its victory music and the orphaned
+  gameplay-UI builder) unreachable. The dead path was deleted, and the actual completion
+  flow is now stated explicitly in the README and DESIGN.md §4/§12.
 
 Current limitations are listed with their management in §9.
 
@@ -96,14 +106,15 @@ caused:
 | Round | Build | What it changed |
 | --- | --- | --- |
 | 01 (self, 25 May) | v0.1–0.3 | first feel fixes on the day-one slice |
-| 02 (coursemate, 27 May) | v0.4 | the game-feel polish pass (juice, audio, font) of v0.5 |
+| 02 (self, 27 May) | v0.4 | the game-feel polish pass (juice, audio, font) of v0.5 |
 | 03 (coursemate, 28 May) | v0.5 | the **art-direction pivot**: feedback made it plain the procedural look read as a blockout, which kicked off the 1-bit baseline |
 | 04 (fresh player, 10 Jun) | v0.9.1 | a six-issue severity list fixed the same night; its pacing findings fed the **Level 3 cut** decision |
 | 05 (self, 11 Jun) | v1.0.0 | ship validation against round 04's fixes; caught the silent L2 exit door (re-wired in v1.1.0) |
 
-Beyond playtests, regressions were checked with scripted in-editor probes (plate
-latching, mines ignoring crates, story-trigger conditions, reachability of pickups),
-and every PR merged only after a full play pass of the affected level.
+Beyond playtests, every PR merged only after a full play pass of the affected level,
+recorded in the DevLog's per-session verification tables; the Level 2 rebuild
+additionally used ad-hoc scripted in-editor walkthroughs with reflection-injected
+input (PR #152 — those scripts were run-and-discarded, not retained in the repo).
 
 ## 5. Reflection: how the game developed from concept to final version
 
@@ -194,23 +205,31 @@ The parts I would point an assessor to as most representative of my own ability:
   based on GitHub's public template (declared in
   [DECLARATIONS.md](DECLARATIONS.md)).
 - **Tutorials:** no tutorial code was copied into the project.
-- **External assets:** one royalty-free 1-bit art kit (source files kept out of the
-  public repo per its licence), CC0 backgrounds, OFL fonts, and CC0/CC-BY music — every
+- **External assets:** one royalty-free 1-bit art kit (its source files — and the seven
+  UI sprites cropped from them — kept out of the public repo per its licence), CC0
+  backgrounds, OFL fonts, and CC0/CC-BY music — every
   item credited in [CREDITS.md](../Aftertrace_01/CREDITS.md) and declared field-by-field
   in [DECLARATIONS.md](DECLARATIONS.md). All sound effects and the remaining sprites
   are original and generated by the project's own editor tooling.
 - **AI support, disclosed in two places:** (a) the ten cutscene illustrations are
   AI-generated to the project's style guide, then curated and integrated by me;
   (b) **Claude Code (Anthropic)** worked as an implementation assistant under my
-  direction throughout development — I designed the mechanics, systems and levels and
-  reviewed/tested everything it produced. The full eight-field declaration, including
-  what I changed and what I tested, is in [DECLARATIONS.md](DECLARATIONS.md).
+  direction throughout development — connected to the Unity Editor through the
+  open-source **Unity-MCP** bridge (Ivan Murzak, Apache-2.0; declared in
+  [DECLARATIONS.md](DECLARATIONS.md) §A16) so it could act inside the editor as well as
+  edit files. I designed the mechanics, systems and levels and reviewed/tested
+  everything it produced. The full eight-field declaration, including what I changed and
+  what I tested, is in [DECLARATIONS.md](DECLARATIONS.md).
 
 ## 8. Organisation, time management, independent work, professionalism
 
-- **Organisation:** one PR per feature (#1–#156), each leaving a playable build; a
-  session-based dev log written as the work happened; playtests with severity lists
-  gating each milestone; a documented decision record for every pivot.
+- **Organisation:** one PR per feature — 21 PRs in total (#1–#7 and #144–#157; the
+  number gap is GitHub issue numbering, and three PRs are docs-only), each gameplay
+  merge leaving a playable build, plus one direct licence-compliance commit recorded in
+  the changelog; a session-based dev log (Sessions 01–02 written day-of, Sessions 03–11
+  disclosed backfills reconstructed from the PR record and the actual diffs); playtests
+  with severity lists gating each milestone; a documented decision record for every
+  pivot.
 - **Time management:** the schedule absorbed a parallel-deadline week by design — Week
   3 was budgeted for planning only (the redesign spec), so Week 4 could be pure
   execution. The one-day MVP at the start bought certainty about the mechanic before
@@ -235,10 +254,10 @@ The parts I would point an assessor to as most representative of my own ability:
 
 | Limitation | Management |
 | --- | --- |
-| Keyboard/mouse only — no gamepad | Out of scope for the assessed build; bindings are centralised so adding one later is contained |
+| Keyboard/mouse only — no gamepad | Out of scope for the assessed build; the input surface is small (legacy `Input` reads in five scripts, the record key a serialized field), so adding one later is a bounded change |
 | Desktop only; WebGL untested | Submission targets a desktop build; the repo documents how to build |
 | In-game text is English only | A deliberate scope cut (the pixel fonts carry no CJK glyphs); all text lives in builder/scene data, so localisation is a data change |
 | One save profile | Matches the 5–10 minute scope; `GameProgress` isolates persistence behind one class |
-| Fresh clones must re-download the art kit before first open | A licence obligation, not a defect — the README documents the one-step restore and the order that protects Unity's import metadata |
+| Fresh clones must re-download the art kit before first open | A licence obligation, not a defect — the README documents the restore steps (the kit, plus the seven gitignored UI crops) and the order that protects Unity's import metadata |
 | The decoy-stun coaching beat fires at the *first* stun anywhere in Level 2 | Intentional (teach at first proof of competence) and recorded; scoping it to specific drones is a one-field change if testing ever argues for it |
 | Music tracks come from different artists and masterings | Per-track volume scaling in the audio manager levels the mix |

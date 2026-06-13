@@ -1,0 +1,41 @@
+Music attribution — Aftertrace
+==============================
+
+All tracks in this folder were downloaded 2026-06-11 from OpenGameArt.org.
+Where a track is multi-licensed on its OpenGameArt page, the licence elected
+for this project is the one stated below. This file travels with the audio so
+that any build or copy carrying the folder carries the required attribution.
+(The master copy of these credits lives in the repository's CREDITS.md.)
+
+1. "Slow Melancholic Theme (C64 Style)" — skrjablin
+   File: menu_c64_lullaby.ogg (main menu)
+   Licence elected: CC0 1.0
+   https://opengameart.org/content/slow-melancholic-theme-c64-style
+
+2. "First Light Particles" — Yoiyami
+   File: l0_first_light.ogg (Level 0 + Act 1 prelude; converted WAV->OGG, otherwise unchanged)
+   Licence: CC0 1.0
+   https://opengameart.org/content/first-light-particles-%E2%80%93-cc0-atmospheric-pianoambient-track
+
+3. "Forgotten Lullaby" (Music Box Loop variant) — Mega Pixel Music Lab
+   File: l1_forgotten_lullaby.ogg (Level 1 + Act 2 prelude; converted WAV->OGG, otherwise unchanged)
+   Licence elected: CC-BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+   Attribution: "Forgotten Lullaby" by Mega Pixel Music Lab, used under CC-BY 4.0.
+   https://opengameart.org/content/forgotten-lullaby
+
+4. "Spooky Dungeon" — Memoraphile / You're Perfect Studio
+   File: l2_spooky_dungeon.ogg (Level 2 + Act 3 prelude)
+   Licence elected: CC0 1.0
+   https://opengameart.org/content/spooky-dungeon
+
+5. Schumann, "Scenes from Childhood" arranged for music box — Gregor Quendel
+   (after Robert Schumann; source notes credit Bernd Krueger / piano-midi.de)
+   Files: cut3_reverie.mp3 (ending cutscene — the movement "Reverie"/"Traeumerei");
+          cut0_distant_lands.mp3, cut1_pleading_child.mp3, cut2_poet_speaks.mp3,
+          alt_blind_mans_buff.mp3, alt_hobgoblin.mp3 (shipped unused alternates)
+   Licence: CC-BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+   Attribution: music-box arrangements by Gregor Quendel, used under CC-BY 4.0.
+   https://opengameart.org/content/schumann-scenes-from-childhood-arranged-for-music-box
+
+All other audio in this project (every .wav in Assets/Audio/) is synthesised by
+the project's own editor tooling and is original work — see CREDITS.md.

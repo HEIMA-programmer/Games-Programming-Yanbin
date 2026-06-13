@@ -4,9 +4,9 @@ namespace EchoShift
 {
     /// <summary>
     /// Declares this scene's background track. On load it hands the clip to the
-    /// persistent AudioManager, which crossfades from whatever was playing — if the
+    /// persistent AudioManager, which moves from whatever was playing — if the
     /// previous scene declared the SAME clip, AudioManager's dedupe keeps it running
-    /// seamlessly (e.g. the menu lullaby continuing into the opening cutscene).
+    /// seamlessly (e.g. a cutscene act sharing its following level's track).
     /// GameManager skips its generic level-music fallback when one of these is present.
     /// </summary>
     public class SceneMusic : MonoBehaviour

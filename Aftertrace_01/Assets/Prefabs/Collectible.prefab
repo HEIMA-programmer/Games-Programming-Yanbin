@@ -5323,12 +5323,10 @@ MonoBehaviour:
   audioSource: {fileID: 6218986351745596190}
   chimeClip: {fileID: 8300000, guid: 9414c4c72299fe44e9f9b03f26ad5040, type: 3}
   burstParticles: {fileID: 665227346505285652}
-  endsLevel: 1
   memoryTitle: MEMORY FRAGMENT
   memorySpeaker: TRACE
   storyLines: []
   memoryImage: {fileID: 0}
-  completeAfterStory: 1
   storyMode: 1
 --- !u!1 &7929947287903400000
 GameObject:

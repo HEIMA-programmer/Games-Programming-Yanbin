@@ -7,7 +7,48 @@ in [`DevLog/`](DevLog/).
 
 ## [Unreleased]
 
-_Nothing yet._
+Post-audit correction pass (v1.1.2 pending). The submission docs rebuilt in PR #157
+were audited line-by-line against the code, scenes, git history and licence sources;
+this pass fixes what the audit found.
+
+### Removed
+
+- **The unreachable victory-screen path.** Early builds completed a level through an
+  in-level victory screen; the shipped levels end at the **exit door** into the next
+  story act, and every memory fragment is optional — so the dead path was deleted:
+  `VictoryScreen`, `GameManager.CompleteLevel`, victory music (`bgm_victory.wav` + its
+  generator), per-level best-time persistence, the unused white pickup flash, the
+  orphaned `EchoUI` gameplay-UI builder, and the inert `VictoryPanel`/`Flash` canvas
+  objects in all three level scenes (all preserved in git history). The stale default
+  `Assets/Scenes/SampleScene.unity` went with them.
+- **CraftPix-derived UI crops untracked.** Seven standalone sprites cropped from the
+  kit's sheets (`Assets/Art/Sprites/UI/`: three portraits, the riveted screen frame,
+  the terminal frame, the plate pill, the lift platform) fall under the same
+  no-redistribution clause as the kit sources and are now gitignored too (metas stay
+  tracked; crop sources are documented per file in `SPRITESHEET_NOTES.md`). The v1.1.1
+  untracking had covered only the kit folder itself — found by the audit.
+- Two files removed from the dev-log evidence folder: `Game-Prototype.png` (a
+  pre-project mockup of a different prototype, referenced by no document) and
+  `menu.png` (the image still shows the pre-rename "ECHO SHIFT" title its caption no
+  longer matched).
+
+### Docs
+
+- Corrections across README / DESIGN / PLAN / PROJECT_REPORT / DECLARATIONS / CREDITS /
+  DevLog from the audit: the deleted `Legacy (DANGER)` menu is no longer described as
+  present-tense tooling; the shipped completion flow (exit door → cutscene, fragments
+  optional) is stated explicitly; PR-range, tester-attribution, key-binding,
+  feedback-pairing and testing-methodology claims corrected to match reality; CREDITS
+  gained missing download dates, unused-asset notes, a TMP-bundled-assets note and a
+  `Music/ATTRIBUTION.txt` that travels with the audio; Session 11 records the v1.1.x
+  endgame and the documentation rebuild.
+- **Editor tooling now declared.** The audit found the project ships an editor-time
+  automation plugin (the open-source **Unity-MCP** bridge + its DLL closure in
+  `Assets/Plugins/NuGet/`) through which the AI assistant acted inside the Unity Editor.
+  It was previously undeclared, which falsified the "no other external resources"
+  statement. It is now a full external-resource entry (DECLARATIONS §A16, with its
+  Apache-2.0/MIT licences) and is woven into the AI-assistance declaration (§B) and
+  CREDITS; it is editor-time only and not part of the game build.
 
 ## [1.1.1] — 2026-06-12
 
@@ -98,7 +139,9 @@ Session 10 · PR #153 — **the presentation build**: the story gets an ending.
 
 - Wall-climb exploit (narrowed ground-check so walls stopped counting as floor),
   jump-over-drone cheese, Sokoban crate-chain push hand-over, scene-load flash,
-  L0 HUD counter + pause issues, exit-door audio.
+  L0 HUD counter + pause issues, and exit-door audio at the prefab + L1-scene level —
+  the L2 scene's own door was missed and stayed silent in v1.0.0 (caught the same
+  night by Playtest 05, fixed in [1.1.0]).
 
 ## [0.9.1] — 2026-06-10
 
@@ -138,8 +181,10 @@ Session 3 · M2 opener — Ride Your Echo mechanic + 1-Bit art baseline + menu/H
   above the surface carries riders by the echo's delta — avoids OnCollisionEnter/Exit edge
   cases the effector creates. Trigger circle on the root is unchanged so pressure plates
   still fire; `BeginDissolve` clears the standpoint so the rising echo can't drag the player up.
-- **External 1-Bit art baseline.** Sprites switch from `EchoArt` procedural to a curated
-  CC0 / royalty-free pack (CraftPix 1-Bit Sci-Fi Platformer Kit + Kenney UI Pack: Sci-Fi).
+- **External 1-Bit art baseline.** Sprites switch from `EchoArt` procedural to curated
+  external packs: the CraftPix 1-Bit Sci-Fi Platformer Kit (royalty-free under the
+  CraftPix Freebies licence — **not** CC0; its no-redistribution clause was honoured
+  later, in [1.1.1]) and the Kenney UI Pack: Sci-Fi (CC0; removed unused in [1.1.1]).
   `EchoSpriteSlicer` slices every sheet on a per-asset grid; `EchoImportedAssetSettings`
   (an `AssetPostprocessor`) configures Point filter, per-folder PPU, and FullRect mesh.
   `EchoBuildUtils.LoadSprite` maps logical names to named frames; replaced generators

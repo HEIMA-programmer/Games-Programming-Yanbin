@@ -30,7 +30,6 @@ namespace EchoShift
         void Update()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            if (GameManager.Instance != null && GameManager.Instance.IsVictory) return;
             if (SceneFader.Instance != null && SceneFader.Instance.IsFading) return;
             Toggle();
         }
