@@ -15,8 +15,8 @@ namespace EchoShift.EditorTools
         const int SampleRate = 44100;
 
         // Safe standalone regen: rewrites the .wav files in place (same paths/GUIDs, so every
-        // AudioSource reference stays valid) WITHOUT rebuilding any scene. Use this after tweaking
-        // a sound so you don't have to run Build All (which would wipe hand-authored tiles).
+        // AudioSource reference stays valid) WITHOUT touching any scene. The hand-authored
+        // scenes are the source of truth; this tool only ever writes into Assets/Audio/.
         [MenuItem("Aftertrace/Art/Regenerate Audio Only", false, 103)]
         public static void RegenerateAudioOnly()
         {
@@ -45,7 +45,6 @@ namespace EchoShift.EditorTools
             WriteWav("pauseopen", PauseOpen());
             WriteWav("bgm_menu", MenuDrone());
             WriteWav("bgm_level", LevelAmbient());
-            WriteWav("bgm_victory", VictoryChord());
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -299,20 +298,6 @@ namespace EchoShift.EditorTools
                     s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * a;
                 }
                 d[i] = s * lfo * 0.45f;
-            }
-            return d;
-        }
-
-        static float[] VictoryChord()
-        {
-            float dur = 4f; int n = Mathf.CeilToInt(dur * SampleRate); var d = new float[n];
-            int[] f = { 131, 165, 196, 262 };
-            for (int i = 0; i < n; i++)
-            {
-                float t = (float)i / SampleRate;
-                float env = 0.6f + 0.4f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
-                float s = 0f; for (int k = 0; k < f.Length; k++) s += Mathf.Sin(2f * Mathf.PI * f[k] * t) * 0.22f;
-                d[i] = s * env * 0.6f;
             }
             return d;
         }

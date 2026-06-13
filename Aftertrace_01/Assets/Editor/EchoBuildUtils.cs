@@ -36,12 +36,13 @@ namespace EchoShift.EditorTools
         public static readonly string[] SortingLayers =
             { "Background", "Midground", "Environment", "Player", "Foreground", "UI" };
 
-        /// <summary>Custom UI font (Exo 2, OFL), set by EchoFont.EnsureFontAsset during Build All.
-        /// Null → fall back to TMP's default (Liberation Sans), so a missing font never breaks the build.</summary>
+        /// <summary>Custom UI font (Exo 2, OFL). Historically assigned by the EchoFont build step,
+        /// which was deleted with the level builders (PR #155). Null → fall back to TMP's default
+        /// (Liberation Sans), so a missing font never breaks a build.</summary>
         public static TMP_FontAsset CustomFont;
 
-        /// <summary>Display/title font (Orbitron, OFL), set by EchoFont.EnsureFontAsset. Used for
-        /// menu titles via CreateTitleText. Null → falls back to CustomFont.</summary>
+        /// <summary>Display/title font (Orbitron, OFL). Historically assigned by the deleted
+        /// EchoFont build step; never set in the shipped tooling. Null → falls back to CustomFont.</summary>
         public static TMP_FontAsset TitleFont;
 
         // ---- Palette -------------------------------------------------------
@@ -188,9 +189,10 @@ namespace EchoShift.EditorTools
 
         // ---- Loading -------------------------------------------------------
 
-        // Maps the project's logical sprite names to imported CraftPix frames.
-        // EchoSpriteSlicer slices the source PNGs into named sprites ("{base}_{index}");
-        // anything missing here falls back to the procedural Assets/Art/Sprites/ asset.
+        // Maps the project's logical sprite names to imported CraftPix frames. The source PNGs
+        // are sliced into named sprites ("{base}_{index}") by their tracked .meta import settings
+        // (the EchoSpriteSlicer tool that authored those rects was deleted with the level
+        // builders in PR #155). Anything missing here falls back to Assets/Art/Sprites/.
         static readonly System.Collections.Generic.Dictionary<string, (string path, string frame)> ImportedSprites =
             new System.Collections.Generic.Dictionary<string, (string, string)>
             {

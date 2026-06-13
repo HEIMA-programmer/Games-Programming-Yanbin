@@ -5,9 +5,9 @@ Naming: every sliced frame is `{sheetName}_{index}`, row-major from the top-left
 This file is the source of truth for all frame-array assignments (animations, tiles,
 props). Wave 1 = sheets needed for Level_00; Wave 2 audited later (marked TODO).
 
-> Slicing is owned by `Assets/Editor/EchoSpriteSlicer.cs`. Single-sheet re-slice:
-> `EchoSpriteSlicer.Slice(path, cellW, cellH)` from script — do NOT blanket-run
-> "Slice ALL" after custom rects exist.
+> Slicing lives in each sheet's tracked `.png.meta` import settings. The
+> `EchoSpriteSlicer.cs` tool that authored those rects was deleted together with the
+> level builders (PR #155) — do NOT re-slice; custom rects exist on several sheets.
 
 ---
 

@@ -47,7 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuBgm: {fileID: 8300000, guid: a2f03d7da2cfe6b47a84fab0e91898e3, type: 3}
   levelBgm: {fileID: 8300000, guid: 11f0074a92d5f5c449051aa17973fb93, type: 3}
-  victoryBgm: {fileID: 8300000, guid: ee2b9467f5430e142a7ecbba7ec5876a, type: 3}
   musicVolume: 0.55
   fadeOutTime: 2.5
   silenceGap: 0.35

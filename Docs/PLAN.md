@@ -75,6 +75,7 @@ build.
 | Story-beat correctness: stun-coaching beat fires on the first decoy-stun | Should | ✓ PR #156 (v1.1.1) |
 | **Licence compliance**: CraftPix source PNGs out of the public repo (metas kept, restore steps documented); unused Kenney pack removed | Must | ✓ 12 Jun |
 | Playtest 05 (ship-build validation) | Must | ✓ 11 Jun |
+| Submission-docs rebuild: as-shipped DESIGN.md + this PLAN.md, CHANGELOG through v1.1.1, project report, external-resource + AI declarations, README objective/known-issues pass | Must | ✓ PR #157 (13 Jun) |
 
 **Exit criteria met:** v1.0.0+ plays menu → Act 1 → L0 → … → Act 4 → menu with no
 debug input and a real ending.
@@ -85,7 +86,7 @@ debug input and a real ending.
 
 | Task | Priority | Outcome |
 | --- | --- | --- |
-| Documentation rebuild: DESIGN.md (as-shipped design), this PLAN.md, CHANGELOG through v1.1.1, project report, external-resource + AI declarations, README known-issues pass | Must | in progress |
+| Post-audit documentation corrections + unreachable-code cleanup (v1.1.2): fix stale tooling/licence claims found by a full doc audit; remove the dead victory-screen path | Must | in progress |
 | v1.0 screenshot set for the dev-log evidence folder | Should | planned |
 | Final full-run validation on a clean checkout | Must | planned |
 | 3-minute presentation + oral-exam preparation | Must | planned |

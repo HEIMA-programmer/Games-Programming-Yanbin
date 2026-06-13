@@ -95,3 +95,15 @@ Desktop.ini
 # repo. The .png.meta files REMAIN tracked: they carry the GUIDs and sprite
 # slicing, so dropping the downloaded kit back in restores every reference.
 /[Aa]ssets/Art/Imported/CraftPix1Bit/**/*.png
+
+# The seven standalone UI sprites below are CROPS of CraftPix kit sheets
+# (sources documented per-file in Assets/Art/Imported/SPRITESHEET_NOTES.md),
+# so the same no-redistribution rule applies: PNGs local-only, .meta tracked.
+# white.png in the same folder is project-generated and stays tracked.
+/[Aa]ssets/Art/Sprites/UI/portrait_a.png
+/[Aa]ssets/Art/Sprites/UI/portrait_b.png
+/[Aa]ssets/Art/Sprites/UI/portrait_c.png
+/[Aa]ssets/Art/Sprites/UI/screen_frame_riveted.png
+/[Aa]ssets/Art/Sprites/UI/terminal_frame_black.png
+/[Aa]ssets/Art/Sprites/UI/plate_pill.png
+/[Aa]ssets/Art/Sprites/UI/lift_platform.png

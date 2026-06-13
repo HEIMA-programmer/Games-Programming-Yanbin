@@ -21,7 +21,7 @@ namespace EchoShift
             if (prefab != null)
                 Object.Instantiate(prefab);
             else
-                Debug.LogWarning("[EchoShift] Resources/App.prefab not found. Run EchoShift ▸ Build All.");
+                Debug.LogWarning("[EchoShift] Resources/App.prefab not found. Restore Assets/Resources/App.prefab from version control.");
         }
     }
 }

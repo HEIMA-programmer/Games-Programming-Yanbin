@@ -3,8 +3,8 @@ using UnityEngine;
 namespace EchoShift
 {
     /// <summary>
-    /// Memory fragment. Optional fragments count immediately; ending fragments can play
-    /// a memory beat before completing the level.
+    /// Memory fragment pickup: counts toward the level's recovered traces and can play
+    /// a memory beat. Fragments are optional — levels end at the exit door, not here.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class Collectible : MonoBehaviour
@@ -12,15 +12,12 @@ namespace EchoShift
         public AudioSource audioSource;
         public AudioClip chimeClip;
         public ParticleSystem burstParticles;
-        [Tooltip("True = the level-ending fragment. False = optional fragment.")]
-        public bool endsLevel = true;
 
         [Header("Memory beat")]
         public string memoryTitle = "MEMORY FRAGMENT";
         public string memorySpeaker = "TRACE";
         [TextArea] public string[] storyLines;
         public Sprite memoryImage;
-        public bool completeAfterStory = true;
         public NarrativeBlockingMode storyMode = NarrativeBlockingMode.Blocking;
 
         bool taken;
@@ -40,28 +37,8 @@ namespace EchoShift
             GameManager gm = GameManager.Instance;
             if (gm != null) gm.CollectFragment();
 
-            bool hasStory = storyLines != null && storyLines.Length > 0;
-            if (hasStory && NarrativeTerminal.Instance != null)
-            {
-                NarrativeTerminal.Instance.Play(storyLines, storyMode, memoryTitle, memorySpeaker, memoryImage,
-                    () => Finish(gm));
-            }
-            else
-            {
-                Finish(gm);
-            }
-        }
-
-        void Finish(GameManager gm)
-        {
-            if (!endsLevel) return;
-            if (!completeAfterStory && storyLines != null && storyLines.Length > 0) return;
-
-            if (gm != null)
-            {
-                gm.Flash();
-                gm.CompleteLevel();
-            }
+            if (storyLines != null && storyLines.Length > 0 && NarrativeTerminal.Instance != null)
+                NarrativeTerminal.Instance.Play(storyLines, storyMode, memoryTitle, memorySpeaker, memoryImage);
         }
     }
 }

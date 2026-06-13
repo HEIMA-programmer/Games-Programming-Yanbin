@@ -55,6 +55,15 @@ sprite slicing), not the images themselves. To restore them in a fresh clone:
    scene and prefab references. (A copy that already includes the PNGs — e.g. a
    submitted archive — just runs.)
 
+The same licence rule covers **seven standalone UI sprites cropped from the kit's sheets**
+in `Assets/Art/Sprites/UI/` (the three dialogue portraits, the riveted screen frame, the
+terminal frame, the plate pill and the lift platform): their PNGs are local-only too, with
+tracked `.meta` files. A fresh clone restores them by re-cropping from the downloaded kit —
+each file's source sheet and cells are listed in
+`Assets/Art/Imported/SPRITESHEET_NOTES.md` (§ "standalone crops") — or by copying the
+folder from a working copy or the submitted archive. (`white.png` in the same folder is
+project-generated and ships in the repo.)
+
 Then:
 
 1. Open the `Aftertrace_01` folder in Unity Hub (Unity 2022.3.62f3).
@@ -67,11 +76,15 @@ already configured).
 
 **A note on the pipeline.** The project began fully procedural (editor scripts generated
 every sprite, sound, prefab and scene). It evolved deliberately — documented in the
-[dev log](../Docs/DevLog/) — and the shipped scenes are now **hand-authored** and are the
-source of truth. Current editor tooling lives under the **`Aftertrace`** menu (cutscene
-builder, sprite/art tools, audio regeneration); the retired procedural level builders are
-fenced behind `Aftertrace ▸ Legacy (DANGER — overwrites hand-made scenes)` and produce
-gameplay blockouts only — don't run them on the shipped scenes.
+[dev log](../Docs/DevLog/) — and the shipped gameplay scenes and menu are now
+**hand-authored** and are the source of truth. The procedural level builders were first
+retired behind a guarded `Legacy` menu (v0.8.0) and then **deleted outright in v1.1.0
+(PR #155)** — they survive only in git history. The `Aftertrace` editor menu now has
+exactly two entries: **Build Cutscene Scenes** (regenerates `Cut_00`–`Cut_03` from the
+data table in `EchoCutscenes.cs` — the four cutscene scenes are tool-built, unlike the
+hand-authored levels) and **Art ▸ Regenerate Audio Only** (re-synthesises the SFX WAVs in
+place). The retained `EchoArt.cs` source documents how the procedural sprites were
+generated but has no menu entry.
 
 ## The game
 
@@ -83,8 +96,9 @@ gameplay blockouts only — don't run them on the shipped scenes.
 | `Level_02` | Sector 02 — Hide and Seek | Five-segment stealth: volumetric searchlight drones with a gaze-alarm meter, decoy-stun passes, an echo step-stool wall, and crate-as-mobile-cover |
 
 Flow: Menu → Act 1 → Level 0 → Act 2 → Level 1 → Act 3 → Level 2 → Act 4 → Menu.
-One memory fragment ("recovered trace") per level — 3 in total; progress persists across
-runs. About 5–10 minutes of play. (A fourth level existed as a blockout and was
+One **optional** memory fragment ("recovered trace") per level — 3 in total; fragments
+are collectibles, not completion requirements (the exit door is what finishes a level),
+and collected fragments persist across runs. About 5–10 minutes of play. (A fourth level existed as a blockout and was
 deliberately cut to keep depth over count; the blockout and its retired generator
 were removed — the decision is documented in the Docs/ dev logs.)
 
@@ -119,8 +133,9 @@ first open (see *How to run* above).
 - **Assets:** code, level design, tooling and all sound effects are original; sprites and
   fonts use licensed CC0 / royalty-free / OFL packs; music is licensed from OpenGameArt;
   the ten cutscene illustrations are AI-generated and disclosed. The CraftPix kit's source
-  PNGs are excluded from the public repository per its licence (see *How to run*). Full
-  per-asset details in [`CREDITS.md`](CREDITS.md).
+  PNGs — and the seven standalone UI sprites cropped from its sheets — are excluded from
+  the public repository per its licence (see *How to run*). Full per-asset details in
+  [`CREDITS.md`](CREDITS.md).
 
 ## Credits
 
@@ -128,9 +143,10 @@ first open (see *How to run* above).
 - **Sprites (1-Bit baseline):**
   [CraftPix Sci-Fi Platformer 1-Bit Game Kit](https://craftpix.net/freebies/free-sci-fi-platformer-1-bit-pixel-art-game-kit/)
   (royalty-free; source PNGs not redistributed here — see *How to run*).
-- **Fonts (OFL):** [VT323](https://fonts.google.com/specimen/VT323) (titles/terminal) ·
+- **Fonts (OFL):** [VT323](https://fonts.google.com/specimen/VT323) (terminal/captions) ·
   [Exo 2](https://fonts.google.com/specimen/Exo+2) (body) ·
-  [Orbitron](https://fonts.google.com/specimen/Orbitron) (fallback display).
+  [Jersey 10](https://fonts.google.com/specimen/Jersey+10) (menu title) ·
+  [Orbitron](https://fonts.google.com/specimen/Orbitron) (ships unused).
 - **Sound effects:** generated procedurally at edit time (16-bit PCM WAV, deterministic).
 - **Music (OpenGameArt, CC0 / CC-BY 4.0):** skrjablin, Yoiyami, Mega Pixel Music Lab,
   Memoraphile / You're Perfect Studio, and Gregor Quendel's music-box arrangements of
@@ -150,8 +166,8 @@ build — can be followed:
 - **Design document:** [`Docs/DESIGN.md`](../Docs/DESIGN.md) — the design as shipped
   (supersedes the original concept document, which lives in git history)
 - **Plan:** [`Docs/PLAN.md`](../Docs/PLAN.md) — week-by-week plan and outcomes
-- **Dev log:** [`../Docs/DevLog/`](../Docs/DevLog/) — ten sessions, from one-day prototype
-  to the v1.0.0 presentation build
+- **Dev log:** [`../Docs/DevLog/`](../Docs/DevLog/) — eleven sessions, from one-day
+  prototype through the v1.1.x endgame and the documentation rebuild
 - **Playtest notes:** [`../Docs/PlayTestNotes/`](../Docs/PlayTestNotes/) — five rounds,
   including the peer playtests that re-shaped the art direction and the final fix list
 
@@ -162,7 +178,7 @@ Aftertrace_01/
 ├── Assets/
 │   ├── _Scenes/     MainMenu, Cut_00…Cut_03, Level_00…Level_02
 │   ├── Scripts/     Player, Echo, Environment, Enemy, UI, App, Management, Camera, Effects
-│   ├── Editor/      Aftertrace tooling: cutscene builder, gameplay-UI builder, art/audio generators
+│   ├── Editor/      Aftertrace tooling: cutscene builder, audio generator, retained art-generator source
 │   ├── Art/         Imported/ (CraftPix — PNGs local-only) · Sprites/ · Palettes/ · images/ (cutscenes)
 │   ├── Audio/       procedural SFX WAVs · Music/ (licensed OGG/MP3 tracks)
 │   ├── Fonts/  Prefabs/  Resources/  Settings/

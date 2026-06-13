@@ -4,7 +4,7 @@ This folder is a session-by-session record of how **Aftertrace** was designed, b
 tested, and refined. It exists so that the *process* — not only the final build — can be
 followed and assessed.
 
-![Aftertrace main menu](screenshots/menu.png)
+![Aftertrace — the first record prompt](screenshots/level01-record.png)
 
 ## How it works
 
@@ -16,11 +16,13 @@ followed and assessed.
   **testing notes**, and the **plan for next session**.
 - Each session links to the **commits / pull requests** made that day, so this written
   record and the Git history corroborate each other.
-- Early high-level changes (v0.1 → v0.6) are also summarised in
-  [`../CHANGELOG.md`](../CHANGELOG.md); from v0.6 onwards the per-session logs are the
-  canonical record. Formal playtest rounds (someone sits down and plays a build) are
-  written up in [`../PlayTestNotes/`](../PlayTestNotes/) and linked from the relevant
-  session.
+- [`../CHANGELOG.md`](../CHANGELOG.md) carries one entry per release all the way to
+  v1.1.1 and is the only process record for the releases between sessions (e.g. the
+  v1.0.1 docs backfill). Sessions 01–02 were written the same day as the work;
+  Sessions 03–11 are **disclosed backfills**, reconstructed from the PR descriptions
+  and the actual diffs (see PR #154). Formal playtest rounds (someone sits down and
+  plays a build) are written up in [`../PlayTestNotes/`](../PlayTestNotes/) and linked
+  from the relevant session.
 
 ## Reading order
 
@@ -40,7 +42,8 @@ The development model itself evolved, and the log records each shift honestly:
    [`CREDITS.md`](../../Aftertrace_01/CREDITS.md)) while the pipeline stayed one-click.
 3. **From Session 06–07 (2026-06-01 → 06-10):** environment art and then level layout
    pivoted to **hand-authored scenes** over procedural gameplay blockouts; the builders
-   were retired behind a guarded Legacy menu, and the scenes became the source of truth.
+   were retired behind a guarded Legacy menu (and later deleted outright in v1.1.0),
+   and the scenes became the source of truth.
    The final build adds licensed music and disclosed AI-illustrated cutscene art (also in
    `CREDITS.md`); all sound effects remain procedurally synthesized.
 
@@ -87,6 +90,10 @@ bug-fixing, redesign, and polish.
   [Playtest 04](../PlayTestNotes/Playtest-04_2026-06-10.md) fix round (wall-climb, crate
   trains, scene-load flash, L0 HUD); ship-build validation in
   [Playtest 05](../PlayTestNotes/Playtest-05_2026-06-11.md). **v1.0.0.**
+- [Session 11 — 2026-06-12 → 06-13](Session-11_2026-06-12.md) — The v1.1.x endgame
+  (backfilled): Level 1 expansion + presentation polish (PR #155), the licence-compliance
+  commit (CraftPix sources untracked, Kenney pack removed), the stun-triggered story beat
+  (PR #156), and the submission-docs rebuild (PR #157). **v1.1.0 → v1.1.1.**
 
 ---
 
