@@ -3,6 +3,7 @@
 <p align="center"><em>Record your own movements, replay them as a ghost clone, and cooperate with your past self.</em></p>
 
 <p align="center">
+  <a href="https://github.com/HEIMA-programmer/Games-Programming-Yanbin/releases/tag/v1.1.2"><img alt="Play v1.1.2" src="https://img.shields.io/badge/play-v1.1.2-7b3fe4"></a>
   <img alt="Unity 2022.3.62f3 LTS" src="https://img.shields.io/badge/Unity-2022.3.62f3%20LTS-black?logo=unity">
   <img alt="URP 2D Renderer" src="https://img.shields.io/badge/URP-2D%20Renderer-informational">
   <img alt="C#" src="https://img.shields.io/badge/C%23-runtime%20%2B%20editor%20tooling-blue?logo=c-sharp">
@@ -30,8 +31,9 @@ Games Programming module (University of Dundee).
 
 ## Play it
 
-- **Just play it (no Unity needed):** download the build, unzip it, and run **`Aftertrace.exe`** —
-  keep the whole unzipped folder together.
+- **▶ Download & play (no Unity needed):** grab the build from the
+  **[v1.1.2 release](https://github.com/HEIMA-programmer/Games-Programming-Yanbin/releases/tag/v1.1.2)**,
+  unzip it (keep the `Aftertrace` folder together), and run **`Aftertrace.exe`**. Windows 64-bit.
 - **Open the project / read the details:** see **[Aftertrace_01/README.md](Aftertrace_01/README.md)**
   for controls, the scene list, the full screenshot gallery, and the one art-kit restore step.
 
@@ -46,6 +48,7 @@ Everything an assessor needs is in version-controlled Markdown, organised by pur
 | **[Docs/DECLARATIONS.md](Docs/DECLARATIONS.md)** | Field-by-field external-resource & AI-assistance declarations, in the module's requested format |
 | **[Aftertrace_01/CREDITS.md](Aftertrace_01/CREDITS.md)** | Credits and per-asset licences (with sources and download dates) |
 | **[Docs/PLAN.md](Docs/PLAN.md)** | Week-by-week plan, outcomes, carry-overs and cuts |
+| **[Project board (kanban)](https://github.com/users/HEIMA-programmer/projects/3/views/6?groupedBy%5BcolumnId%5D=Milestone)** | GitHub Project — every issue and PR, grouped by milestone (M1–M4); also a flat [board view](https://github.com/users/HEIMA-programmer/projects/3/views/1) |
 | **[Docs/CHANGELOG.md](Docs/CHANGELOG.md)** | Version history v0.1 → v1.1.x, each release mapped to its pull requests |
 | **[Docs/DevLog/](Docs/DevLog/)** | Eleven session logs — one-day prototype → ship → documentation rebuild |
 | **[Docs/PlayTestNotes/](Docs/PlayTestNotes/)** | Six playtest rounds (self and peer), each tied to the changes it caused |
