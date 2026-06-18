@@ -235,8 +235,8 @@ Status: ✓ shipped · ✗ cut (with the cut recorded and justified).
   the four cutscene scenes stay tool-built from `EchoCutscenes`' data table. Each shift
   is logged in the DevLog with reasons.
 - **Process:** public GitHub repo; one PR per feature, each merge leaving a playable
-  build — 22 PRs in total (#1–#7 and #144–#158; the number gap is GitHub issue numbering,
-  and four of them are docs-only — #4, #145, #154, #157), plus one direct licence-compliance commit (`0d56e63`)
+  build — one PR per feature across the #1–#7 and #144+ PR series (the number gap is GitHub
+  issue numbering, and several are documentation-only), plus one direct licence-compliance commit (`0d56e63`)
   recorded in the changelog; playtest rounds gating milestones; licence check before any
   asset enters the repo.
 - **Testing:** manual in-editor play passes per PR, recorded in per-session verification
@@ -326,8 +326,10 @@ tables, outcomes, carry-overs) is [PLAN.md](PLAN.md).
 | W2 | 26 May – 1 Jun | M2 — mechanical depth & art identity | Drone LOS AI + stealth rule; game-feel pass; rename to *Aftertrace*; **1-bit art pivot** (CraftPix baseline, tilemaps, VT323); pixel-perfect + animation (v0.4–0.7, PR #5–#149) |
 | W3 | 2–8 Jun | (low-bandwidth — parallel coursework) | M3 redesign spec: narrative spine, crates-as-recordables, per-level themes |
 | W4 | 9–15 Jun | M3 — content, narrative & ship | Three levels hand-rebuilt (#150–#152); Playtest 04; **Level 3 cut**; four cutscene acts + soundtrack = **v1.0.0** (#153); presentation polish + licence compliance (v1.1.x, #155–#156); submission-docs rebuild (#157, 13 Jun) |
-| W5 | 16–21 Jun | Submission & presentation | Post-audit documentation corrections + dead-code cleanup (v1.1.2), current-build screenshot set, final ship-build validation (Playtest 06), presentation and demo video |
+| W5 | 16–21 Jun | M4 — presentation polish & submission | Post-audit documentation corrections + dead-code cleanup (v1.1.2), current-build screenshot set, final ship-build validation (Playtest 06), presentation and demo video |
 
-There is no separate "M4" milestone: its planned content (a climax level) was cut in
-favour of finishing the story with cutscenes, and its polish duties were absorbed into
-W4. The decision and its reasoning are recorded in DevLog Session 10.
+M4 was **repurposed, not dropped**: its originally planned content (a climax level) was cut
+in favour of finishing the story with cutscenes, so M4 became the **presentation-polish and
+submission** milestone (the v1.1.x passes through to the shipped build) — which is how the
+[project board](https://github.com/users/HEIMA-programmer/projects/3) groups the work. The
+climax-cut decision and its reasoning are recorded in DevLog Session 10.

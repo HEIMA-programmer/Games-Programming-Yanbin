@@ -92,11 +92,11 @@ debug input and a real ending.
 | 3-minute presentation + oral-exam preparation | Must | ✓ (delivered; recording is the demo video) |
 | Submission build (desktop; WebGL only if required) | Must | ✓ Windows x86_64 standalone (v1.1.2) |
 
-## Milestone map (for the original M-numbering)
+## Milestone map (as grouped on the project board)
 
 | Milestone | Where it landed |
 | --- | --- |
 | M1 — vertical slice | W1 (one-day burst, PR #1–#3) |
 | M2 — mechanical depth + art identity | W2 (PR #5–#149) |
 | M3 — content, narrative, audio | W4 (PR #150–#154) |
-| M4 — climax level + ship | **does not exist as shipped**: the climax level (L3) was cut 11 Jun; M4's polish duties were absorbed into W4's v1.1.x passes; the game ends with Act 4 instead. Decision record: DevLog Session 10. |
+| M4 — presentation polish & submission | **repurposed, not dropped**: the originally planned climax level (L3) was cut 11 Jun, so M4 became the v1.1.x presentation-polish-and-submission milestone — Level 1 expansion, the stun beat, licence compliance, the submission docs, the build, Playtest 06 and the v1.1.2 release (as grouped on the project board). Climax-cut decision: DevLog Session 10. |

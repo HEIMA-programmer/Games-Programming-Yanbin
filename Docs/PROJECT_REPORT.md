@@ -224,8 +224,8 @@ The parts I would point an assessor to as most representative of my own ability:
 
 ## 8. Organisation, time management, independent work, professionalism
 
-- **Organisation:** one PR per feature — 22 PRs in total (#1–#7 and #144–#158; the
-  number gap is GitHub issue numbering, and four PRs are docs-only — #4, #145, #154, #157), each gameplay
+- **Organisation:** one PR per feature across the #1–#7 and #144+ PR series (the
+  number gap is GitHub issue numbering, and several are documentation-only), each gameplay
   merge leaving a playable build, plus one direct licence-compliance commit recorded in
   the changelog; a session-based dev log (Sessions 01–02 written day-of, Sessions 03–11
   disclosed backfills reconstructed from the PR record and the actual diffs); playtests
