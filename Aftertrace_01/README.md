@@ -36,8 +36,15 @@ replay ends.
 
 ## How to run
 
-The game targets **Unity 2022.3.62f3 (LTS)** with the Universal Render Pipeline (2D
-renderer).
+**Quickest — play the build (no Unity needed).** Download the submission build
+(`2617313_CW2_FinalGameBuild.zip`, or the link on the submission form), unzip it anywhere
+and double-click **`Aftertrace.exe`**. Keep the unzipped folder intact — the executable
+needs its `Aftertrace_Data` folder beside it. Everything the game needs is baked into the
+build, so the CraftPix restore step below does **not** apply to a build — it is only for
+opening the *source project* in Unity.
+
+**To open the source project in Unity**, the game targets **Unity 2022.3.62f3 (LTS)** with
+the Universal Render Pipeline (2D renderer).
 
 **One asset must be downloaded separately — the CraftPix art kit.** Its free licence
 allows shipping the sprites inside a game but forbids redistributing the source PNGs, so
@@ -110,9 +117,60 @@ were removed — the decision is documented in the Docs/ dev logs.)
 - **Lose:** there is no permanent fail state — hazards, mines and drones respawn you at
   the last checkpoint.
 
+## Screenshots
+
+Captured from the shipped v1.1.2 build.
+
+**Menus & UI**
+
+<table>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Menu.png" width="400"><br><sub>Main menu</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level_Select.png" width="400"><br><sub>Level select</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/How_to_Play.png" width="400"><br><sub>How to play</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Pause_Page.png" width="400"><br><sub>Pause menu</sub></td>
+  </tr>
+</table>
+
+**Levels**
+
+<table>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level0_Example00.png" width="400"><br><sub>Level 0 — Awakening (the echo tutorial)</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level0_Example01.png" width="400"><br><sub>Level 0 — record-and-replay</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level1_Example00.png" width="400"><br><sub>Level 1 — Playroom (recordable crates)</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level1_Example01.png" width="400"><br><sub>Level 1 — crates & proximity mines</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level1_Example_02.png" width="400"><br><sub>Level 1 — the multi-lock gate</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level2_Example00.png" width="400"><br><sub>Level 2 — Hide and Seek (stealth)</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Level2_Example01.png" width="400"><br><sub>Level 2 — searchlight drone</sub></td>
+    <td></td>
+  </tr>
+</table>
+
+**Story acts (illustrated cutscenes)**
+
+<table>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Cut_Scene0_Example.png" width="400"><br><sub>Act 1</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Cut_Scene1_Example.png" width="400"><br><sub>Act 2</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="../Docs/Game_View_Picture/Cut_Scene2_Example.png" width="400"><br><sub>Act 3</sub></td>
+    <td align="center"><img src="../Docs/Game_View_Picture/Cut_Scene3_Example.png" width="400"><br><sub>Act 4 (ending)</sub></td>
+  </tr>
+</table>
+
 ## Known issues & limitations
 
-No open gameplay bugs are known in the shipped build (v1.1.1 — see
+No open gameplay bugs are known in the shipped build (v1.1.2 — see
 [`Docs/CHANGELOG.md`](../Docs/CHANGELOG.md)). Current limitations, with how they are
 managed, are listed in [`Docs/PROJECT_REPORT.md`](../Docs/PROJECT_REPORT.md) §9 — the
 short version: keyboard/mouse only (no gamepad), desktop builds only, in-game text is
@@ -168,7 +226,7 @@ build — can be followed:
 - **Plan:** [`Docs/PLAN.md`](../Docs/PLAN.md) — week-by-week plan and outcomes
 - **Dev log:** [`../Docs/DevLog/`](../Docs/DevLog/) — eleven sessions, from one-day
   prototype through the v1.1.x endgame and the documentation rebuild
-- **Playtest notes:** [`../Docs/PlayTestNotes/`](../Docs/PlayTestNotes/) — five rounds,
+- **Playtest notes:** [`../Docs/PlayTestNotes/`](../Docs/PlayTestNotes/) — six rounds,
   including the peer playtests that re-shaped the art direction and the final fix list
 
 ## Project structure

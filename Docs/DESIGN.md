@@ -1,13 +1,13 @@
 # Aftertrace — Design Document
 
-> **Final revision, written against the shipped v1.1.1 build (June 2026).**
+> **Final revision, written against the shipped v1.1.2 build (June 2026).**
 > This document replaces the original 19 May concept document and the early
 > `ROADMAP.md` / `BACKLOG.md` / `REDESIGN.md` planning files (all preserved in git
 > history). It records the design **as shipped** — including what was cut and why —
 > so the plan→result connection can be assessed against the actual game.
 > Companions: [PLAN.md](PLAN.md) (weekly schedule) · [CHANGELOG.md](CHANGELOG.md)
 > (version history mapped to PRs) · [DevLog/](DevLog/) (session-by-session record) ·
-> [PlayTestNotes/](PlayTestNotes/) (five testing rounds) ·
+> [PlayTestNotes/](PlayTestNotes/) (six testing rounds) ·
 > [game README](../Aftertrace_01/README.md) · [CREDITS](../Aftertrace_01/CREDITS.md).
 
 ## 1. Game title
@@ -235,13 +235,13 @@ Status: ✓ shipped · ✗ cut (with the cut recorded and justified).
   the four cutscene scenes stay tool-built from `EchoCutscenes`' data table. Each shift
   is logged in the DevLog with reasons.
 - **Process:** public GitHub repo; one PR per feature, each merge leaving a playable
-  build — 21 PRs in total (#1–#7 and #144–#157; the number gap is GitHub issue numbering,
-  and three of them are docs-only), plus one direct licence-compliance commit (`0d56e63`)
+  build — 22 PRs in total (#1–#7 and #144–#158; the number gap is GitHub issue numbering,
+  and four of them are docs-only — #4, #145, #154, #157), plus one direct licence-compliance commit (`0d56e63`)
   recorded in the changelog; playtest rounds gating milestones; licence check before any
   asset enters the repo.
 - **Testing:** manual in-editor play passes per PR, recorded in per-session verification
   tables; ad-hoc scripted in-editor walkthroughs with reflection-injected input during
-  the Level 2 rebuild (PR #152 — the scripts were not retained in the repo); five
+  the Level 2 rebuild (PR #152 — the scripts were not retained in the repo); six
   recorded playtest rounds with fix lists ([PlayTestNotes/](PlayTestNotes/)).
 
 ## 12. Main systems / scripts
@@ -326,7 +326,7 @@ tables, outcomes, carry-overs) is [PLAN.md](PLAN.md).
 | W2 | 26 May – 1 Jun | M2 — mechanical depth & art identity | Drone LOS AI + stealth rule; game-feel pass; rename to *Aftertrace*; **1-bit art pivot** (CraftPix baseline, tilemaps, VT323); pixel-perfect + animation (v0.4–0.7, PR #5–#149) |
 | W3 | 2–8 Jun | (low-bandwidth — parallel coursework) | M3 redesign spec: narrative spine, crates-as-recordables, per-level themes |
 | W4 | 9–15 Jun | M3 — content, narrative & ship | Three levels hand-rebuilt (#150–#152); Playtest 04; **Level 3 cut**; four cutscene acts + soundtrack = **v1.0.0** (#153); presentation polish + licence compliance (v1.1.x, #155–#156); submission-docs rebuild (#157, 13 Jun) |
-| W5 | 16–21 Jun | Submission & presentation | Post-audit documentation corrections + dead-code cleanup (v1.1.2), v1.0 screenshot set, final clean-checkout validation, presentation and oral-exam prep |
+| W5 | 16–21 Jun | Submission & presentation | Post-audit documentation corrections + dead-code cleanup (v1.1.2), current-build screenshot set, final ship-build validation (Playtest 06), presentation and demo video |
 
 There is no separate "M4" milestone: its planned content (a climax level) was cut in
 favour of finishing the story with cutscenes, and its polish duties were absorbed into

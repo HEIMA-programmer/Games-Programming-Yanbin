@@ -17,7 +17,7 @@ followed and assessed.
 - Each session links to the **commits / pull requests** made that day, so this written
   record and the Git history corroborate each other.
 - [`../CHANGELOG.md`](../CHANGELOG.md) carries one entry per release all the way to
-  v1.1.1 and is the only process record for the releases between sessions (e.g. the
+  v1.1.2 and is the only process record for the releases between sessions (e.g. the
   v1.0.1 docs backfill). Sessions 01–02 were written the same day as the work;
   Sessions 03–11 are **disclosed backfills**, reconstructed from the PR descriptions
   and the actual diffs (see PR #154). Formal playtest rounds (someone sits down and
@@ -93,7 +93,8 @@ bug-fixing, redesign, and polish.
 - [Session 11 — 2026-06-12 → 06-13](Session-11_2026-06-12.md) — The v1.1.x endgame
   (backfilled): Level 1 expansion + presentation polish (PR #155), the licence-compliance
   commit (CraftPix sources untracked, Kenney pack removed), the stun-triggered story beat
-  (PR #156), and the submission-docs rebuild (PR #157). **v1.1.0 → v1.1.1.**
+  (PR #156), and the submission-docs rebuild (PR #157). **v1.1.0 → v1.1.1**; the v1.1.2
+  post-audit correction pass (PR #158) is recorded in the [CHANGELOG](../CHANGELOG.md).
 
 ---
 

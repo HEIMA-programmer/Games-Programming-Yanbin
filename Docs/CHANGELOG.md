@@ -5,11 +5,11 @@ All notable changes to **Aftertrace** are recorded here. Format follows
 [Semantic Versioning](https://semver.org/). Each entry corresponds to a day's work logged
 in [`DevLog/`](DevLog/).
 
-## [Unreleased]
+## [1.1.2] — 2026-06-13
 
-Post-audit correction pass (v1.1.2 pending). The submission docs rebuilt in PR #157
-were audited line-by-line against the code, scenes, git history and licence sources;
-this pass fixes what the audit found.
+PR #158 — post-audit correction pass. The submission docs rebuilt in PR #157 were
+audited line-by-line against the code, scenes, git history and licence sources; this
+pass fixes what the audit found.
 
 ### Removed
 
