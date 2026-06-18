@@ -1,6 +1,6 @@
 # Aftertrace — Project Report
 
-> Post-project report for the shipped v1.1.1 build (June 2026). Written to be read
+> Post-project report for the shipped v1.1.2 build (June 2026). Written to be read
 > alongside [DESIGN.md](DESIGN.md) (what the game is), [PLAN.md](PLAN.md) (when things
 > happened), [CHANGELOG.md](CHANGELOG.md) (what shipped in each version),
 > [DevLog/](DevLog/) (how each session actually went) and
@@ -100,7 +100,7 @@ Current limitations are listed with their management in §9.
 
 ## 4. Testing and what changed because of it
 
-Five recorded rounds in [PlayTestNotes/](PlayTestNotes/), each tied to the changes it
+Six recorded rounds in [PlayTestNotes/](PlayTestNotes/), each tied to the changes it
 caused:
 
 | Round | Build | What it changed |
@@ -110,6 +110,7 @@ caused:
 | 03 (coursemate, 28 May) | v0.5 | the **art-direction pivot**: feedback made it plain the procedural look read as a blockout, which kicked off the 1-bit baseline |
 | 04 (fresh player, 10 Jun) | v0.9.1 | a six-issue severity list fixed the same night; its pacing findings fed the **Level 3 cut** decision |
 | 05 (self, 11 Jun) | v1.0.0 | ship validation against round 04's fixes; caught the silent L2 exit door (re-wired in v1.1.0) |
+| 06 (self, 18 Jun) | v1.1.2 | final ship-build validation on the standalone player: L1's S3/S4 finale, the event-driven stun beat and the world-freeze rule all confirmed; L2 exit door now audible; doubled as the demo-video run |
 
 Beyond playtests, every PR merged only after a full play pass of the affected level,
 recorded in the DevLog's per-session verification tables; the Level 2 rebuild
@@ -145,7 +146,7 @@ melancholic, thinky).
    compile errors. They were a player frozen mid-dialogue while a mine kept burning
    beside them; a lesson that displayed before the player had earned it; a caption
    plate that hid the very scene it was captioning. Every one of them was invisible in
-   the code and obvious in play — which is why five recorded playtest rounds, and a
+   the code and obvious in play — which is why six recorded playtest rounds, and a
    full menu-to-ending run before every merge, were worth more than any amount of
    re-reading the scripts. A game's quality lives in details that only testing can
    surface.
@@ -223,8 +224,8 @@ The parts I would point an assessor to as most representative of my own ability:
 
 ## 8. Organisation, time management, independent work, professionalism
 
-- **Organisation:** one PR per feature — 21 PRs in total (#1–#7 and #144–#157; the
-  number gap is GitHub issue numbering, and three PRs are docs-only), each gameplay
+- **Organisation:** one PR per feature — 22 PRs in total (#1–#7 and #144–#158; the
+  number gap is GitHub issue numbering, and four PRs are docs-only — #4, #145, #154, #157), each gameplay
   merge leaving a playable build, plus one direct licence-compliance commit recorded in
   the changelog; a session-based dev log (Sessions 01–02 written day-of, Sessions 03–11
   disclosed backfills reconstructed from the PR record and the actual diffs); playtests

@@ -184,9 +184,10 @@ change, tested it in the editor, and made every commit, merge and release myself
      Level 1 (freight minefield, three-lock finale) over adding new surface area.
 5. **How I tested it:** every change was played in the editor before it counted — a
    full pass of the affected level, and a full menu-to-ending run before each merge.
-   Five recorded playtest rounds (two with an external coursemate tester) produced
+   Six recorded playtest rounds (two with an external coursemate tester) produced
    severity-ranked issue lists that were fixed and then re-verified against the next
-   build — Playtest 05 validates Playtest 04's fixes item by item
+   build — Playtest 05 validates Playtest 04's fixes item by item, and Playtest 06
+   validates the shipped standalone build
    ([PlayTestNotes/](PlayTestNotes/)). UI and scene work was checked visually against
    screenshots; after one fix was silently lost in a save, scene changes were also
    confirmed by reopening the saved scene from disk. Puzzle invariants — doors latching

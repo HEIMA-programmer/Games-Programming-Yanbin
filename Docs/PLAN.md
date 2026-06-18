@@ -1,6 +1,6 @@
 # Aftertrace — Weekly Plan
 
-> The project's plan-of-record, consolidated at v1.1.1. It replaces the original
+> The project's plan-of-record, consolidated at v1.1.2. It replaces the original
 > `ROADMAP.md` (five-week / four-milestone outline) and `BACKLOG.md` (issue specs),
 > both preserved in git history. Each week below lists the goal set for that week and
 > the outcome recorded at its end — including what was carried over or cut, with links
@@ -86,11 +86,11 @@ debug input and a real ending.
 
 | Task | Priority | Outcome |
 | --- | --- | --- |
-| Post-audit documentation corrections + unreachable-code cleanup (v1.1.2): fix stale tooling/licence claims found by a full doc audit; remove the dead victory-screen path | Must | in progress |
-| v1.0 screenshot set for the dev-log evidence folder | Should | planned |
-| Final full-run validation on a clean checkout | Must | planned |
-| 3-minute presentation + oral-exam preparation | Must | planned |
-| Submission build (desktop; WebGL only if required) | Must | planned |
+| Post-audit documentation corrections + unreachable-code cleanup (v1.1.2): fix stale tooling/licence claims found by a full doc audit; remove the dead victory-screen path | Must | ✓ PR #158 (13 Jun) |
+| Current-build screenshot set (`Docs/Game_View_Picture/`, embedded in the READMEs) | Should | ✓ |
+| Final full-run validation on the standalone build | Must | ✓ Playtest 06 (18 Jun) |
+| 3-minute presentation + oral-exam preparation | Must | ✓ (delivered; recording is the demo video) |
+| Submission build (desktop; WebGL only if required) | Must | ✓ Windows x86_64 standalone (v1.1.2) |
 
 ## Milestone map (for the original M-numbering)
 
